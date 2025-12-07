@@ -220,13 +220,13 @@
 
         // Determine profile picture path
         if ($user->name === 'Admin') {
-            $profilePicture = 'images/AdminProfile.png';
+            $profilePicture = 'images/Adminprofile.png';
         } elseif ($user->role === 'employee' && $user->employee && $user->employee->profile_picture) {
             // Employee with uploaded profile picture
             $profilePicture = 'storage/' . $user->employee->profile_picture;
         } else {
             // Default profile picture
-            $profilePicture = 'images/default-profile.jpg';
+            $profilePicture = 'images/Adminprofile.png';
         }
     @endphp
 

@@ -23,6 +23,7 @@ php artisan view:cache
 
 # Create storage link
 echo "🔗 Creating storage link..."
+rm -rf public/storage
 php artisan storage:link || true
 
 # Set correct permissions
