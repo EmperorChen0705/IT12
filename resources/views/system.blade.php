@@ -226,7 +226,7 @@
             $profilePicture = 'storage/' . $user->employee->profile_picture;
         } else {
             // Default profile picture
-            $profilePicture = 'images/admin-profile.png';
+            $profilePicture = 'images/default-profile.png';
         }
     @endphp
 
