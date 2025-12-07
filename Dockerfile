@@ -28,6 +28,7 @@ COPY . /var/www/html
 
 # Copy nginx configuration
 COPY docker/nginx.conf /etc/nginx/sites-available/default
+COPY docker/php.ini /usr/local/etc/php/conf.d/uploads.ini
 
 # Install dependencies
 RUN composer install --no-dev --optimize-autoloader --no-interaction
