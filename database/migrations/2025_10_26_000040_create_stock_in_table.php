@@ -9,13 +9,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('stock_in', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+            $table->charset = 'utf8mb4';
+            $table->collation = 'utf8mb4_unicode_ci';
+
             $table->string('stockin_id', 10)->primary();
-
-            $table->string('item_id');      
-            $table->string('supplier_id');  
-
+            $table->string('item_id', 12);
+            $table->string('supplier_id', 10);
             $table->unsignedInteger('quantity');
-            $table->decimal('price', 10, 2);       
+            $table->decimal('price', 10, 2);
             $table->decimal('total_price', 10, 2);
             $table->date('stockin_date');
             $table->timestamps();

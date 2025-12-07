@@ -9,6 +9,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('stock_out', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+            $table->charset = 'utf8mb4';
+            $table->collation = 'utf8mb4_unicode_ci';
+
             $table->string('stockout_id', 10)->primary();
             $table->string('item_id', 12);
             $table->unsignedBigInteger('user_id')->nullable();

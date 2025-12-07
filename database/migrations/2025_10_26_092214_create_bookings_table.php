@@ -9,6 +9,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('bookings', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+            $table->charset = 'utf8mb4';
+            $table->collation = 'utf8mb4_unicode_ci';
+
             $table->string('booking_id', 12)->primary();        
             $table->string('customer_name', 150);
             $table->string('email', 150);

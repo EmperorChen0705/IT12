@@ -8,6 +8,10 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('activity_logs', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+            $table->charset = 'utf8mb4';
+            $table->collation = 'utf8mb4_unicode_ci';
+
             $table->bigIncrements('id');
             $table->string('event_type', 80)->index();                 
             $table->string('subject_type', 120)->nullable()->index();

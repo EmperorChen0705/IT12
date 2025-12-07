@@ -6,11 +6,16 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-
     public function up(): void
     {
         Schema::create('suppliers', function (Blueprint $table) {
-            $table->string('supplier_id')->unique();
+            $table->engine = 'InnoDB';
+            $table->charset = 'utf8mb4';
+            $table->collation = 'utf8mb4_unicode_ci';
+
+            // Match with stock_in (string length 10)
+            $table->string('supplier_id', 10)->primary();
+
             $table->string('name');
             $table->string('address');
             $table->string('number');

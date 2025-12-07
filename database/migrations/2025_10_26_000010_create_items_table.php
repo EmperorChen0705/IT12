@@ -9,6 +9,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('items', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+            $table->charset = 'utf8mb4';
+            $table->collation = 'utf8mb4_unicode_ci';
             $table->string('item_id', 12)->primary(); 
             $table->string('itemctgry_id', 10);       
 

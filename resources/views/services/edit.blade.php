@@ -1,6 +1,6 @@
 @extends('system')
 
-@section('title','Edit Service - TITLE')
+@section('title','Edit Service - SubWfour ')
 
 @section('head')
     <link href="{{ asset('css/pages.css') }}" rel="stylesheet">
@@ -129,6 +129,23 @@
             @endif
         </div>
     </form>
+
+    <div class="button-row" style="margin-top:10px;display:flex;gap:10px;justify-content:flex-end;">
+        @if($service->status === \App\Models\Service::STATUS_PENDING)
+            <form action="{{ route('services.status',$service) }}" method="POST">
+                @csrf
+                <input type="hidden" name="status" value="{{ \App\Models\Service::STATUS_IN_PROGRESS }}">
+                <button type="submit" class="btn btn-secondary">Check-In</button>
+            </form>
+        @endif
+        @if(in_array($service->status, [\App\Models\Service::STATUS_IN_PROGRESS, \App\Models\Service::STATUS_PENDING]))
+            <form action="{{ route('services.status',$service) }}" method="POST">
+                @csrf
+                <input type="hidden" name="status" value="{{ \App\Models\Service::STATUS_COMPLETED }}">
+                <button type="submit" class="btn btn-primary" @if($service->items->isEmpty()) disabled @endif>Check-Out</button>
+            </form>
+        @endif
+    </div>
 </div>
 
 @if($service->status!=='completed')
@@ -211,4 +228,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 @endif
+<div class="button-row" style="margin-top:18px;display:flex;gap:10px;justify-content:flex-end;">
+    @if($service->status === \App\Models\Service::STATUS_COMPLETED)
+        <a href="{{ route('payments.create', ['booking_id' => $service->booking_id]) }}" class="btn btn-primary">Record Payment</a>
+    @endif
+</div>
 @endsection

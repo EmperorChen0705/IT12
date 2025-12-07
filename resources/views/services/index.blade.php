@@ -1,6 +1,6 @@
 @extends('system')
 
-@section('title','Services - TITLE')
+@section('title','Services - SubWfour')
 
 @section('head')
     <link href="{{ asset('css/pages.css') }}" rel="stylesheet">
@@ -43,7 +43,29 @@
     </div>
 @endif
 
+@php
+    $checkedInCount = \App\Models\Service::where('status', \App\Models\Service::STATUS_IN_PROGRESS)->count();
+    $limitReached = $checkedInCount >= 10;
+@endphp
+
 <div class="glass-card glass-card-wide">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding:0 4px;">
+        <h3 style="margin:0;font-size:.75rem;letter-spacing:1px;text-transform:uppercase;color:var(--gray-400);">Service List</h3>
+        <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:.7rem;color:var(--gray-400);">Check-In Status:</span>
+            <span style="
+                background:{{ $limitReached ? 'var(--red-500)22' : 'var(--green-500)22' }};
+                color:{{ $limitReached ? 'var(--red-500)' : 'var(--green-500)' }};
+                padding:4px 12px;
+                border-radius:12px;
+                font-size:.7rem;
+                font-weight:600;
+                letter-spacing:.5px;
+            ">
+                {{ $checkedInCount }}/10 Checked In
+            </span>
+        </div>
+    </div>
     <div class="table-responsive">
         <table class="table align-middle">
             <thead>
@@ -56,7 +78,7 @@
                 <th class="text-end">Labor</th>
                 <th class="text-end">Total</th>
                 <th>Started</th>
-                <th style="width:110px;">Actions</th>
+                <th style="width:200px;">Actions</th>
             </tr>
             </thead>
             <tbody>
@@ -65,23 +87,35 @@
                     <td>{{ $service->reference_code }}</td>
                     <td>#{{ $service->booking_id }}</td>
                     <td style="min-width:130px;">
-                        <form action="{{ route('services.status',$service) }}" method="POST" class="d-inline">
-                            @csrf
-                            <select name="status"
-                                    onchange="this.form.submit()"
-                                    class="form-input mini-select"
-                                    style="padding:4px 6px;font-size:.62rem;"
-                                    @if($service->status==='completed') disabled @endif>
-                                @foreach([
-                                    \App\Models\Service::STATUS_PENDING=>'Pending',
-                                    \App\Models\Service::STATUS_IN_PROGRESS=>'In Progress',
-                                    \App\Models\Service::STATUS_COMPLETED=>'Completed',
-                                    \App\Models\Service::STATUS_CANCELLED=>'Cancelled'
-                                ] as $k=>$v)
-                                    <option value="{{ $k }}" @selected($service->status===$k)>{{ $v }}</option>
-                                @endforeach
-                            </select>
-                        </form>
+                        @php
+                            $statusColors = [
+                                \App\Models\Service::STATUS_PENDING => 'var(--yellow-500)',
+                                \App\Models\Service::STATUS_IN_PROGRESS => 'var(--blue-500)',
+                                \App\Models\Service::STATUS_COMPLETED => 'var(--green-500)',
+                                \App\Models\Service::STATUS_CANCELLED => 'var(--red-500)',
+                            ];
+                            $statusLabels = [
+                                \App\Models\Service::STATUS_PENDING => 'Pending',
+                                \App\Models\Service::STATUS_IN_PROGRESS => 'In Progress',
+                                \App\Models\Service::STATUS_COMPLETED => 'Completed',
+                                \App\Models\Service::STATUS_CANCELLED => 'Cancelled',
+                            ];
+                            $color = $statusColors[$service->status] ?? 'var(--gray-500)';
+                            $label = $statusLabels[$service->status] ?? $service->status;
+                        @endphp
+                        <span style="
+                            background:{{ $color }}22;
+                            color:{{ $color }};
+                            padding:4px 10px;
+                            border-radius:12px;
+                            font-size:.62rem;
+                            font-weight:600;
+                            text-transform:uppercase;
+                            letter-spacing:.5px;
+                            display:inline-block;
+                        ">
+                            {{ $label }}
+                        </span>
                     </td>
                     <td class="text-end">{{ $service->items->count() }}</td>
                     <td class="text-end">₱{{ number_format($service->subtotal,2) }}</td>
@@ -90,10 +124,23 @@
                     <td>{{ $service->started_at? $service->started_at->format('m/d H:i'):'—' }}</td>
                     <td>
                         <div class="d-flex gap-1">
-                            <a href="{{ route('services.edit',$service) }}"
-                               class="btn btn-edit btn-sm" title="Edit">
-                                <i class="bi bi-pencil-square"></i>
-                            </a>
+                            @if($service->status === \App\Models\Service::STATUS_COMPLETED)
+                                <a href="{{ route('services.edit',$service) }}" class="btn btn-edit btn-sm" title="Edit">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                            @elseif($service->status === \App\Models\Service::STATUS_PENDING)
+                                <form action="{{ route('services.status',$service) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    <input type="hidden" name="status" value="{{ \App\Models\Service::STATUS_IN_PROGRESS }}">
+                                    <button type="submit" class="btn btn-secondary btn-sm" title="Check-In">Check-In</button>
+                                </form>
+                            @elseif($service->status === \App\Models\Service::STATUS_IN_PROGRESS)
+                                <form action="{{ route('services.status',$service) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    <input type="hidden" name="status" value="{{ \App\Models\Service::STATUS_COMPLETED }}">
+                                    <button type="submit" class="btn btn-primary btn-sm" title="Check-Out" @if($service->items->isEmpty()) disabled @endif>Check-Out</button>
+                                </form>
+                            @endif
                         </div>
                     </td>
                 </tr>

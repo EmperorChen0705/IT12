@@ -9,6 +9,7 @@ use App\Models\Booking;
 use App\Models\Item;
 use App\Models\ActivityLog;
 use App\Models\StockOut;
+use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -17,7 +18,7 @@ class ServiceController extends Controller
 {
     public function index(Request $request)
     {
-        $services = Service::with(['booking','items.item'])
+        $services = Service::with(['booking', 'items.item'])
             ->latest()
             ->paginate(25);
 
@@ -30,7 +31,7 @@ class ServiceController extends Controller
 
         $serviceTypes = ServiceType::orderBy('name')->get();
 
-        return view('services.index', compact('services','booking','serviceTypes'));
+        return view('services.index', compact('services', 'booking', 'serviceTypes'));
     }
 
     public function store(Request $request)
@@ -49,11 +50,11 @@ class ServiceController extends Controller
 
             $service = Service::create([
                 'booking_id' => $booking->booking_id,
-                'status'     => Service::STATUS_PENDING,
-                'labor_fee'  => $validated['labor_fee'] ?? 0,
-                'notes'      => $validated['notes'] ?? null,
-                'subtotal'   => 0,
-                'total'      => 0,
+                'status' => Service::STATUS_PENDING,
+                'labor_fee' => $validated['labor_fee'] ?? 0,
+                'notes' => $validated['notes'] ?? null,
+                'subtotal' => 0,
+                'total' => 0,
             ]);
 
             $this->syncItemsAndTotals($service, $validated['items']);
@@ -67,12 +68,12 @@ class ServiceController extends Controller
         });
 
         return redirect()->route('services.index')
-            ->with('success','Service created.');
+            ->with('success', 'Service created.');
     }
 
     public function edit(Service $service)
     {
-        $service->load('items.item','booking');
+        $service->load('items.item', 'booking');
         return view('services.edit', compact('service'));
     }
 
@@ -90,7 +91,7 @@ class ServiceController extends Controller
 
             $service->update([
                 'labor_fee' => $validated['labor_fee'] ?? 0,
-                'notes'     => $validated['notes'] ?? null,
+                'notes' => $validated['notes'] ?? null,
             ]);
 
             $service->items()->delete();
@@ -105,30 +106,43 @@ class ServiceController extends Controller
         });
 
         return redirect()->route('services.edit', $service)
-            ->with('success','Service updated.');
+            ->with('success', 'Service updated.');
     }
 
     public function updateStatus(Request $request, Service $service)
     {
         // NEW GUARD: prevent further changes if already completed or cancelled
-        if (in_array($service->status, [
-            Service::STATUS_COMPLETED,
-            Service::STATUS_CANCELLED
-        ], true)) {
+        if (
+            in_array($service->status, [
+                Service::STATUS_COMPLETED,
+                Service::STATUS_CANCELLED
+            ], true)
+        ) {
             return back()->withErrors('This service is finalized and its status can no longer be changed.');
         }
 
         $request->validate([
-            'status' => ['required', Rule::in([
-                Service::STATUS_PENDING,
-                Service::STATUS_IN_PROGRESS,
-                Service::STATUS_COMPLETED,
-                Service::STATUS_CANCELLED
-            ])]
+            'status' => [
+                'required',
+                Rule::in([
+                    Service::STATUS_PENDING,
+                    Service::STATUS_IN_PROGRESS,
+                    Service::STATUS_COMPLETED,
+                    Service::STATUS_CANCELLED
+                ])
+            ]
         ]);
 
         DB::transaction(function () use ($service, $request) {
             $new = $request->status;
+
+            // Check-in limit: maximum 10 concurrent in-progress services
+            if ($new === Service::STATUS_IN_PROGRESS && $service->status !== Service::STATUS_IN_PROGRESS) {
+                $currentCheckedIn = Service::where('status', Service::STATUS_IN_PROGRESS)->count();
+                if ($currentCheckedIn >= 10) {
+                    throw new \Exception('Check-in limit reached (10/10). Please wait for a service to be checked out before checking in again.');
+                }
+            }
 
             if ($new === Service::STATUS_CANCELLED && $service->status !== Service::STATUS_CANCELLED) {
                 // Return items to inventory
@@ -159,8 +173,8 @@ class ServiceController extends Controller
                     $service->booking,
                     'Booking rejected due to service cancellation',
                     [
-                        'booking_id'     => $service->booking->booking_id,
-                        'service_id'     => $service->id,
+                        'booking_id' => $service->booking->booking_id,
+                        'service_id' => $service->id,
                         'service_status' => $new
                     ]
                 );
@@ -171,8 +185,8 @@ class ServiceController extends Controller
                 foreach ($service->items as $si) {
                     $returned[] = [
                         'item_id' => $si->item_id,
-                        'name'    => optional($si->item)->name,
-                        'qty'     => (int)$si->quantity
+                        'name' => optional($si->item)->name,
+                        'qty' => (int) $si->quantity
                     ];
                 }
                 if ($returned) {
@@ -182,7 +196,7 @@ class ServiceController extends Controller
                         'Service cancellation returned items to inventory',
                         [
                             'service_id' => $service->id,
-                            'items'      => $returned
+                            'items' => $returned
                         ]
                     );
                 }
@@ -191,8 +205,8 @@ class ServiceController extends Controller
             ActivityLog::record(
                 'service.status_changed',
                 $service,
-                'Service status changed to '.$new,
-                ['status'=>$new]
+                'Service status changed to ' . $new,
+                ['status' => $new]
             );
 
             if ($new === Service::STATUS_COMPLETED) {
@@ -200,7 +214,7 @@ class ServiceController extends Controller
                     'service.completed',
                     $service,
                     'Service completed',
-                    ['booking_id'=>$service->booking_id]
+                    ['booking_id' => $service->booking_id]
                 );
                 $service->loadMissing('items.item');
                 foreach ($service->items as $si) {
@@ -209,9 +223,9 @@ class ServiceController extends Controller
                         $service,
                         'Item used',
                         [
-                            'item_id'    => $si->item_id,
-                            'name'       => optional($si->item)->name,
-                            'quantity'   => $si->quantity,
+                            'item_id' => $si->item_id,
+                            'name' => optional($si->item)->name,
+                            'quantity' => $si->quantity,
                             'unit_price' => $si->unit_price,
                             'line_total' => $si->line_total,
                         ]
@@ -220,21 +234,74 @@ class ServiceController extends Controller
             }
         });
 
-        return back()->with('success','Status updated.');
+        return back()->with('success', 'Status updated.');
+    }
+
+    public function addPayment(Request $request, Service $service)
+    {
+        if ($service->status === Service::STATUS_CANCELLED) {
+            return back()->withErrors('Cannot add payment to a cancelled service.');
+        }
+
+        $booking = Booking::where('booking_id', $service->booking_id)->first();
+
+        $data = $request->validate([
+            'customer_name' => ['required', 'string', 'max:150'],
+            'email' => ['required', 'email', 'max:150'],
+            'contact_number' => ['required', 'string', 'max:60'],
+            'method' => ['required', 'in:cash,bank_transfer,gcash'],
+            'amount' => ['required', 'numeric', 'min:0.01'],
+            'reference' => ['nullable', 'string', 'max:255'],
+            'notes' => ['nullable', 'string'],
+        ]);
+
+        $paid = $service->payments()->sum('amount');
+        $due = ($service->total ?? 0) - $paid;
+        if ($data['amount'] > $due && $service->total !== null) {
+            return back()->withErrors('Payment exceeds remaining balance.')->withInput();
+        }
+
+        $payment = Payment::create([
+            'service_id' => $service->id,
+            'booking_id' => $service->booking_id,
+            'user_id' => auth()->id(),
+            'customer_name' => $data['customer_name'],
+            'email' => $data['email'],
+            'contact_number' => $data['contact_number'],
+            'method' => $data['method'],
+            'amount' => $data['amount'],
+            'reference' => $data['reference'] ?? null,
+            'notes' => $data['notes'] ?? null,
+            'paid_at' => now(),
+        ]);
+
+        ActivityLog::record(
+            'payment.recorded',
+            $service,
+            'Payment recorded',
+            [
+                'service_id' => $service->id,
+                'booking_id' => $service->booking_id,
+                'amount' => $payment->amount,
+                'method' => $payment->method,
+            ]
+        );
+
+        return redirect()->route('services.edit', $service)->with('success', 'Payment added.');
     }
 
     private function validateService(Request $request, bool $creating): array
     {
         return $request->validate([
-            'booking_id'         => $creating
-                ? ['required','exists:bookings,booking_id']
-                : ['sometimes','exists:bookings,booking_id'],
-            'labor_fee'          => ['nullable','numeric','min:0'],
-            'notes'              => ['nullable','string'],
-            'items'              => ['required','array','min:1'],
-            'items.*.item_id'    => ['required','distinct','exists:items,item_id'],
-            'items.*.quantity'   => ['required','integer','min:1'],
-            'items.*.unit_price' => ['nullable','numeric','min:0'],
+            'booking_id' => $creating
+                ? ['required', 'exists:bookings,booking_id']
+                : ['sometimes', 'exists:bookings,booking_id'],
+            'labor_fee' => ['nullable', 'numeric', 'min:0'],
+            'notes' => ['nullable', 'string'],
+            'items' => ['required', 'array', 'min:1'],
+            'items.*.item_id' => ['required', 'distinct', 'exists:items,item_id'],
+            'items.*.quantity' => ['required', 'integer', 'min:1'],
+            'items.*.unit_price' => ['nullable', 'numeric', 'min:0'],
         ]);
     }
 
@@ -246,11 +313,12 @@ class ServiceController extends Controller
             if (!isset($row['item_id']) || $row['item_id'] === '') {
                 continue;
             }
-            $qty = isset($row['quantity']) && $row['quantity'] !== '' ? (int)$row['quantity'] : 1;
-            if ($qty < 1) $qty = 1;
+            $qty = isset($row['quantity']) && $row['quantity'] !== '' ? (int) $row['quantity'] : 1;
+            if ($qty < 1)
+                $qty = 1;
             $filtered[] = [
-                'item_id'    => $row['item_id'],
-                'quantity'   => $qty,
+                'item_id' => $row['item_id'],
+                'quantity' => $qty,
                 'unit_price' => $row['unit_price'] ?? null,
             ];
         }
@@ -270,16 +338,17 @@ class ServiceController extends Controller
 
         foreach ($itemsData as $row) {
             $item = $inventoryItems[$row['item_id']] ?? null;
-            if (!$item) abort(422,'Item not found.');
+            if (!$item)
+                abort(422, 'Item not found.');
 
-            $qty = (int)$row['quantity'];
+            $qty = (int) $row['quantity'];
             if ($item->quantity < $qty) {
                 abort(422, "Insufficient stock for item ID {$item->item_id}.");
             }
 
             $unit = isset($row['unit_price']) && $row['unit_price'] !== null
-                ? (float)$row['unit_price']
-                : (float)($item->unit_price ?? 0);
+                ? (float) $row['unit_price']
+                : (float) ($item->unit_price ?? 0);
 
             $lineTotal = $qty * $unit;
             $subtotal += $lineTotal;
@@ -288,18 +357,18 @@ class ServiceController extends Controller
             $item->save();
 
             \App\Models\StockOut::create([
-                'stockout_id'     => $this->nextStockOutId(),
-                'item_id'         => $item->item_id,
-                'user_id'         => auth()->id(),
-                'quantity'        => $qty,
-                'stockout_date'   => now()->toDateString(),
-                'reference_type'  => Service::class,
-                'reference_id'    => $service->id,
+                'stockout_id' => $this->nextStockOutId(),
+                'item_id' => $item->item_id,
+                'user_id' => auth()->id(),
+                'quantity' => $qty,
+                'stockout_date' => now()->toDateString(),
+                'reference_type' => Service::class,
+                'reference_id' => $service->id,
             ]);
 
             $lineItems[] = new ServiceItem([
-                'item_id'    => $item->item_id,
-                'quantity'   => $qty,
+                'item_id' => $item->item_id,
+                'quantity' => $qty,
                 'unit_price' => $unit,
                 'line_total' => $lineTotal,
             ]);
@@ -324,8 +393,8 @@ class ServiceController extends Controller
 
     private function nextStockOutId(): string
     {
-        $last = \App\Models\StockOut::orderBy('stockout_id','desc')->first();
-        $n = $last ? (int) preg_replace('/\D/','', $last->stockout_id) : 0;
+        $last = \App\Models\StockOut::orderBy('stockout_id', 'desc')->first();
+        $n = $last ? (int) preg_replace('/\D/', '', $last->stockout_id) : 0;
         return 'SOUT' . str_pad($n + 1, 4, '0', STR_PAD_LEFT);
     }
 }
