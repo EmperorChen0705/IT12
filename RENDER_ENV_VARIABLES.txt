@@ -1,0 +1,52 @@
+# =============================================================================
+# RENDER ENVIRONMENT VARIABLES - COPY & PASTE TEMPLATE
+# =============================================================================
+# Instructions:
+# 1. Fill in the values marked with [REPLACE_THIS]
+# 2. Copy each line (Key=Value format)
+# 3. In Render, click "Add Environment Variable" and paste
+# =============================================================================
+
+# Application Settings
+APP_NAME=SubWFour Inventory
+APP_ENV=production
+APP_DEBUG=false
+APP_KEY=[LEAVE_BLANK_FOR_NOW]
+APP_URL=https://subwfour-inventory.onrender.com
+
+# Logging
+LOG_CHANNEL=stack
+
+# Database Settings (MySQL)
+DB_CONNECTION=mysql
+DB_HOST=[REPLACE_WITH_YOUR_MYSQL_HOST]
+DB_PORT=3306
+DB_DATABASE=[REPLACE_WITH_YOUR_DATABASE_NAME]
+DB_USERNAME=[REPLACE_WITH_YOUR_MYSQL_USERNAME]
+DB_PASSWORD=[REPLACE_WITH_YOUR_MYSQL_PASSWORD]
+
+# Session Settings
+SESSION_DRIVER=file
+SESSION_LIFETIME=120
+
+# =============================================================================
+# EXAMPLE - Railway MySQL
+# =============================================================================
+# If using Railway, your values might look like this:
+# DB_HOST=containers-us-west-123.railway.app
+# DB_PORT=3306
+# DB_DATABASE=railway
+# DB_USERNAME=root
+# DB_PASSWORD=abc123xyz789
+# =============================================================================
+
+# =============================================================================
+# QUICK REFERENCE - What to Replace
+# =============================================================================
+# 1. APP_URL: Change "subwfour-inventory" to your actual Render service name
+# 2. APP_KEY: Leave blank, generate later using: php artisan key:generate --show
+# 3. DB_HOST: Your MySQL host (from Railway/PlanetScale/etc)
+# 4. DB_DATABASE: Your database name
+# 5. DB_USERNAME: Your MySQL username
+# 6. DB_PASSWORD: Your MySQL password
+# =============================================================================
