@@ -220,19 +220,19 @@
 
         // Determine profile picture path
         if ($user->name === 'Admin') {
-            $profilePicture = 'images/Adminprofile.png';
+            $profilePicture = 'images/admin-profile.png';
         } elseif ($user->role === 'employee' && $user->employee && $user->employee->profile_picture) {
             // Employee with uploaded profile picture
             $profilePicture = 'storage/' . $user->employee->profile_picture;
         } else {
             // Default profile picture
-            $profilePicture = 'images/Adminprofile.png';
+            $profilePicture = 'images/admin-profile.png';
         }
     @endphp
 
     <div class="sidebar" id="sidebar" style="background: #000000 !important;">
         <div class="sidebar-logo">
-            <img src="{{ asset('images/logo.png') }}" alt="Logo">
+            <img src="{{ asset('images/app-logo.png') }}" alt="Logo">
         </div>
         <center>
             <ul>

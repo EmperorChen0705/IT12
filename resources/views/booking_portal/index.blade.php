@@ -43,7 +43,7 @@
         <header class="portal-topbar">
             <div class="topbar-inner">
                 <div class="brand">
-                    <img src="{{ asset('images/logo.png') }}" alt="Title" class="brand-mark">
+                    <img src="{{ asset('images/app-logo.png') }}" alt="Title" class="brand-mark">
                 </div>
                 <nav class="mini-nav">
                     <a href="#services" class="mini-link">Services</a>
@@ -61,7 +61,7 @@
         <section class="portal-hero expanded-hero" id="hero">
             <div class="hero-grid">
                 <div class="hero-main">
-                    <img src="{{ asset('images/logo.png') }}" alt="Full Logo" class="hero-logo">
+                    <img src="{{ asset('images/app-logo.png') }}" alt="Full Logo" class="hero-logo">
                     <h1 class="portal-title">Premium Car Audio & Installation</h1>
                     <p class="portal-subtitle hero-sub">
                         Precision speaker upgrades, subwoofer fabrication, full custom audio system design & tuning.
