@@ -40,7 +40,7 @@
   <div class="login-wrapper">
     <div class="login-box">
       <div class="login-header">
-        <h1>[SUBWFOUR]</h1>
+        <h1>SUBWFOUR</h1>
         <p>To hear is to believe.</p>
       </div>
 
