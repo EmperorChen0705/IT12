@@ -75,7 +75,7 @@
                             $email = $employee->user->email ?? '—';
                             $profile = $employee->profile_picture
                                 ? 'storage/' . $employee->profile_picture
-                                : 'images/TCEmployeeProfile.png';
+                                : 'images/admin-profile.png';
                         @endphp
                         <tr>
                             <td>
