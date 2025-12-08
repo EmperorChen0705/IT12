@@ -72,7 +72,12 @@
         .app-modal-content h3,
         .app-modal-content h4,
         .modal-content label,
-        .app-modal-content label {
+        .app-modal-content label,
+        .glass-card h2,
+        .glass-card h3,
+        .glass-card h4,
+        .app-modal-header,
+        .section-heading {
             color: #ef3535 !important;
         }
 
@@ -226,7 +231,7 @@
             $profilePicture = 'storage/' . $user->employee->profile_picture;
         } else {
             // Default profile picture
-            $profilePicture = 'images/default-profile.png';
+            $profilePicture = 'images/admin-profile.png';
         }
     @endphp
 
