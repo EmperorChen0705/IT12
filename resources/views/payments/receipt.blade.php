@@ -222,6 +222,16 @@
                     @php $rowCount++; @endphp
                 @endforeach
 
+                @if($payment->service && $payment->service->labor_fee > 0)
+                    <tr>
+                        <td>Labor Fee via Reference Code: {{ $payment->service->reference_code }}</td>
+                        <td class="col-qty">1</td>
+                        <td class="col-price">{{ number_format($payment->service->labor_fee, 2) }}</td>
+                        <td class="col-amount">{{ number_format($payment->service->labor_fee, 2) }}</td>
+                    </tr>
+                    @php $rowCount++; @endphp
+                @endif
+
                 {{-- Fill empty rows to make it look like the form --}}
                 @for($i = $rowCount; $i < 8; $i++)
                     <tr>
