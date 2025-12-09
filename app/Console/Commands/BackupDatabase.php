@@ -77,7 +77,7 @@ class BackupDatabase extends Command
             // Build mysqldump command
             // Stdout to backup file, Stderr to error log
             $command = sprintf(
-                '%s --user=%s --password=%s --host=%s --port=%s %s > %s 2> %s',
+                '%s --user=%s --password=%s --host=%s --port=%s --ssl-verify-server-cert=0 %s > %s 2> %s',
                 $dumpBinaryPath,
                 escapeshellarg($username),
                 escapeshellarg($password),
