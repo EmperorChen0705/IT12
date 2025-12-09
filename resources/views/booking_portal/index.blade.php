@@ -344,7 +344,7 @@
         <footer class="portal-footer">
             <div class="footer-inner">
                 <span>&copy; {{ date('Y') }} SubWFour. All rights reserved.</span>
-                <span class="foot-meta">INSERT TEXT • INSERT TEXT • INSERT TEXT</span>
+                <span class="foot-meta">SUBWFOUR • AUTOMOTIVE • INSTALLATION</span>
             </div>
         </footer>
     </div>
