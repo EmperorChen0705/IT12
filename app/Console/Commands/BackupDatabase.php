@@ -50,29 +50,73 @@ class BackupDatabase extends Command
             $filename = $this->generateFilename($database);
             $filepath = $backupPath . DIRECTORY_SEPARATOR . $filename;
 
+            // Temp file for error logging
+            $errorLogFile = $backupPath . DIRECTORY_SEPARATOR . 'backup_error.log';
+
+            // Resolve mysqldump path
+            $configuredPath = config('backup.dump_binary_path');
+            $dumpBinaryPath = 'mysqldump'; // Default fallback
+
+            if ($configuredPath && File::exists($configuredPath)) {
+                // If a specific valid path is provided, use it
+                $dumpBinaryPath = '"' . $configuredPath . '"';
+            } elseif ($configuredPath && $configuredPath !== 'mysqldump') {
+                // Configured but not found? Log warning and try default
+                $this->warn("Configured dump path '$configuredPath' not found. Trying global 'mysqldump'...");
+            }
+
             // Build mysqldump command
+            // Stdout to backup file, Stderr to error log
             $command = sprintf(
-                'mysqldump --user=%s --password=%s --host=%s --port=%s %s > %s',
+                '%s --user=%s --password=%s --host=%s --port=%s %s > %s 2> %s',
+                $dumpBinaryPath,
                 escapeshellarg($username),
                 escapeshellarg($password),
                 escapeshellarg($host),
                 escapeshellarg($port),
                 escapeshellarg($database),
-                escapeshellarg($filepath)
+                escapeshellarg($filepath),
+                escapeshellarg($errorLogFile)
             );
 
             // Execute backup
             $this->info('Creating backup...');
             exec($command, $output, $returnCode);
 
+            // Check for errors
             if ($returnCode !== 0) {
+                $errorOutput = File::exists($errorLogFile) ? File::get($errorLogFile) : 'Unknown error';
                 $this->error('Backup failed! Please check your database configuration.');
+                $this->error('Error details: ' . $errorOutput);
+
+                // Cleanup partial files
+                if (File::exists($filepath))
+                    File::delete($filepath);
+                if (File::exists($errorLogFile))
+                    File::delete($errorLogFile);
+
                 return 1;
             }
 
-            // Verify backup was created
+            // Cleanup error log if empty or specific warnings we ignore
+            if (File::exists($errorLogFile)) {
+                $errorContent = File::get($errorLogFile);
+                if (!empty($errorContent)) {
+                    // Sometimes mysqldump outputs warnings to stderr even on success
+                    $this->warn('Backup completed with warnings: ' . $errorContent);
+                }
+                File::delete($errorLogFile);
+            }
+
+            // Verify backup was created and has content
             if (!File::exists($filepath)) {
                 $this->error('Backup file was not created!');
+                return 1;
+            }
+
+            if (File::size($filepath) === 0) {
+                $this->error('Backup created but file is empty (0 bytes). Check database structure.');
+                File::delete($filepath);
                 return 1;
             }
 

@@ -22,6 +22,11 @@ class BackupController extends Controller
             $files = File::files($backupPath);
 
             foreach ($files as $file) {
+                // Skip empty files
+                if (File::size($file) === 0) {
+                    continue;
+                }
+
                 $backups[] = [
                     'filename' => basename($file),
                     'path' => $file,
@@ -51,8 +56,14 @@ class BackupController extends Controller
     public function create()
     {
         try {
-            Artisan::call('backup:database', ['--clean' => true]);
+            $exitCode = Artisan::call('backup:database', ['--clean' => true]);
             $output = Artisan::output();
+
+            if ($exitCode !== 0) {
+                // Extract clean error message if possible
+                return redirect()->route('backups.index')
+                    ->with('error', 'Backup failed: ' . $output);
+            }
 
             return redirect()->route('backups.index')
                 ->with('success', 'Backup created successfully!');

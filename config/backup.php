@@ -75,6 +75,18 @@ return [
     |
     */
 
+    /*
+    |--------------------------------------------------------------------------
+    | MySQL Dump Binary Path
+    |--------------------------------------------------------------------------
+    |
+    | The path to the mysqldump binary. on Windows this is usually in your
+    | XAMPP/WAMP/Laragon installation.
+    |
+    */
+
+    'dump_binary_path' => env('DUMP_BINARY_PATH', 'mysqldump'),
+
     'compress' => false,
 
 ];
