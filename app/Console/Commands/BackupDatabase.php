@@ -37,7 +37,16 @@ class BackupDatabase extends Command
             $username = config("database.connections.{$connection}.username");
             $password = config("database.connections.{$connection}.password");
             $host = config("database.connections.{$connection}.host");
-            $port = config("database.connections.{$connection}.port", 3306);
+            $configPort = config("database.connections.{$connection}.port", 3306);
+
+            // Handle case where host contains port (e.g. host:port)
+            if (strpos($host, ':') !== false) {
+                $parts = explode(':', $host);
+                $host = $parts[0];
+                $port = $parts[1]; // Use port from host string
+            } else {
+                $port = $configPort; // Use standard config port
+            }
 
             // Create backup directory if it doesn't exist
             $backupPath = config('backup.path');
