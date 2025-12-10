@@ -70,3 +70,110 @@ Tracks physical assets to prevent stockouts/pilferage.
 > 4. Click **"Check In"** (In Progress) when work starts.
 > 5. When finished, enter **Labor Fee** and click **"Check Out"** (Completed).
 > 6. Go to **Payments** tab to record the cash received.
+
+## 5. Entity Relationship Diagram (ERD)
+
+```mermaid
+erDiagram
+    users ||--o{ employees : "has profile"
+    users ||--o{ activity_logs : "generates"
+    users ||--o{ payments : "records"
+    users ||--o{ stock_out : "performs"
+    
+    employees {
+        bigint id PK
+        bigint user_id FK
+        string first_name
+        string last_name
+    }
+
+    users {
+        bigint id PK
+        string name
+        string email
+        string role
+        boolean is_manager
+        timestamp elevated_until
+        bigint elevated_by
+    }
+
+    bookings ||--|| services : "generates"
+    bookings ||--o{ payments : "has"
+
+    bookings {
+        string booking_id PK
+        string customer_name
+        string email "Nullable"
+        string service_type
+        date preferred_date
+        string status
+    }
+
+    services ||--o{ service_items : "includes"
+    services ||--o{ payments : "paid via"
+
+    services {
+        bigint id PK
+        string booking_id FK
+        string status
+        decimal labor_fee
+        decimal total
+    }
+
+    items ||--o{ service_items : "used in"
+    items ||--o{ stock_in : "replenished via"
+    items ||--o{ stock_out : "consumed via"
+    item_categories ||--o{ items : "categorizes"
+
+    items {
+        string item_id PK
+        string itemctgry_id FK
+        string name
+        int quantity
+        decimal unit_price
+    }
+
+    item_categories {
+        string itemctgry_id PK
+        string name
+    }
+
+    service_items {
+        bigint id PK
+        bigint service_id FK
+        string item_id FK
+        int quantity
+        decimal line_total
+    }
+
+    suppliers ||--o{ stock_in : "supplies"
+
+    suppliers {
+        string supplier_id PK
+        string name
+        string contact_person
+    }
+
+    stock_in {
+        string stockin_id PK
+        string item_id FK
+        string supplier_id FK
+        int quantity
+        decimal total_price
+    }
+
+    stock_out {
+        string stockout_id PK
+        string item_id FK
+        string user_id FK
+        int quantity
+    }
+
+    payments {
+        bigint id PK
+        bigint service_id FK
+        string booking_id FK
+        decimal amount
+        string method
+    }
+```

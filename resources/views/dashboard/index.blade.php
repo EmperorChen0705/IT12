@@ -122,6 +122,15 @@
                 <div class="dm-value">₱{{ number_format($inventoryValue ?? 0, 2) }}</div>
                 <div class="dm-sub"><span class="dot dot-silver"></span>Total (qty * price)</div>
             </div>
+
+            <div class="dm-card wide">
+                <div class="dm-label">Shop Load (Capacity)</div>
+                <div class="dm-value">{{ $currentLoad ?? 0 }}/10</div>
+                <div class="dm-sub">
+                    <span class="dot {{ ($currentLoad ?? 0) >= 10 ? 'dot-red' : 'dot-blue' }}"></span>
+                    Active Services (Max 10)
+                </div>
+            </div>
         </div>
 
         <!-- Charts and Side Panels -->
@@ -144,6 +153,27 @@
                     </div>
                 </div>
                 <canvas id="monthlyServicesChart" height="140"></canvas>
+            </div>
+
+            <!-- Upcoming Schedule -->
+            <div class="panel panel-list">
+                <div class="panel-head">
+                    <h3>Upcoming Schedule</h3>
+                </div>
+                <div class="list-body">
+                    @forelse($upcomingBookings ?? [] as $ub)
+                        <div class="list-row">
+                            <span class="lr-id" style="width:50px;">{{ \Carbon\Carbon::parse($ub->preferred_date)->format('M d') }}</span>
+                            <div class="lr-details" style="flex:1; margin-left:10px; display:flex; flex-direction:column; justify-content:center;">
+                                <div style="font-weight:600; font-size:0.85rem; color:var(--white);">{{ $ub->customer_name }}</div>
+                                <div style="font-size:0.75rem; opacity:0.7;">{{ $ub->service_type }} @ {{ $ub->preferred_time }}</div>
+                            </div>
+                            <span class="lr-val" style="font-size:0.7rem;">{{ strtoupper($ub->channel ?? 'web') }}</span>
+                        </div>
+                    @empty
+                        <div class="empty-alt">No upcoming bookings.</div>
+                    @endforelse
+                </div>
             </div>
 
             <div class="panel panel-list">

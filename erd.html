@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Entity Relationship Diagram</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #ffffff;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .meta {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>System Entity Relationship Diagram</h1>
+    <div class="meta">
+        <p><strong>Project:</strong> Inventory and Booking System</p>
+        <p><strong>Generated:</strong> 2025-12-10</p>
+    </div>
+
+    <div class="mermaid">
+        erDiagram
+        users ||--o{ employees : "has profile"
+        users ||--o{ activity_logs : "generates"
+        users ||--o{ payments : "records"
+        users ||--o{ stock_out : "performs"
+        service_types ||--o{ bookings : "defines"
+
+        activity_logs {
+        bigint id PK
+        string event_type
+        string subject_type
+        string subject_id
+        bigint user_id FK
+        string description
+        json meta
+        timestamp occurred_at
+        }
+
+        employees {
+        bigint id PK
+        bigint user_id FK
+        string first_name
+        string last_name
+        }
+
+        users {
+        bigint id PK
+        string name
+        string email
+        string role
+        boolean is_manager
+        timestamp elevated_until
+        bigint elevated_by
+        }
+
+        bookings ||--|| services : "generates"
+        bookings ||--o{ payments : "has"
+
+        bookings {
+        string booking_id PK
+        string customer_name
+        string email "Nullable"
+        string service_type
+        date preferred_date
+        string status
+        }
+
+        services ||--o{ service_items : "includes"
+        services ||--o{ payments : "paid via"
+
+        services {
+        bigint id PK
+        string booking_id FK
+        string status
+        decimal labor_fee
+        decimal total
+        }
+
+        items ||--o{ service_items : "used in"
+        items ||--o{ stock_in : "replenished via"
+        items ||--o{ stock_out : "consumed via"
+        item_categories ||--o{ items : "categorizes"
+
+        items {
+        string item_id PK
+        string itemctgry_id FK
+        string name
+        int quantity
+        decimal unit_price
+        }
+
+        item_categories {
+        string itemctgry_id PK
+        string name
+        }
+
+        service_items {
+        bigint id PK
+        bigint service_id FK
+        string item_id FK
+        int quantity
+        decimal line_total
+        }
+
+        suppliers ||--o{ stock_in : "supplies"
+
+        suppliers {
+        string supplier_id PK
+        string name
+        string contact_person
+        }
+
+        stock_in {
+        string stockin_id PK
+        string item_id FK
+        string supplier_id FK
+        int quantity
+        decimal total_price
+        }
+
+        stock_out {
+        string stockout_id PK
+        string item_id FK
+        string user_id FK
+        int quantity
+        }
+
+        payments {
+        bigint id PK
+        bigint service_id FK
+        string booking_id FK
+        decimal amount
+        string method
+        }
+
+        service_types {
+        bigint id PK
+        string name
+        string description
+        boolean active
+        }
+    </div>
+
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+</body>
+
+</html>

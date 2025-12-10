@@ -135,6 +135,17 @@ class DashboardController extends Controller
             ->get()
             ->map(fn($r) => ['month' => $r->m, 'count' => $r->c]);
 
+        // New Metrics for Schedule
+        $currentLoad = Service::whereIn('status', [Service::STATUS_IN_PROGRESS ?? 'in_progress', 'doing'])->count();
+
+        $upcomingBookings = Booking::where('status', '!=', 'completed')
+            ->where('status', '!=', 'rejected')
+            ->where('preferred_date', '>=', today())
+            ->orderBy('preferred_date')
+            ->orderBy('preferred_time')
+            ->limit(5)
+            ->get();
+
         return view('dashboard.index', compact(
             'bookingsMonth',
             'servicesCompletedMonth',
@@ -154,7 +165,9 @@ class DashboardController extends Controller
             'topServices',
             'customersCurrentMonth',
             'customersPrevMonth',
-            'customerGrowthRate'
+            'customerGrowthRate',
+            'currentLoad',
+            'upcomingBookings'
         ));
     }
 }

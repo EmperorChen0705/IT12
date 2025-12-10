@@ -20,6 +20,7 @@ class Booking extends Model
         'preferred_time',
         'notes',
         'status',
+        'channel',
     ];
 
     protected static function booted()

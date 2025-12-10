@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h3 {
+            margin-top: 30px;
+            margin-bottom: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        th,
+        td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+            vertical-align: top;
+            font-size: 14px;
+        }
+
+        .table-meta {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>System Data Dictionary</h1>
+    <p><strong>Project:</strong> Inventory and Booking System</p>
+    <p><strong>Generated:</strong> 2025-12-10</p>
+
+    <h3>User Account Table (`users`)</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Field Name</th>
+                <th>Data Type</th>
+                <th>Size</th>
+                <th>Description</th>
+                <th>Constraints</th>
+                <th>Reference to</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>id</td>
+                <td>BIGINT</td>
+                <td>-</td>
+                <td>Unique identifier for user</td>
+                <td>Primary Key, Auto Increment, Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>name</td>
+                <td>VARCHAR</td>
+                <td>255</td>
+                <td>Full name of the user</td>
+                <td>Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>email</td>
+                <td>VARCHAR</td>
+                <td>255</td>
+                <td>User email address</td>
+                <td>Unique, Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>email_verified_at</td>
+                <td>TIMESTAMP</td>
+                <td>-</td>
+                <td>Timestamp of email verification</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>password</td>
+                <td>VARCHAR</td>
+                <td>255</td>
+                <td>Hashed password</td>
+                <td>Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>role</td>
+                <td>VARCHAR</td>
+                <td>255</td>
+                <td>User role (e.g., admin, employee)</td>
+                <td>Default 'employee', Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>is_manager</td>
+                <td>BOOLEAN</td>
+                <td>-</td>
+                <td>Flag indicating manager status</td>
+                <td>Default false, Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>elevated_until</td>
+                <td>TIMESTAMP</td>
+                <td>-</td>
+                <td>Expiration time for manager elevation</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>elevated_by</td>
+                <td>BIGINT</td>
+                <td>-</td>
+                <td>User ID who granted the elevation</td>
+                <td>Nullable, Foreign Key</td>
+                <td>users(id)</td>
+            </tr>
+            <tr>
+                <td>remember_token</td>
+                <td>VARCHAR</td>
+                <td>100</td>
+                <td>Token for "remember me" functionality</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>created_at</td>
+                <td>TIMESTAMP</td>
+                <td>-</td>
+                <td>Record creation timestamp</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>updated_at</td>
+                <td>TIMESTAMP</td>
+                <td>-</td>
+                <td>Record update timestamp</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>deleted_at</td>
+                <td>TIMESTAMP</td>
+                <td>-</td>
+                <td>Soft delete timestamp</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Item Categories Table (`item_categories`)</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Field Name</th>
+                <th>Data Type</th>
+                <th>Size</th>
+                <th>Description</th>
+                <th>Constraints</th>
+                <th>Reference to</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>itemctgry_id</td>
+                <td>VARCHAR</td>
+                <td>10</td>
+                <td>Unique identifier for category</td>
+                <td>Primary Key, Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>name</td>
+                <td>VARCHAR</td>
+                <td>120</td>
+                <td>Category name</td>
+                <td>Unique, Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>description</td>
+                <td>TEXT</td>
+                <td>-</td>
+                <td>Detailed description</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>active</td>
+                <td>BOOLEAN</td>
+                <td>-</td>
+                <td>Status of the category</td>
+                <td>Default true, Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>created_at</td>
+                <td>TIMESTAMP</td>
+                <td>-</td>
+                <td>Record creation timestamp</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>updated_at</td>
+                <td>TIMESTAMP</td>
+                <td>-</td>
+                <td>Record update timestamp</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Items Table (`items`)</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Field Name</th>
+                <th>Data Type</th>
+                <th>Size</th>
+                <th>Description</th>
+                <th>Constraints</th>
+                <th>Reference to</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>item_id</td>
+                <td>VARCHAR</td>
+                <td>12</td>
+                <td>Unique identifier for item</td>
+                <td>Primary Key, Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>itemctgry_id</td>
+                <td>VARCHAR</td>
+                <td>10</td>
+                <td>Category identifier</td>
+                <td>Not Null, Foreign Key</td>
+                <td>item_categories(itemctgry_id)</td>
+            </tr>
+            <tr>
+                <td>name</td>
+                <td>VARCHAR</td>
+                <td>150</td>
+                <td>Item name</td>
+                <td>Unique, Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>description</td>
+                <td>TEXT</td>
+                <td>-</td>
+                <td>Detailed description</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>quantity</td>
+                <td>INT</td>
+                <td>-</td>
+                <td>Current stock quantity</td>
+                <td>Default 0, Not Null, Unsigned</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>unit_price</td>
+                <td>DECIMAL</td>
+                <td>10,2</td>
+                <td>Price per unit</td>
+                <td>Default 0.00, Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>unit</td>
+                <td>VARCHAR</td>
+                <td>30</td>
+                <td>Unit of measurement</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>active</td>
+                <td>BOOLEAN</td>
+                <td>-</td>
+                <td>Status of the item</td>
+                <td>Default true, Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>created_at</td>
+                <td>TIMESTAMP</td>
+                <td>-</td>
+                <td>Record creation timestamp</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>updated_at</td>
+                <td>TIMESTAMP</td>
+                <td>-</td>
+                <td>Record update timestamp</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>deleted_at</td>
+                <td>TIMESTAMP</td>
+                <td>-</td>
+                <td>Soft delete timestamp</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Suppliers Table (`suppliers`)</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Field Name</th>
+                <th>Data Type</th>
+                <th>Size</th>
+                <th>Description</th>
+                <th>Constraints</th>
+                <th>Reference to</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>supplier_id</td>
+                <td>VARCHAR</td>
+                <td>10</td>
+                <td>Unique identifier for supplier</td>
+                <td>Primary Key, Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>name</td>
+                <td>VARCHAR</td>
+                <td>255</td>
+                <td>Supplier company name</td>
+                <td>Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>address</td>
+                <td>VARCHAR</td>
+                <td>255</td>
+                <td>Supplier address</td>
+                <td>Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>number</td>
+                <td>VARCHAR</td>
+                <td>255</td>
+                <td>Supplier contact number</td>
+                <td>Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>contact_person</td>
+                <td>VARCHAR</td>
+                <td>255</td>
+                <td>Contact person name</td>
+                <td>Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>created_at</td>
+                <td>TIMESTAMP</td>
+                <td>-</td>
+                <td>Record creation timestamp</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>updated_at</td>
+                <td>TIMESTAMP</td>
+                <td>-</td>
+                <td>Record update timestamp</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>deleted_at</td>
+                <td>TIMESTAMP</td>
+                <td>-</td>
+                <td>Soft delete timestamp</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Employees Table (`employees`)</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Field Name</th>
+                <th>Data Type</th>
+                <th>Size</th>
+                <th>Description</th>
+                <th>Constraints</th>
+                <th>Reference to</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>id</td>
+                <td>BIGINT</td>
+                <td>-</td>
+                <td>Unique identifier for employee record</td>
+                <td>Primary Key, Auto Increment, Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>user_id</td>
+                <td>BIGINT</td>
+                <td>-</td>
+                <td>Associated user account</td>
+                <td>Not Null, Foreign Key</td>
+                <td>users(id)</td>
+            </tr>
+            <tr>
+                <td>first_name</td>
+                <td>VARCHAR</td>
+                <td>80</td>
+                <td>Employee first name</td>
+                <td>Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>last_name</td>
+                <td>VARCHAR</td>
+                <td>80</td>
+                <td>Employee last name</td>
+                <td>Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>address</td>
+                <td>VARCHAR</td>
+                <td>255</td>
+                <td>Employee address</td>
+                <td>Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>contact_number</td>
+                <td>VARCHAR</td>
+                <td>40</td>
+                <td>Contact phone number</td>
+                <td>Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>sss_number</td>
+                <td>VARCHAR</td>
+                <td>40</td>
+                <td>SSS number</td>
+                <td>Unique, Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>profile_picture</td>
+                <td>VARCHAR</td>
+                <td>255</td>
+                <td>Path to profile picture</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>created_at</td>
+                <td>TIMESTAMP</td>
+                <td>-</td>
+                <td>Record creation timestamp</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>updated_at</td>
+                <td>TIMESTAMP</td>
+                <td>-</td>
+                <td>Record update timestamp</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>deleted_at</td>
+                <td>TIMESTAMP</td>
+                <td>-</td>
+                <td>Soft delete timestamp</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Stock In Table (`stock_in`)</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Field Name</th>
+                <th>Data Type</th>
+                <th>Size</th>
+                <th>Description</th>
+                <th>Constraints</th>
+                <th>Reference to</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>stockin_id</td>
+                <td>VARCHAR</td>
+                <td>10</td>
+                <td>Unique identifier for stock-in transaction</td>
+                <td>Primary Key, Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>item_id</td>
+                <td>VARCHAR</td>
+                <td>12</td>
+                <td>Item identifier</td>
+                <td>Not Null, Foreign Key</td>
+                <td>items(item_id)</td>
+            </tr>
+            <tr>
+                <td>supplier_id</td>
+                <td>VARCHAR</td>
+                <td>10</td>
+                <td>Supplier identifier</td>
+                <td>Not Null, Foreign Key</td>
+                <td>suppliers(supplier_id)</td>
+            </tr>
+            <tr>
+                <td>quantity</td>
+                <td>INT</td>
+                <td>-</td>
+                <td>Quantity added</td>
+                <td>Not Null, Unsigned</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>price</td>
+                <td>DECIMAL</td>
+                <td>10,2</td>
+                <td>Cost price per unit</td>
+                <td>Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>total_price</td>
+                <td>DECIMAL</td>
+                <td>10,2</td>
+                <td>Total cost of transaction</td>
+                <td>Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>stockin_date</td>
+                <td>DATE</td>
+                <td>-</td>
+                <td>Date of stock-in</td>
+                <td>Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>created_at</td>
+                <td>TIMESTAMP</td>
+                <td>-</td>
+                <td>Record creation timestamp</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>updated_at</td>
+                <td>TIMESTAMP</td>
+                <td>-</td>
+                <td>Record update timestamp</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Bookings Table (`bookings`)</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Field Name</th>
+                <th>Data Type</th>
+                <th>Size</th>
+                <th>Description</th>
+                <th>Constraints</th>
+                <th>Reference to</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>booking_id</td>
+                <td>VARCHAR</td>
+                <td>12</td>
+                <td>Unique identifier for booking</td>
+                <td>Primary Key, Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>customer_name</td>
+                <td>VARCHAR</td>
+                <td>150</td>
+                <td>Name of the customer</td>
+                <td>Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>email</td>
+                <td>VARCHAR</td>
+                <td>150</td>
+                <td>Customer email address</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>contact_number</td>
+                <td>VARCHAR</td>
+                <td>60</td>
+                <td>Customer contact number</td>
+                <td>Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>service_type</td>
+                <td>VARCHAR</td>
+                <td>120</td>
+                <td>Type of service requested</td>
+                <td>Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>preferred_date</td>
+                <td>DATE</td>
+                <td>-</td>
+                <td>Preferred service date</td>
+                <td>Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>preferred_time</td>
+                <td>VARCHAR</td>
+                <td>20</td>
+                <td>Preferred service time</td>
+                <td>Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>notes</td>
+                <td>TEXT</td>
+                <td>-</td>
+                <td>Customer notes</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>status</td>
+                <td>VARCHAR</td>
+                <td>30</td>
+                <td>Current status of the booking</td>
+                <td>Default 'pending', Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>created_at</td>
+                <td>TIMESTAMP</td>
+                <td>-</td>
+                <td>Record creation timestamp</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>updated_at</td>
+                <td>TIMESTAMP</td>
+                <td>-</td>
+                <td>Record update timestamp</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>deleted_at</td>
+                <td>TIMESTAMP</td>
+                <td>-</td>
+                <td>Soft delete timestamp</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Services Table (`services`)</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Field Name</th>
+                <th>Data Type</th>
+                <th>Size</th>
+                <th>Description</th>
+                <th>Constraints</th>
+                <th>Reference to</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>id</td>
+                <td>BIGINT</td>
+                <td>-</td>
+                <td>Unique identifier for service record</td>
+                <td>Primary Key, Auto Increment, Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>booking_id</td>
+                <td>VARCHAR</td>
+                <td>12</td>
+                <td>Associated booking</td>
+                <td>Not Null, Unique, Foreign Key</td>
+                <td>bookings(booking_id)</td>
+            </tr>
+            <tr>
+                <td>reference_code</td>
+                <td>VARCHAR</td>
+                <td>32</td>
+                <td>Unique reference code</td>
+                <td>Unique, Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>status</td>
+                <td>VARCHAR</td>
+                <td>32</td>
+                <td>Service status</td>
+                <td>Default 'pending', Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>labor_fee</td>
+                <td>DECIMAL</td>
+                <td>10,2</td>
+                <td>Fee for labor</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>subtotal</td>
+                <td>DECIMAL</td>
+                <td>10,2</td>
+                <td>Subtotal amount</td>
+                <td>Default 0.00, Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>total</td>
+                <td>DECIMAL</td>
+                <td>10,2</td>
+                <td>Total amount</td>
+                <td>Default 0.00, Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>notes</td>
+                <td>TEXT</td>
+                <td>-</td>
+                <td>Tech notes</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>started_at</td>
+                <td>TIMESTAMP</td>
+                <td>-</td>
+                <td>Time service started</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>completed_at</td>
+                <td>TIMESTAMP</td>
+                <td>-</td>
+                <td>Time service completed</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>created_at</td>
+                <td>TIMESTAMP</td>
+                <td>-</td>
+                <td>Record creation timestamp</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>updated_at</td>
+                <td>TIMESTAMP</td>
+                <td>-</td>
+                <td>Record update timestamp</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>deleted_at</td>
+                <td>TIMESTAMP</td>
+                <td>-</td>
+                <td>Soft delete timestamp</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Service Items Table (`service_items`)</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Field Name</th>
+                <th>Data Type</th>
+                <th>Size</th>
+                <th>Description</th>
+                <th>Constraints</th>
+                <th>Reference to</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>id</td>
+                <td>BIGINT</td>
+                <td>-</td>
+                <td>Unique identifier for service item</td>
+                <td>Primary Key, Auto Increment, Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>service_id</td>
+                <td>BIGINT</td>
+                <td>-</td>
+                <td>Service identifier</td>
+                <td>Not Null, Foreign Key</td>
+                <td>services(id)</td>
+            </tr>
+            <tr>
+                <td>item_id</td>
+                <td>VARCHAR</td>
+                <td>12</td>
+                <td>Item identifier</td>
+                <td>Not Null, Foreign Key</td>
+                <td>items(item_id)</td>
+            </tr>
+            <tr>
+                <td>quantity</td>
+                <td>INT</td>
+                <td>-</td>
+                <td>Quantity used</td>
+                <td>Not Null, Unsigned</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>unit_price</td>
+                <td>DECIMAL</td>
+                <td>10,2</td>
+                <td>Price per unit at time of service</td>
+                <td>Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>line_total</td>
+                <td>DECIMAL</td>
+                <td>10,2</td>
+                <td>Total price for line item</td>
+                <td>Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>created_at</td>
+                <td>TIMESTAMP</td>
+                <td>-</td>
+                <td>Record creation timestamp</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>updated_at</td>
+                <td>TIMESTAMP</td>
+                <td>-</td>
+                <td>Record update timestamp</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>deleted_at</td>
+                <td>TIMESTAMP</td>
+                <td>-</td>
+                <td>Soft delete timestamp</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Activity Logs Table (`activity_logs`)</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Field Name</th>
+                <th>Data Type</th>
+                <th>Size</th>
+                <th>Description</th>
+                <th>Constraints</th>
+                <th>Reference to</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>id</td>
+                <td>BIGINT</td>
+                <td>-</td>
+                <td>Unique identifier for log</td>
+                <td>Primary Key, Auto Increment, Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>event_type</td>
+                <td>VARCHAR</td>
+                <td>80</td>
+                <td>Type of event (e.g., login, create)</td>
+                <td>Not Null, Indexed</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>subject_type</td>
+                <td>VARCHAR</td>
+                <td>120</td>
+                <td>Model type of the subject</td>
+                <td>Nullable, Indexed</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>subject_id</td>
+                <td>VARCHAR</td>
+                <td>64</td>
+                <td>ID of the subject</td>
+                <td>Nullable, Indexed</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>user_id</td>
+                <td>BIGINT</td>
+                <td>-</td>
+                <td>User associated with the event</td>
+                <td>Nullable, Foreign Key</td>
+                <td>users(id)</td>
+            </tr>
+            <tr>
+                <td>description</td>
+                <td>VARCHAR</td>
+                <td>255</td>
+                <td>Description of the event</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>meta</td>
+                <td>JSON</td>
+                <td>-</td>
+                <td>Additional metadata</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>occurred_at</td>
+                <td>TIMESTAMP</td>
+                <td>-</td>
+                <td>Time the event occurred</td>
+                <td>Not Null, Indexed</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>created_at</td>
+                <td>TIMESTAMP</td>
+                <td>-</td>
+                <td>Record creation timestamp</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>updated_at</td>
+                <td>TIMESTAMP</td>
+                <td>-</td>
+                <td>Record update timestamp</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>deleted_at</td>
+                <td>TIMESTAMP</td>
+                <td>-</td>
+                <td>Soft delete timestamp</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Service Types Table (`service_types`)</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Field Name</th>
+                <th>Data Type</th>
+                <th>Size</th>
+                <th>Description</th>
+                <th>Constraints</th>
+                <th>Reference to</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>id</td>
+                <td>BIGINT</td>
+                <td>-</td>
+                <td>Unique identifier</td>
+                <td>Primary Key, Auto Increment, Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>name</td>
+                <td>VARCHAR</td>
+                <td>120</td>
+                <td>Name of the service type</td>
+                <td>Unique, Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>description</td>
+                <td>TEXT</td>
+                <td>-</td>
+                <td>Detailed description</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>active</td>
+                <td>BOOLEAN</td>
+                <td>-</td>
+                <td>Status of the service type</td>
+                <td>Default true, Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>created_at</td>
+                <td>TIMESTAMP</td>
+                <td>-</td>
+                <td>Record creation timestamp</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>updated_at</td>
+                <td>TIMESTAMP</td>
+                <td>-</td>
+                <td>Record update timestamp</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Stock Out Table (`stock_out`)</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Field Name</th>
+                <th>Data Type</th>
+                <th>Size</th>
+                <th>Description</th>
+                <th>Constraints</th>
+                <th>Reference to</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>stockout_id</td>
+                <td>VARCHAR</td>
+                <td>10</td>
+                <td>Unique identifier</td>
+                <td>Primary Key, Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>item_id</td>
+                <td>VARCHAR</td>
+                <td>12</td>
+                <td>Item identifier</td>
+                <td>Not Null, Foreign Key</td>
+                <td>items(item_id)</td>
+            </tr>
+            <tr>
+                <td>user_id</td>
+                <td>BIGINT</td>
+                <td>-</td>
+                <td>User who performed the stock out</td>
+                <td>Nullable, Foreign Key</td>
+                <td>users(id)</td>
+            </tr>
+            <tr>
+                <td>quantity</td>
+                <td>INT</td>
+                <td>-</td>
+                <td>Quantity removed</td>
+                <td>Not Null, Unsigned</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>stockout_date</td>
+                <td>DATE</td>
+                <td>-</td>
+                <td>Date of stock out</td>
+                <td>Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>reference_type</td>
+                <td>VARCHAR</td>
+                <td>255</td>
+                <td>Type of reference</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>reference_id</td>
+                <td>VARCHAR</td>
+                <td>255</td>
+                <td>ID of reference</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>created_at</td>
+                <td>TIMESTAMP</td>
+                <td>-</td>
+                <td>Record creation timestamp</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>updated_at</td>
+                <td>TIMESTAMP</td>
+                <td>-</td>
+                <td>Record update timestamp</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>deleted_at</td>
+                <td>TIMESTAMP</td>
+                <td>-</td>
+                <td>Soft delete timestamp</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Payments Table (`payments`)</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Field Name</th>
+                <th>Data Type</th>
+                <th>Size</th>
+                <th>Description</th>
+                <th>Constraints</th>
+                <th>Reference to</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>id</td>
+                <td>BIGINT</td>
+                <td>-</td>
+                <td>Unique identifier</td>
+                <td>Primary Key, Auto Increment, Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>service_id</td>
+                <td>BIGINT</td>
+                <td>-</td>
+                <td>Service identifier</td>
+                <td>Not Null, Unsigned, Indexed</td>
+                <td>services(id)</td>
+            </tr>
+            <tr>
+                <td>booking_id</td>
+                <td>VARCHAR</td>
+                <td>255</td>
+                <td>Booking identifier</td>
+                <td>Not Null, Indexed</td>
+                <td>bookings(booking_id)</td>
+            </tr>
+            <tr>
+                <td>user_id</td>
+                <td>BIGINT</td>
+                <td>-</td>
+                <td>User who recorded payment</td>
+                <td>Nullable, Unsigned</td>
+                <td>users(id)</td>
+            </tr>
+            <tr>
+                <td>customer_name</td>
+                <td>VARCHAR</td>
+                <td>255</td>
+                <td>Name of customer</td>
+                <td>Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>email</td>
+                <td>VARCHAR</td>
+                <td>255</td>
+                <td>Email of customer</td>
+                <td>Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>contact_number</td>
+                <td>VARCHAR</td>
+                <td>255</td>
+                <td>Contact number of customer</td>
+                <td>Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>method</td>
+                <td>VARCHAR</td>
+                <td>40</td>
+                <td>Payment method</td>
+                <td>Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>amount</td>
+                <td>DECIMAL</td>
+                <td>12,2</td>
+                <td>Amount paid</td>
+                <td>Not Null</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>reference</td>
+                <td>VARCHAR</td>
+                <td>255</td>
+                <td>Payment reference details</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>notes</td>
+                <td>TEXT</td>
+                <td>-</td>
+                <td>Payment notes</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>paid_at</td>
+                <td>TIMESTAMP</td>
+                <td>-</td>
+                <td>Time payment was made</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>created_at</td>
+                <td>TIMESTAMP</td>
+                <td>-</td>
+                <td>Record creation timestamp</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>updated_at</td>
+                <td>TIMESTAMP</td>
+                <td>-</td>
+                <td>Record update timestamp</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>deleted_at</td>
+                <td>TIMESTAMP</td>
+                <td>-</td>
+                <td>Soft delete timestamp</td>
+                <td>Nullable</td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+
+</body>
+
+</html>

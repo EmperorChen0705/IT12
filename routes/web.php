@@ -61,6 +61,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/inventory/{item_id}/edit', [ItemController::class, 'edit'])->name('inventory.edit');
     Route::put('/inventory/{item_id}', [ItemController::class, 'update'])->name('inventory.update');
     Route::delete('/inventory/{item_id}', [ItemController::class, 'destroy'])->name('inventory.destroy');
+    Route::post('/inventory/{item_id}/restore', [ItemController::class, 'restore'])->name('inventory.restore');
+    Route::get('/inventory/{item_id}/history', [ItemController::class, 'history'])->name('inventory.history');
 
     // Item Categories
     Route::get('/inventory/item-categories', [ItemCategoryController::class, 'index'])->name('inventory.itemctgry');

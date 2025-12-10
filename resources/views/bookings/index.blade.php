@@ -10,7 +10,11 @@
     <h2 class="text-accent">BOOKINGS</h2>
 
     <div class="page-actions mb-3" style="display:flex; justify-content:flex-end; gap:10px; margin-bottom:10px;">
-        <a href="{{ route('booking.portal') }}" class="btn btn-primary" target="_blank" rel="noopener">
+        <button type="button" class="btn btn-primary btn-add-record"
+            onclick="document.getElementById('createBookingModal').classList.remove('hidden');requestAnimationFrame(()=>document.getElementById('createBookingModal').classList.add('show'));">
+            <i class="bi bi-plus-lg"></i> New Booking
+        </button>
+        <a href="{{ route('booking.portal') }}" class="btn btn-secondary" target="_blank" rel="noopener">
             <i class="bi bi-globe"></i> Booking Portal
         </a>
     </div>
@@ -227,56 +231,56 @@
             function renderReceipt(data) {
                 let html = '';
                 html += `<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:10px;">
-                        <div>
-                            <div style="font-weight:600;font-size:.8rem;">Booking #${escapeHtml(data.booking_id ?? '')}</div>
-                            <div>${escapeHtml(data.customer_name ?? '')}</div>
-                            <div>${escapeHtml(data.email ?? '—')}</div>
-                            <div>${escapeHtml(data.contact_number ?? '')}</div>
-                        </div>
-                        <div>
-                            <div><strong>Status:</strong> ${escapeHtml(data.status ?? '')}</div>
-                            <div><strong>Date:</strong> ${escapeHtml(data.preferred_date ?? '')}</div>
-                            <div><strong>Time:</strong> ${escapeHtml(data.preferred_time ?? '')}</div>
-                            <div><strong>Service Type:</strong> ${escapeHtml(data.service_type ?? '')}</div>
-                        </div>
-                    </div>`;
+                                <div>
+                                    <div style="font-weight:600;font-size:.8rem;">Booking #${escapeHtml(data.booking_id ?? '')}</div>
+                                    <div>${escapeHtml(data.customer_name ?? '')}</div>
+                                    <div>${escapeHtml(data.email ?? '—')}</div>
+                                    <div>${escapeHtml(data.contact_number ?? '')}</div>
+                                </div>
+                                <div>
+                                    <div><strong>Status:</strong> ${escapeHtml(data.status ?? '')}</div>
+                                    <div><strong>Date:</strong> ${escapeHtml(data.preferred_date ?? '')}</div>
+                                    <div><strong>Time:</strong> ${escapeHtml(data.preferred_time ?? '')}</div>
+                                    <div><strong>Service Type:</strong> ${escapeHtml(data.service_type ?? '')}</div>
+                                </div>
+                            </div>`;
 
                 if (data.service) {
                     html += `<hr style="border:0;border-top:1px solid var(--gray-700);margin:8px 0;">
-                        <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;">
-                            <div>
-                                <div><strong>Service Ref:</strong> ${escapeHtml(data.service.reference_code ?? '')}</div>
-                                <div><strong>Service Status:</strong> ${escapeHtml(data.service.status ?? '')}</div>
-                                <div><strong>Started:</strong> ${escapeHtml(data.service.started_at ?? '—')}</div>
-                                <div><strong>Completed:</strong> ${escapeHtml(data.service.completed_at ?? '—')}</div>
-                            </div>
-                            <div>
-                                <div><strong>Labor Fee:</strong> ${formatMoney(data.service.labor_fee)}</div>
-                                <div><strong>Subtotal:</strong> ${formatMoney(data.service.subtotal)}</div>
-                                <div><strong>Total:</strong> ${formatMoney(data.service.total)}</div>
-                            </div>
-                        </div>`;
+                                <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+                                    <div>
+                                        <div><strong>Service Ref:</strong> ${escapeHtml(data.service.reference_code ?? '')}</div>
+                                        <div><strong>Service Status:</strong> ${escapeHtml(data.service.status ?? '')}</div>
+                                        <div><strong>Started:</strong> ${escapeHtml(data.service.started_at ?? '—')}</div>
+                                        <div><strong>Completed:</strong> ${escapeHtml(data.service.completed_at ?? '—')}</div>
+                                    </div>
+                                    <div>
+                                        <div><strong>Labor Fee:</strong> ${formatMoney(data.service.labor_fee)}</div>
+                                        <div><strong>Subtotal:</strong> ${formatMoney(data.service.subtotal)}</div>
+                                        <div><strong>Total:</strong> ${formatMoney(data.service.total)}</div>
+                                    </div>
+                                </div>`;
 
                     if (data.service.items && data.service.items.length) {
                         html += `<div style="margin-top:10px;">
-                                <h3 style="margin:0 0 6px;font-size:.7rem;letter-spacing:1px;text-transform:uppercase;">Items</h3>
-                                <table style="width:100%;border-collapse:collapse;font-size:.68rem;">
-                                    <thead>
-                                        <tr style="text-align:left;background:var(--gray-800);">
-                                            <th style="padding:6px;">Name</th>
-                                            <th style="padding:6px;">Qty</th>
-                                            <th style="padding:6px;text-align:right;">Unit</th>
-                                            <th style="padding:6px;text-align:right;">Line Total</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>`;
+                                        <h3 style="margin:0 0 6px;font-size:.7rem;letter-spacing:1px;text-transform:uppercase;">Items</h3>
+                                        <table style="width:100%;border-collapse:collapse;font-size:.68rem;">
+                                            <thead>
+                                                <tr style="text-align:left;background:var(--gray-800);">
+                                                    <th style="padding:6px;">Name</th>
+                                                    <th style="padding:6px;">Qty</th>
+                                                    <th style="padding:6px;text-align:right;">Unit</th>
+                                                    <th style="padding:6px;text-align:right;">Line Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>`;
                         data.service.items.forEach(it => {
                             html += `<tr>
-                                    <td style="padding:4px 6px;">${escapeHtml(it.name ?? '')}</td>
-                                    <td style="padding:4px 6px;">${it.quantity}</td>
-                                    <td style="padding:4px 6px;text-align:right;">${formatMoney(it.unit_price)}</td>
-                                    <td style="padding:4px 6px;text-align:right;">${formatMoney(it.line_total)}</td>
-                                </tr>`;
+                                            <td style="padding:4px 6px;">${escapeHtml(it.name ?? '')}</td>
+                                            <td style="padding:4px 6px;">${it.quantity}</td>
+                                            <td style="padding:4px 6px;text-align:right;">${formatMoney(it.unit_price)}</td>
+                                            <td style="padding:4px 6px;text-align:right;">${formatMoney(it.line_total)}</td>
+                                        </tr>`;
                         });
                         html += `</tbody></table></div>`;
                     }
@@ -294,4 +298,88 @@
             }
         });
     </script>
+    <!-- Create Booking Modal (Admin) -->
+    <div class="modal hidden" id="createBookingModal" data-modal>
+        <div class="modal-content" style="max-width:600px;">
+            <h2 style="margin-bottom:14px;">New Booking</h2>
+            <form action="{{ route('booking.portal.store') }}" method="POST">
+                @csrf
+                <input type="hidden" name="is_admin_booking" value="1">
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Channel / Source</label>
+                        <select name="channel" class="form-input" required>
+                            <option value="walk-in">Walk-In</option>
+                            <option value="phone">Phone Call</option>
+                            <option value="facebook">Facebook / Messenger</option>
+                            <option value="email">Email</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Customer Name</label>
+                        <input name="customer_name" class="form-input" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Contact Number</label>
+                        <input name="contact_number" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email (Optional)</label>
+                        <input name="email" type="email" class="form-input">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Service Type</label>
+                        <input name="service_type" class="form-input" required list="serviceTypeOptions">
+                        <datalist id="serviceTypeOptions">
+                            <option value="Car Wash">
+                            <option value="Detailing">
+                            <option value="Paint Protection">
+                            <option value="Maintenance">
+                        </datalist>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Preferred Date</label>
+                        <input name="preferred_date" type="date" class="form-input" required min="{{ date('Y-m-d') }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Preferred Time</label>
+                        <select name="preferred_time" class="form-input" required>
+                            <option value="08:00">08:00 AM</option>
+                            <option value="09:00">09:00 AM</option>
+                            <option value="10:00">10:00 AM</option>
+                            <option value="11:00">11:00 AM</option>
+                            <option value="13:00">01:00 PM</option>
+                            <option value="14:00">02:00 PM</option>
+                            <option value="15:00">03:00 PM</option>
+                            <option value="16:00">04:00 PM</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group" style="flex:1 0 100%;">
+                        <label>Notes</label>
+                        <textarea name="notes" class="form-input" rows="2"></textarea>
+                    </div>
+                </div>
+
+                <div class="button-row" style="margin-top:18px;display:flex;gap:10px;justify-content:flex-end;">
+                    <button type="button" class="btn-secondary" data-close>Cancel</button>
+                    <button type="submit" class="btn-primary">Create Booking</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
 @endsection
