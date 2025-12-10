@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Booking;
 use App\Models\StockOut;
 use App\Models\ActivityLog;
+use App\Models\ServiceType;
 
 class BookingController extends Controller
 {
@@ -21,29 +22,30 @@ class BookingController extends Controller
         }
 
         if ($search) {
-            $query->where(function($q) use ($search){
-                $q->where('booking_id','like',"%{$search}%")
-                  ->orWhere('customer_name','like',"%{$search}%")
-                  ->orWhere('service_type','like',"%{$search}%")
-                  ->orWhere('email','like',"%{$search}%");
+            $query->where(function ($q) use ($search) {
+                $q->where('booking_id', 'like', "%{$search}%")
+                    ->orWhere('customer_name', 'like', "%{$search}%")
+                    ->orWhere('service_type', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
             });
         }
 
         $bookings = $query->orderByDesc('created_at')->paginate(15);
+        $serviceTypes = ServiceType::where('active', true)->orderBy('name')->get();
 
-        return view('bookings.index', compact('bookings','search','status'));
+        return view('bookings.index', compact('bookings', 'search', 'status', 'serviceTypes'));
     }
 
     public function appoint($booking_id)
     {
-        $booking = Booking::where('booking_id',$booking_id)->firstOrFail();
+        $booking = Booking::where('booking_id', $booking_id)->firstOrFail();
 
         if ($booking->status !== 'completed') {
             return back()->withErrors('Booking is not completed yet.');
         }
 
         if ($booking->status === 'appointed') {
-            return back()->with('success','Already appointed.');
+            return back()->with('success', 'Already appointed.');
         }
 
         $booking->status = 'appointed';
@@ -56,6 +58,6 @@ class BookingController extends Controller
             ['status' => $booking->status]
         );
 
-        return back()->with('success','Booking appointed.');
+        return back()->with('success', 'Booking appointed.');
     }
 }

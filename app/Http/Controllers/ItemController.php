@@ -157,13 +157,13 @@ class ItemController extends Controller
 
         // Fetch Stock Ins
         $ins = \App\Models\StockIn::where('item_id', $item_id)
-            ->with('user')
+            ->with('supplier')
             ->get()
             ->map(fn($r) => [
                 'type' => 'in',
                 'date' => $r->created_at,
                 'qty' => $r->quantity,
-                'user' => $r->user->name ?? 'Unknown',
+                'user' => $r->supplier->name ?? 'Unknown Supplier',
                 'ref' => 'Stock In',
             ]);
 
