@@ -261,8 +261,10 @@
                             Reports</a></li>
                     <li><a href="{{ route('employees.index') }}" class="nav-link"><i class="bi bi-people-fill"></i>
                             Employees</a></li>
-                    <li><a href="{{ route('managers.index') }}" class="nav-link"><i class="bi bi-shield-lock"></i>
-                            Managers</a></li>
+                    @if($user->role === 'admin')
+                        <li><a href="{{ route('managers.index') }}" class="nav-link"><i class="bi bi-shield-lock"></i>
+                                Managers</a></li>
+                    @endif
                     <li><a href="{{ route('backups.index') }}" class="nav-link"><i class="bi bi-database"></i>
                             Backups</a></li>
                 @endif
