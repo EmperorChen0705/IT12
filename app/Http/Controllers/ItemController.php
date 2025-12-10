@@ -40,6 +40,14 @@ class ItemController extends Controller
 
     public function store(Request $request)
     {
+        // Smart Check: Is this item in the archives?
+        $existing = Item::withTrashed()->where('name', $request->name)->first();
+        if ($existing && $existing->trashed()) {
+            return back()
+                ->withInput()
+                ->withErrors(['name' => "This item is currently in the ARCHIVES (deleted). Please go to Archives and restore it."]);
+        }
+
         $data = $request->validate([
             'itemctgry_id' => ['required', 'exists:item_categories,itemctgry_id'],
             'name' => ['required', 'string', 'max:150', 'unique:items,name'],

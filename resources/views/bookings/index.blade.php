@@ -309,42 +309,31 @@
             <form action="{{ route('booking.portal.store') }}" method="POST">
                 @csrf
                 <input type="hidden" name="is_admin_booking" value="1">
-                {{-- Default channel to walk-in for admin modal since field is removed from UI --}}
-                <input type="hidden" name="channel" value="walk-in">
 
                 <div class="form-row" style="margin-bottom:20px;">
                     <div class="form-group" style="flex:1;">
-                        <label
-                            style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Full
-                            Name *</label>
-                        <input name="customer_name" class="form-input" required
+                        <label style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Full Name *</label>
+                        <input name="customer_name" class="form-input" required 
                             style="background:white; color:black; border:none; border-radius:8px; padding:12px; font-size:0.9rem; width:100%;">
                     </div>
                 </div>
 
                 <div class="form-row" style="display:flex; gap:20px; margin-bottom:20px;">
                     <div class="form-group" style="flex:1;">
-                        <label
-                            style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Contact
-                            Number *</label>
-                        <input name="contact_number" class="form-input" required
+                        <label style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Contact Number *</label>
+                        <input name="contact_number" class="form-input" required 
                             style="background:white; color:black; border:none; border-radius:8px; padding:12px; font-size:0.9rem; width:100%;">
                     </div>
                     <div class="form-group" style="flex:1;">
-                        <label
-                            style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Service
-                            Type *</label>
+                        <label style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Channel *</label>
                         <div style="position:relative;">
-                            <select name="service_type" class="form-input" required
-                                style="background:white; color:#ef4444; border:none; border-radius:8px; padding:12px; font-size:0.9rem; width:100%; -webkit-appearance:none; appearance:none;">
-                                <option value="" disabled selected>-- select service --</option>
-                                <option value="Car Wash">Car Wash</option>
-                                <option value="Detailing">Detailing</option>
-                                <option value="Paint Protection">Paint Protection</option>
-                                <option value="Maintenance">Maintenance</option>
+                            <select name="channel" class="form-input" required 
+                                style="background:white; color:black; border:none; border-radius:8px; padding:12px; font-size:0.9rem; width:100%; -webkit-appearance:none; appearance:none;">
+                                <option value="walk-in">Walk-In</option>
+                                <option value="phone">Phone Call</option>
+                                <option value="facebook">Facebook / Messenger</option>
                             </select>
-                            <span
-                                style="position:absolute; right:15px; top:50%; transform:translateY(-50%); color:#ef4444; pointer-events:none;">
+                            <span style="position:absolute; right:15px; top:50%; transform:translateY(-50%); color:black; pointer-events:none;">
                                 <i class="bi bi-chevron-down"></i>
                             </span>
                         </div>
@@ -353,20 +342,34 @@
 
                 <div class="form-row" style="display:flex; gap:20px; margin-bottom:20px;">
                     <div class="form-group" style="flex:1;">
-                        <label
-                            style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Preferred
-                            Date *</label>
+                        <label style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Service Type *</label>
+                        <div style="position:relative;">
+                            <select name="service_type" class="form-input" required 
+                                style="background:white; color:#ef4444; border:none; border-radius:8px; padding:12px; font-size:0.9rem; width:100%; -webkit-appearance:none; appearance:none;">
+                                <option value="" disabled selected>-- select service --</option>
+                                @foreach($serviceTypes ?? [] as $st)
+                                    <option value="{{ $st->name }}">{{ $st->name }}</option>
+                                @endforeach
+                            </select>
+                            <span style="position:absolute; right:15px; top:50%; transform:translateY(-50%); color:#ef4444; pointer-events:none;">
+                                <i class="bi bi-chevron-down"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Preferred Date *</label>
                         <div style="position:relative;">
                             <input name="preferred_date" type="date" class="form-input" required min="{{ date('Y-m-d') }}"
                                 style="background:white; color:#ef4444; border:none; border-radius:8px; padding:12px; font-size:0.9rem; width:100%;">
                         </div>
                     </div>
+                </div>
+
+                <div class="form-row" style="display:flex; gap:20px; margin-bottom:20px;">
                     <div class="form-group" style="flex:1;">
-                        <label
-                            style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Preferred
-                            Time *</label>
+                        <label style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Preferred Time *</label>
                         <div style="position:relative;">
-                            <select name="preferred_time" class="form-input" required
+                             <select name="preferred_time" class="form-input" required 
                                 style="background:white; color:#ef4444; border:none; border-radius:8px; padding:12px; font-size:0.9rem; width:100%; -webkit-appearance:none; appearance:none;">
                                 <option value="" disabled selected>-- : -- --</option>
                                 <option value="08:00">08:00 AM</option>
@@ -378,20 +381,20 @@
                                 <option value="15:00">03:00 PM</option>
                                 <option value="16:00">04:00 PM</option>
                             </select>
-                            <span
-                                style="position:absolute; right:15px; top:50%; transform:translateY(-50%); color:black; pointer-events:none;">
+                            <span style="position:absolute; right:15px; top:50%; transform:translateY(-50%); color:black; pointer-events:none;">
                                 <i class="bi bi-clock"></i>
                             </span>
                         </div>
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <!-- Spacer -->
                     </div>
                 </div>
 
                 <div class="form-row" style="margin-bottom:30px;">
                     <div class="form-group" style="flex:1;">
-                        <label
-                            style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Additional
-                            Notes (Optional)</label>
-                        <textarea name="notes" class="form-input" rows="4"
+                        <label style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Additional Notes (Optional)</label>
+                        <textarea name="notes" class="form-input" rows="4" 
                             style="background:white; color:black; border:none; border-radius:8px; padding:12px; font-size:0.9rem; width:100%; resize:vertical;"></textarea>
                     </div>
                 </div>
@@ -405,7 +408,7 @@
                         style="background:#dc2626; color:white; border:none; border-radius:6px; padding:10px 24px; font-weight:600; cursor:pointer;">
                         Cancel
                     </button>
-                    <button type="submit"
+                    <button type="submit" 
                         style="background:#dc2626; color:white; border:none; border-radius:6px; padding:10px 24px; font-weight:600; cursor:pointer;">
                         Submit Booking
                     </button>
