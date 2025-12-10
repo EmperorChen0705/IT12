@@ -241,7 +241,7 @@
         </div>
         <center>
             <ul>
-                @if($user->role === 'admin')
+                @if($user->canAccessAdmin())
                     <li><a href="{{ route('system') }}" class="nav-link"><i class="bi bi-activity"></i> Dashboard</a></li>
                 @endif
                 <li><a href="{{ route('stock_in.index') }}" class="nav-link"><i class="bi bi-dropbox"></i> Stock-In</a>
@@ -256,7 +256,7 @@
                         Suppliers</a></li>
                 <li><a href="{{ route('payments.index') }}" class="nav-link"><i class="bi bi-credit-card"></i>
                         Payments</a></li>
-                @if($user->role === 'admin')
+                @if($user->canAccessAdmin())
                     <li><a href="{{ route('reports.index') }}" class="nav-link"><i class="bi bi-list-columns"></i>
                             Reports</a></li>
                     <li><a href="{{ route('employees.index') }}" class="nav-link"><i class="bi bi-people-fill"></i>
@@ -291,7 +291,7 @@
 
             <div class="dropdown-menu hidden" id="dropdownMenu" data-dropdown-menu>
                 <button class="dropdown-item" data-action="view-profile">View Profile</button>
-                @if($user->role === 'admin')
+                @if($user->canAccessAdmin())
                     <a href="{{ route('employees.index') }}" class="dropdown-item">View Employees</a>
                     <button class="dropdown-item" data-action="register-employee">Register Employee</button>
                 @endif
@@ -311,7 +311,7 @@
                 </div>
             </div>
 
-            @if($user->role === 'admin')
+            @if($user->canAccessAdmin())
                 <div class="modal hidden" id="createEmployeeModal" data-modal>
                     <div class="modal-content" style="max-width:640px;">
                         <h2 style="margin-bottom:14px;">Register Employee</h2>

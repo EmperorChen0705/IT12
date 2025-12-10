@@ -157,16 +157,11 @@
 
                 <div id="formErrorSummary" class="portal-alert error" style="display:none;font-size:.65rem;"></div>
 
-                <div class="form-row uniform">
-                    <div class="form-group" style="margin-right:25px;">
+                <div class="form-row single">
+                    <div class="form-group">
                         <label>Full Name *</label>
                         <input name="customer_name" class="form-input" required value="{{ old('customer_name') }}">
                         <div class="field-error" data-error-for="customer_name"></div>
-                    </div>
-                    <div class="form-group">
-                        <label>Email *</label>
-                        <input name="email" type="email" class="form-input" required value="{{ old('email') }}">
-                        <div class="field-error" data-error-for="email"></div>
                     </div>
                 </div>
 

@@ -1,0 +1,64 @@
+services:
+  - type: web
+    name: inventory-booking-system
+    runtime: php
+    plan: free
+    buildCommand: "./render-build.sh"
+    startCommand: "php artisan serve --host=0.0.0.0 --port=$PORT"
+    envVars:
+      - key: APP_NAME
+        value: SubWFour Inventory System
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: LOG_CHANNEL
+        value: stack
+      - key: DB_CONNECTION
+        value: mysql
+      - key: APP_KEY
+        generateValue: true
+      - key: SESSION_DRIVER
+        value: database
+      - key: SESSION_LIFETIME
+        value: 120
+      # Database Credentials (Input these from Railway)
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        value: 3306
+      - key: DB_DATABASE
+        sync: false
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+
+  - type: cron
+    name: backup-scheduler
+    runtime: php
+    plan: free
+    schedule: "* * * * *"
+    command: "php artisan schedule:run"
+    envVars:
+      - key: APP_NAME
+        value: SubWFour Inventory System
+      - key: APP_ENV
+        value: production
+      - key: DB_CONNECTION
+        value: mysql
+      - key: SESSION_DRIVER
+        value: database
+      # Database Credentials (Must match Web Service)
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        value: 3306
+      - key: DB_DATABASE
+        sync: false
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+
+version: "1"

@@ -2,21 +2,12 @@
 # exit on error
 set -o errexit
 
-echo "🔧 Installing PHP dependencies..."
-composer install --no-dev --optimize-autoloader --no-interaction
-
-echo "🔑 Generating application key..."
-php artisan key:generate --force
-
-echo "🗄️ Running database migrations..."
-php artisan migrate --force
-
-echo "🧹 Clearing and caching configuration..."
+composer install --no-dev --optimize-autoloader
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
+php artisan migrate --force
 
-echo "🔗 Creating storage link..."
-php artisan storage:link || true
-
-echo "✅ Build completed successfully!"
+# Create backup directory
+mkdir -p storage/app/backups
+chmod -R 775 storage/app/backups
