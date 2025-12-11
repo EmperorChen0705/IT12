@@ -86,17 +86,22 @@ Route::middleware('auth')->group(function () {
 
     // Payments
     Route::get('/payments', [\App\Http\Controllers\PaymentController::class, 'index'])->name('payments.index');
+    Route::get('/payments/create', [\App\Http\Controllers\PaymentController::class, 'create'])->name('payments.create');
+    Route::post('/payments', [\App\Http\Controllers\PaymentController::class, 'store'])->name('payments.store');
     Route::get('/payments/{payment}/receipt', [\App\Http\Controllers\PaymentController::class, 'receipt'])->name('payments.receipt');
 
-    // Strict Admin Only Routes
-    Route::middleware('role:admin,strict')->group(function () {
-        Route::get('/payments/create', [\App\Http\Controllers\PaymentController::class, 'create'])->name('payments.create');
-        Route::post('/payments', [\App\Http\Controllers\PaymentController::class, 'store'])->name('payments.store');
+    // Service Types 
+    Route::post('/service-types', [ServiceTypeController::class, 'store'])->name('service_types.store');
+    Route::put('/service-types/{id}', [ServiceTypeController::class, 'update'])->name('service_types.update');
+    Route::delete('/service-types/{id}', [ServiceTypeController::class, 'destroy'])->name('service_types.destroy');
 
-        // Reports (Strict Admin)
-        Route::get('/reports', [ReportsController::class, 'index'])->name('reports.index');
-        Route::get('/reports/export', [ReportsController::class, 'export'])->name('reports.export');
-    });
+    // System Bookings
+    Route::get('/system/bookings', [BookingController::class, 'index'])->name('bookings.index');
+    Route::post('/bookings/{booking}/appoint', [BookingController::class, 'appoint'])->name('bookings.appoint');
+
+    // Reports (Admin Only)
+    Route::get('/reports', [ReportsController::class, 'index'])->middleware('role:admin')->name('reports.index');
+    Route::get('/reports/export', [ReportsController::class, 'export'])->middleware('role:admin')->name('reports.export');
 
     // Manager Elevation (Admin Only)
     Route::middleware('role:admin')->prefix('managers')->group(function () {

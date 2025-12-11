@@ -24,17 +24,6 @@
             style="flex:1;display:flex;justify-content:center;align-items:center;">
             <i class="bi bi-folder2-open"></i> Categories
         </button>
-        @if(request('view') === 'archived')
-            <a href="{{ route('inventory.index') }}" class="btn btn-secondary"
-                style="flex:1;display:flex;justify-content:center;align-items:center;">
-                <i class="bi bi-arrow-left"></i> Active Items
-            </a>
-        @else
-            <a href="{{ route('inventory.index', ['view' => 'archived']) }}" class="btn btn-secondary"
-                style="flex:1;display:flex;justify-content:center;align-items:center;">
-                <i class="bi bi-archive"></i> Archives
-            </a>
-        @endif
         <button type="button" class="btn btn-primary" data-action="register-item"
             style="flex:1;display:flex;justify-content:center;align-items:center;">
             <i class="bi bi-plus-lg"></i> Add Item
@@ -115,8 +104,7 @@
                 </thead>
                 <tbody>
                     @forelse($items as $item)
-                        <tr
-                            style="{{ ($item->quantity < 5 && !$item->trashed()) ? 'background:rgba(239, 53, 53, 0.15);' : '' }}">
+                        <tr>
                             <td>{{ $item->item_id }}</td>
                             <td>{{ $item->name }}</td>
                             <td>{{ $item->category?->name ?? '—' }}</td>
@@ -125,31 +113,17 @@
                             <td class="text-end">₱{{ number_format($item->unit_price, 2) }}</td>
                             <td>
                                 <div class="d-flex gap-2">
-                                    @if($item->trashed())
-                                        <form action="{{ route('inventory.restore', $item->item_id) }}" method="POST">
-                                            @csrf
-                                            <button class="btn btn-primary btn-sm" title="Restore">
-                                                <i class="bi bi-arrow-counterclockwise"></i>
-                                            </button>
-                                        </form>
-                                    @else
-                                        <a href="{{ route('inventory.history', $item->item_id) }}" class="btn btn-secondary"
-                                            title="History"
-                                            style="padding: 0; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
-                                            <i class="bi bi-clock-history"></i>
-                                        </a>
-                                        <a href="{{ route('inventory.edit', $item->item_id) }}" class="btn btn-edit" title="Edit">
-                                            <i class="bi bi-pencil-square"></i>
-                                        </a>
-                                        <form action="{{ route('inventory.destroy', $item->item_id) }}" method="POST"
-                                            onsubmit="return confirm('Delete this item?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button class="btn btn-delete" title="Delete">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </form>
-                                    @endif
+                                    <a href="{{ route('inventory.edit', $item->item_id) }}" class="btn btn-edit" title="Edit">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <form action="{{ route('inventory.destroy', $item->item_id) }}" method="POST"
+                                        onsubmit="return confirm('Delete this item?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button class="btn btn-delete" title="Delete">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
                                 </div>
                             </td>
                         </tr>
@@ -169,7 +143,7 @@
                     | Showing {{ $items->firstItem() }}–{{ $items->lastItem() }} of {{ $items->total() }}
                 </div>
                 <div style="width:100%;display:flex;justify-content:center;">
-                    {{ $items->onEachSide(1)->appends(request()->input())->links() }}
+                    {{ $items->onEachSide(1)->links() }}
                 </div>
             </div>
         @endif
@@ -380,7 +354,7 @@
             document.addEventListener('keydown', e => {
                 if (e.key === 'Escape' && !modal.classList.contains('hidden')) hideModal();
             });
-            @if(session('showCategoriesModal') || ($errors->any() && old('_categoryForm')))
+            @if(session('showCategoriesModal') || ($errors->any() && !(old('_from') === 'createItem')))
                 showModal();
                 @if(old('name') && session('showCategoriesModal') && old('itemctgry_id'))
                     setEditMode("{{ old('itemctgry_id') }}", "{{ old('name') }}");

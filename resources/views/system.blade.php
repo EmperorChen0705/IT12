@@ -248,19 +248,17 @@
                         Inventory</a></li>
                 <li><a href="{{ route('stock_in.index') }}" class="nav-link"><i class="bi bi-dropbox"></i> Stock-In</a>
                 </li>
-                <li><a href="{{ route('bookings.index') }}" class="nav-link"><i class="bi bi-person-lines-fill"></i>
-                        Bookings</a></li>
                 <li><a href="{{ route('services.index') }}" class="nav-link"><i class="bi bi-wrench"></i> Service</a>
                 </li>
+                <li><a href="{{ route('bookings.index') }}" class="nav-link"><i class="bi bi-person-lines-fill"></i>
+                        Bookings</a></li>
                 <li><a href="{{ route('suppliers.index') }}" class="nav-link"><i class="bi bi-person-fill-down"></i>
                         Suppliers</a></li>
                 <li><a href="{{ route('payments.index') }}" class="nav-link"><i class="bi bi-credit-card"></i>
                         Payments</a></li>
                 @if($user->canAccessAdmin())
-                    @if($user->role === 'admin')
-                        <li><a href="{{ route('reports.index') }}" class="nav-link"><i class="bi bi-list-columns"></i>
-                                Reports</a></li>
-                    @endif
+                    <li><a href="{{ route('reports.index') }}" class="nav-link"><i class="bi bi-list-columns"></i>
+                            Reports</a></li>
                     <li><a href="{{ route('employees.index') }}" class="nav-link"><i class="bi bi-people-fill"></i>
                             Employees</a></li>
                     @if($user->role === 'admin')
@@ -297,8 +295,6 @@
                 <button class="dropdown-item" data-action="view-profile">View Profile</button>
                 @if($user->canAccessAdmin())
                     <a href="{{ route('employees.index') }}" class="dropdown-item">View Employees</a>
-                @endif
-                @if($user->role === 'admin')
                     <button class="dropdown-item" data-action="register-employee">Register Employee</button>
                 @endif
                 <form action="{{ route('logout') }}" method="POST">
