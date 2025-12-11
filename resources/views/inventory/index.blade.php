@@ -42,6 +42,13 @@
                 </ul>
             </div>
         @endif
+        @if($errors->any() && !old('_from') && !old('_categoryForm'))
+            <div class="alert alert-danger mb-3">
+                <ul class="m-0 ps-3" style="font-size:.7rem;">
+                    @foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach
+                </ul>
+            </div>
+        @endif
 
         <div class="toolbar-top d-flex flex-wrap align-items-end gap-3 mb-3">
             <div class="search-bar-wrapper" style="flex:1 1 380px;">
