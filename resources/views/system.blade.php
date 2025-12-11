@@ -297,6 +297,9 @@
                 <button class="dropdown-item" data-action="view-profile">View Profile</button>
                 @if($user->canAccessAdmin())
                     <a href="{{ route('employees.index') }}" class="dropdown-item">View Employees</a>
+                    @if($user->role === 'admin')
+                        <button class="dropdown-item" data-action="register-employee">Register Employee</button>
+                    @endif
                 @endif
                 <form action="{{ route('logout') }}" method="POST">
                     @csrf
