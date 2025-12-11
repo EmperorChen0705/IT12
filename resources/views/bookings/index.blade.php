@@ -87,6 +87,7 @@
                         <th>Date</th>
                         <th>Time</th>
                         <th>Status</th>
+                        <th>Service Status</th>
                         <th style="width:180px;">Actions</th>
                     </tr>
                 </thead>
@@ -103,6 +104,15 @@
                                 'appointed' => 'var(--green-500)',
                                 default => 'var(--gray-500)',
                             };
+                            
+                            // Service status badge color
+                            $serviceBadgeColor = $srv ? match ($srv->status) {
+                                'pending' => 'var(--gray-500)',
+                                'in_progress' => 'var(--blue-500)',
+                                'completed' => 'var(--green-500)',
+                                default => 'var(--gray-500)',
+                            } : null;
+                            
                             $receiptPayload = [
                                 'booking_id' => $b->booking_id,
                                 'customer_name' => $b->customer_name,
@@ -145,6 +155,16 @@
                                     style="background:{{ $badgeColor }}22;color:{{ $badgeColor }};padding:2px 8px;border-radius:12px;font-size:.6rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px;">
                                     {{ $b->status }}
                                 </span>
+                            </td>
+                            <td>
+                                @if($srv)
+                                    <span
+                                        style="background:{{ $serviceBadgeColor }}22;color:{{ $serviceBadgeColor }};padding:2px 8px;border-radius:12px;font-size:.6rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px;">
+                                        {{ str_replace('_', ' ', $srv->status) }}
+                                    </span>
+                                @else
+                                    <span style="color:var(--gray-500);font-size:.6rem;">—</span>
+                                @endif
                             </td>
                             <td>
                                 <div class="d-flex gap-2">
