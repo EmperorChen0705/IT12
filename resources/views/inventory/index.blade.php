@@ -380,7 +380,7 @@
             document.addEventListener('keydown', e => {
                 if (e.key === 'Escape' && !modal.classList.contains('hidden')) hideModal();
             });
-            @if(session('showCategoriesModal') || ($errors->any() && !(old('_from') === 'createItem')))
+            @if(session('showCategoriesModal') || ($errors->any() && old('_categoryForm')))
                 showModal();
                 @if(old('name') && session('showCategoriesModal') && old('itemctgry_id'))
                     setEditMode("{{ old('itemctgry_id') }}", "{{ old('name') }}");

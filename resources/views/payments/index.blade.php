@@ -21,10 +21,12 @@
     @endif
 
     <div class="page-actions" style="display:flex;gap:10px;margin-bottom:10px;">
-        <a href="{{ route('payments.create') }}" class="btn btn-primary"
-            style="flex:1;display:flex;justify-content:center;align-items:center;">
-            <i class="bi bi-plus-lg"></i> New Payment
-        </a>
+        @if(Auth::user()->role === 'admin')
+            <a href="{{ route('payments.create') }}" class="btn btn-primary"
+                style="flex:1;display:flex;justify-content:center;align-items:center;">
+                <i class="bi bi-plus-lg"></i> New Payment
+            </a>
+        @endif
     </div>
 
     <div class="glass-card glass-card-wide">

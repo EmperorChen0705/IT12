@@ -193,8 +193,19 @@
                     </div>
                     <div class="form-group">
                         <label>Preferred Time *</label>
-                        <input type="time" name="preferred_time" class="form-input" required
-                            value="{{ old('preferred_time') }}">
+                        <select name="preferred_time" class="form-input" required>
+                            <option value="">-- select time --</option>
+                            @php
+                                $start = strtotime('08:00');
+                                $end = strtotime('18:00');
+                            @endphp
+                            @for ($i = $start; $i <= $end; $i += 1800)
+                                @php $timeVal = date('H:i', $i);
+                                $timeLabel = date('h:i A', $i); @endphp
+                                <option value="{{ $timeVal }}" @selected(old('preferred_time') == $timeVal)>{{ $timeLabel }}
+                                </option>
+                            @endfor
+                        </select>
                         <div class="field-error" data-error-for="preferred_time"></div>
                     </div>
                 </div>
