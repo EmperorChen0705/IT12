@@ -85,19 +85,23 @@
                             <td>{{ $email }}</td>
                             <td>{{ $employee->contact_number ?? '—' }}</td>
                             <td>
-                                <div class="d-flex gap-2">
-                                    <a href="{{ route('employees.edit', $employee->id) }}" class="btn btn-edit" title="Edit">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </a>
-                                    <form action="{{ route('employees.destroy', $employee->id) }}" method="POST"
-                                        onsubmit="return confirm('Delete this employee?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-delete" title="Delete">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </form>
-                                </div>
+                                @if(auth()->user()->role === 'admin')
+                                    <div class="d-flex gap-2">
+                                        <a href="{{ route('employees.edit', $employee->id) }}" class="btn btn-edit" title="Edit">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <form action="{{ route('employees.destroy', $employee->id) }}" method="POST"
+                                            onsubmit="return confirm('Delete this employee?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-delete" title="Delete">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                @else
+                                    <span style="color:var(--gray-500);font-size:.7rem;">View Only</span>
+                                @endif
                             </td>
                         </tr>
                     @empty

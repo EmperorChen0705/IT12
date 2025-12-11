@@ -45,8 +45,12 @@ Route::middleware('auth')->group(function () {
     // Dashboard (single authoritative route)
     Route::get('/system', [DashboardController::class, 'index'])->name('system');
 
-    // Employees (Admin Only - NOT managers with elevated access)
-    Route::resource('employees', EmployeeController::class)->except(['show', 'create'])->middleware('strict_admin');
+    // Employees - View access for managers, but edit/delete only for admin
+    Route::get('/employees', [EmployeeController::class, 'index'])->middleware('role:admin')->name('employees.index');
+    Route::post('/employees', [EmployeeController::class, 'store'])->middleware('strict_admin')->name('employees.store');
+    Route::get('/employees/{employee}/edit', [EmployeeController::class, 'edit'])->middleware('strict_admin')->name('employees.edit');
+    Route::put('/employees/{employee}', [EmployeeController::class, 'update'])->middleware('strict_admin')->name('employees.update');
+    Route::delete('/employees/{employee}', [EmployeeController::class, 'destroy'])->middleware('strict_admin')->name('employees.destroy');
 
     // Suppliers
     Route::get('/suppliers', [SupplierController::class, 'index'])->name('suppliers.index');
