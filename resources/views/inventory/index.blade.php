@@ -93,13 +93,16 @@
             <table class="table align-middle">
                 <thead>
                     <tr>
-                        <th>Item ID</th>
-                        <th>Name</th>
-                        <th>Category</th>
-                        <th class="text-end">Qty</th>
-                        <th>Unit</th>
-                        <th class="text-end">Unit Price</th>
-                        <th style="width:130px;">Actions</th>
+                        <th style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px;">ITEM ID</th>
+                        <th style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px;">NAME</th>
+                        <th style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px;">CATEGORY</th>
+                        <th class="text-end"
+                            style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px;">QTY</th>
+                        <th class="text-end"
+                            style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px;">UNIT PRICE
+                        </th>
+                        <th style="width:130px; color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px;">
+                            ACTIONS</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -109,7 +112,6 @@
                             <td>{{ $item->name }}</td>
                             <td>{{ $item->category?->name ?? '—' }}</td>
                             <td class="text-end">{{ $item->quantity }}</td>
-                            <td>{{ $item->unit ?? '—' }}</td>
                             <td class="text-end">₱{{ number_format($item->unit_price, 2) }}</td>
                             <td>
                                 <div class="d-flex gap-2">
@@ -159,7 +161,7 @@
                 <input type="hidden" name="_from" value="createItem">
                 <div class="form-row">
                     <div class="form-group" style="flex:1 0 60%;">
-                        <label>Name</label>
+                        <label>Unit</label>
                         <input name="name" class="form-input" required value="{{ old('name') }}">
                     </div>
                 </div>
@@ -183,7 +185,7 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Unit</label>
+                        <label>Quantity</label>
                         <input name="unit" class="form-input" value="{{ old('unit') }}" placeholder="pcs / box">
                     </div>
                 </div>

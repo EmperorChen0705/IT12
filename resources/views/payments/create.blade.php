@@ -57,8 +57,8 @@
                 </div>
                 <div class="form-group" style="flex:0 0 180px;">
                     <label>Status</label>
-                    <input class="form-input" value="{{ $service ? ucfirst(str_replace('_', ' ', $service->status)) : '—' }}"
-                        disabled>
+                    <input class="form-input"
+                        value="{{ $service ? ucfirst(str_replace('_', ' ', $service->status)) : '—' }}" disabled>
                 </div>
             </div>
 
@@ -67,11 +67,6 @@
                     <label>Customer Name</label>
                     <input name="customer_name" class="form-input"
                         value="{{ old('customer_name', $booking->customer_name ?? '') }}" required>
-                </div>
-                <div class="form-group" style="flex:1;">
-                    <label>Email</label>
-                    <input name="email" type="email" class="form-input" value="{{ old('email', $booking->email ?? '') }}"
-                        required>
                 </div>
                 <div class="form-group" style="flex:1;">
                     <label>Contact Number</label>
@@ -139,7 +134,6 @@
 
             const bookingIdIn = document.querySelector('input[name="booking_id"]');
             const nameIn = document.querySelector('input[name="customer_name"]');
-            const emailIn = document.querySelector('input[name="email"]');
             const contactIn = document.querySelector('input[name="contact_number"]');
             const saveBtn = document.getElementById('savePaymentBtn');
 
@@ -163,7 +157,6 @@
                 if (!opt) return;
                 const bk = opt.dataset.bookingId || '';
                 const nm = opt.dataset.name || '';
-                const em = opt.dataset.email || '';
                 const cn = opt.dataset.contact || '';
                 const st = opt.dataset.serviceStatus || '';
                 const tot = parseFloat(opt.dataset.serviceTotal || '0');
@@ -172,7 +165,6 @@
 
                 if (bookingIdIn) bookingIdIn.value = bk;
                 if (nameIn) nameIn.value = nm;
-                if (emailIn) emailIn.value = em;
                 if (contactIn) contactIn.value = cn;
 
                 updateTotals(tot, pd, bl);
