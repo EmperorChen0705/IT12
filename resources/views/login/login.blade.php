@@ -8,10 +8,6 @@
   <link rel="stylesheet" href="{{ asset('css/login.css') }}">
   <style>
     /* Override login form styling to match design */
-    body {
-      background: #1a1a1a;
-      background-image: none;
-    }
 
     .login-box {
       background: #2a2a2a !important;
