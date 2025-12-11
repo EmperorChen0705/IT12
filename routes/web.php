@@ -86,8 +86,8 @@ Route::middleware('auth')->group(function () {
 
     // Payments
     Route::get('/payments', [\App\Http\Controllers\PaymentController::class, 'index'])->name('payments.index');
-    Route::get('/payments/create', [\App\Http\Controllers\PaymentController::class, 'create'])->name('payments.create');
-    Route::post('/payments', [\App\Http\Controllers\PaymentController::class, 'store'])->name('payments.store');
+    Route::get('/payments/create', [\App\Http\Controllers\PaymentController::class, 'create'])->middleware('role:admin')->name('payments.create');
+    Route::post('/payments', [\App\Http\Controllers\PaymentController::class, 'store'])->middleware('role:admin')->name('payments.store');
     Route::get('/payments/{payment}/receipt', [\App\Http\Controllers\PaymentController::class, 'receipt'])->name('payments.receipt');
 
     // Service Types 

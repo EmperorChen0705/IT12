@@ -20,12 +20,14 @@
         </div>
     @endif
 
-    <div class="page-actions" style="display:flex;gap:10px;margin-bottom:10px;">
-        <a href="{{ route('payments.create') }}" class="btn btn-primary"
-            style="flex:1;display:flex;justify-content:center;align-items:center;">
-            <i class="bi bi-plus-lg"></i> New Payment
-        </a>
-    </div>
+    @if(auth()->user()->role === 'admin')
+        <div class="page-actions" style="display:flex;gap:10px;margin-bottom:10px;">
+            <a href="{{ route('payments.create') }}" class="btn btn-primary"
+                style="flex:1;display:flex;justify-content:center;align-items:center;">
+                <i class="bi bi-plus-lg"></i> New Payment
+            </a>
+        </div>
+    @endif
 
     <div class="glass-card glass-card-wide">
         <div class="table-responsive">

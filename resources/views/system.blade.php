@@ -256,9 +256,11 @@
                         Suppliers</a></li>
                 <li><a href="{{ route('payments.index') }}" class="nav-link"><i class="bi bi-credit-card"></i>
                         Payments</a></li>
-                @if($user->canAccessAdmin())
+                @if($user->role === 'admin')
                     <li><a href="{{ route('reports.index') }}" class="nav-link"><i class="bi bi-list-columns"></i>
                             Reports</a></li>
+                @endif
+                @if($user->canAccessAdmin())
                     <li><a href="{{ route('employees.index') }}" class="nav-link"><i class="bi bi-people-fill"></i>
                             Employees</a></li>
                     @if($user->role === 'admin')
