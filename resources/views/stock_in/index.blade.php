@@ -315,7 +315,14 @@
 
                 if (tableBody.children.length === 0) addLine();
 
+                let isSubmitting = false;
                 form?.addEventListener('submit', e => {
+                    // Prevent double submission
+                    if (isSubmitting) {
+                        e.preventDefault();
+                        return;
+                    }
+
                     if (tableBody.children.length === 0) {
                         e.preventDefault();
                         alert('Add at least one stock line.');
@@ -330,6 +337,15 @@
                     if (!ok) {
                         e.preventDefault();
                         alert('Complete all line fields.');
+                        return;
+                    }
+
+                    // Mark as submitting and disable submit button
+                    isSubmitting = true;
+                    const submitBtn = form.querySelector('button[type="submit"]');
+                    if (submitBtn) {
+                        submitBtn.disabled = true;
+                        submitBtn.textContent = 'Saving...';
                     }
                 });
             }
