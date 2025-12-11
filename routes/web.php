@@ -46,14 +46,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/system', [DashboardController::class, 'index'])->name('system');
 
     // Employees (Admin Only - NOT managers with elevated access)
-    Route::resource('employees', EmployeeController::class)
-        ->except(['show', 'create'])
-        ->middleware(function ($request, $next) {
-            if ($request->user()->role !== 'admin') {
-                abort(403, 'Only the admin can manage employees.');
-            }
-            return $next($request);
-        });
+    Route::resource('employees', EmployeeController::class)->except(['show', 'create'])->middleware('strict_admin');
 
     // Suppliers
     Route::get('/suppliers', [SupplierController::class, 'index'])->name('suppliers.index');
