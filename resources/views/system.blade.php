@@ -248,10 +248,10 @@
                         Inventory</a></li>
                 <li><a href="{{ route('stock_in.index') }}" class="nav-link"><i class="bi bi-dropbox"></i> Stock-In</a>
                 </li>
-                <li><a href="{{ route('services.index') }}" class="nav-link"><i class="bi bi-wrench"></i> Service</a>
-                </li>
                 <li><a href="{{ route('bookings.index') }}" class="nav-link"><i class="bi bi-person-lines-fill"></i>
                         Bookings</a></li>
+                <li><a href="{{ route('services.index') }}" class="nav-link"><i class="bi bi-wrench"></i> Service</a>
+                </li>
                 <li><a href="{{ route('suppliers.index') }}" class="nav-link"><i class="bi bi-person-fill-down"></i>
                         Suppliers</a></li>
                 <li><a href="{{ route('payments.index') }}" class="nav-link"><i class="bi bi-credit-card"></i>
