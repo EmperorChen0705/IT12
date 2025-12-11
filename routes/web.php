@@ -89,12 +89,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/payments/{payment}/receipt', [\App\Http\Controllers\PaymentController::class, 'receipt'])->name('payments.receipt');
 
     // Strict Admin Only Routes
-    Route::middleware(function ($request, $next) {
-        if ($request->user()->role !== 'admin') {
-            abort(403, 'Unauthorized.');
-        }
-        return $next($request);
-    })->group(function () {
+    Route::middleware('strict_admin')->group(function () {
         Route::get('/payments/create', [\App\Http\Controllers\PaymentController::class, 'create'])->name('payments.create');
         Route::post('/payments', [\App\Http\Controllers\PaymentController::class, 'store'])->name('payments.store');
 
