@@ -162,13 +162,18 @@
                 </div>
                 <div class="list-body">
                     @forelse($upcomingBookings ?? [] as $ub)
-                        <div class="list-row">
-                            <span class="lr-id" style="width:50px;">{{ \Carbon\Carbon::parse($ub->preferred_date)->format('M d') }}</span>
-                            <div class="lr-details" style="flex:1; margin-left:10px; display:flex; flex-direction:column; justify-content:center;">
-                                <div style="font-weight:600; font-size:0.85rem; color:var(--white);">{{ $ub->customer_name }}</div>
-                                <div style="font-size:0.75rem; opacity:0.7;">{{ $ub->service_type }} @ {{ $ub->preferred_time }}</div>
+                        <div class="list-row" style="color: #ffffff !important;">
+                            <span class="lr-id"
+                                style="width:50px; color: #ffffff !important;">{{ \Carbon\Carbon::parse($ub->preferred_date)->format('M d') }}</span>
+                            <div class="lr-details"
+                                style="flex:1; margin-left:10px; display:flex; flex-direction:column; justify-content:center;">
+                                <div style="font-weight:600; font-size:0.85rem; color: #ffffff !important;">
+                                    {{ $ub->customer_name }}</div>
+                                <div style="font-size:0.75rem; opacity:0.7; color: #ffffff !important;">{{ $ub->service_type }}
+                                    @ {{ $ub->preferred_time }}</div>
                             </div>
-                            <span class="lr-val" style="font-size:0.7rem;">{{ strtoupper($ub->channel ?? 'web') }}</span>
+                            <span class="lr-val"
+                                style="font-size:0.7rem; color: #ffffff !important;">{{ strtoupper($ub->channel ?? 'web') }}</span>
                         </div>
                     @empty
                         <div class="empty-alt">No upcoming bookings.</div>
