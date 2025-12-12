@@ -48,10 +48,7 @@
         </div>
     @endif
 
-    {{-- Quick Toggle Widget for Admin (Owner) --}}
-    @if(auth()->user()->role === 'admin')
-        @include('managers.quick_toggle')
-    @endif
+    {{-- Quick Toggle Widget Removed (Only in Managers Page now) --}}
 
     <div class="dashboard-grid" id="dashboardRoot" data-daily-bookings='@json($dailyBookings)'
         data-monthly-services='@json($monthlyServices)' data-top-sales-items='@json($topSalesItems ?? [])'
@@ -155,28 +152,28 @@
                 <canvas id="monthlyServicesChart" height="140"></canvas>
             </div>
 
-            <!-- Upcoming Schedule -->
-            <div class="panel panel-list">
+            <!-- Upcoming Schedule (Enlarged) -->
+            <div class="panel panel-list" style="min-height: 300px;">
                 <div class="panel-head">
                     <h3>Upcoming Schedule</h3>
                 </div>
-                <div class="list-body">
+                <div class="list-body" style="max-height: 480px;">
                     @forelse($upcomingBookings ?? [] as $ub)
-                        <div class="list-row" style="color: #ffffff !important;">
+                        <div class="list-row" style="color: #ffffff !important; padding: 10px 0;">
                             <span class="lr-id"
-                                style="width:50px; color: #ffffff !important;">{{ \Carbon\Carbon::parse($ub->preferred_date)->format('M d') }}</span>
+                                style="width:60px; color: #ffffff !important; font-size: 1.1rem !important;">{{ \Carbon\Carbon::parse($ub->preferred_date)->format('M d') }}</span>
                             <div class="lr-details"
-                                style="flex:1; margin-left:10px; display:flex; flex-direction:column; justify-content:center;">
-                                <div style="font-weight:600; font-size:0.85rem; color: #ffffff !important;">
+                                style="flex:1; margin-left:14px; display:flex; flex-direction:column; justify-content:center;">
+                                <div style="font-weight:700; font-size:1.15rem; color: #ffffff !important; margin-bottom: 4px;">
                                     {{ $ub->customer_name }}</div>
-                                <div style="font-size:0.75rem; opacity:0.7; color: #ffffff !important;">{{ $ub->service_type }}
+                                <div style="font-size:0.95rem; opacity:0.9; color: #ffffff !important;">{{ $ub->service_type }}
                                     @ {{ $ub->preferred_time }}</div>
                             </div>
                             <span class="lr-val"
-                                style="font-size:0.7rem; color: #ffffff !important;">{{ strtoupper($ub->channel ?? 'web') }}</span>
+                                style="font-size:0.85rem; color: #ffffff !important;">{{ strtoupper($ub->channel ?? 'web') }}</span>
                         </div>
                     @empty
-                        <div class="empty-alt">No upcoming bookings.</div>
+                        <div class="empty-alt" style="font-size: 1.1rem; padding: 20px 0;">No upcoming bookings.</div>
                     @endforelse
                 </div>
             </div>
