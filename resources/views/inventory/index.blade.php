@@ -144,6 +144,11 @@
                                             </button>
                                         </form>
                                     @else
+                                        <a href="{{ route('inventory.history', $item->item_id) }}" class="btn btn-info"
+                                            title="History"
+                                            style="background:#0ea5e9 !important; border-color:#0284c7 !important; color:white !important;">
+                                            <i class="bi bi-clock-history"></i>
+                                        </a>
                                         <a href="{{ route('inventory.edit', $item->item_id) }}" class="btn btn-edit" title="Edit">
                                             <i class="bi bi-pencil-square"></i>
                                         </a>
