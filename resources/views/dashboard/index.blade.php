@@ -131,28 +131,32 @@
         </div>
 
         <!-- Charts and Side Panels -->
-        <div class="dash-main-grid">
-            <div class="panel panel-chart">
-                <div class="panel-head">
-                    <h3>Daily Bookings (7 Days)</h3>
-                    <div class="panel-actions">
-                        <button class="btn btn-small-black" data-reload-bookings>Reload</button>
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+            
+            <!-- Row 1: Charts -->
+            <div class="charts-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="panel panel-chart">
+                    <div class="panel-head">
+                        <h3>Daily Bookings (7 Days)</h3>
+                        <div class="panel-actions">
+                            <button class="btn btn-small-black" data-reload-bookings>Reload</button>
+                        </div>
                     </div>
+                    <canvas id="dailyBookingsChart" height="140"></canvas>
                 </div>
-                <canvas id="dailyBookingsChart" height="140"></canvas>
+
+                <div class="panel panel-chart">
+                    <div class="panel-head">
+                        <h3>Monthly Services (6 Months)</h3>
+                        <div class="panel-actions">
+                            <button class="btn btn-small-black" data-reload-services>Reload</button>
+                        </div>
+                    </div>
+                    <canvas id="monthlyServicesChart" height="140"></canvas>
+                </div>
             </div>
 
-            <div class="panel panel-chart">
-                <div class="panel-head">
-                    <h3>Monthly Services (6 Months)</h3>
-                    <div class="panel-actions">
-                        <button class="btn btn-small-black" data-reload-services>Reload</button>
-                    </div>
-                </div>
-                <canvas id="monthlyServicesChart" height="140"></canvas>
-            </div>
-
-            <!-- Upcoming Schedule (Enlarged) -->
+            <!-- Row 2: Upcoming Schedule (Full Width) -->
             <div class="panel panel-list" style="min-height: 300px;">
                 <div class="panel-head">
                     <h3>Upcoming Schedule</h3>
@@ -178,86 +182,98 @@
                 </div>
             </div>
 
-            <div class="panel panel-list">
-                <div class="panel-head">
-                    <h3>Top Items Used (Qty)</h3>
-                </div>
-                <div class="list-body">
-                    @forelse($topItems as $ti)
-                        <div class="list-row">
-                            <span class="lr-id">#{{ $ti->item_id }}</span>
-                            <div class="lr-bar">
-                                @php
-                                    $max = max($topItems->pluck('uses')->toArray() ?: [1]);
-                                    $pct = $max ? ($ti->uses / $max) * 100 : 0;
-                                @endphp
-                                <span class="bar">
-                                    <span class="fill" style="width:{{ $pct }}%;"></span>
-                                </span>
+            <!-- Row 3: Stats Lists -->
+            <div class="stats-row" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+                <div class="panel panel-list">
+                    <div class="panel-head">
+                        <h3>Top Items Used (Qty)</h3>
+                    </div>
+                    <div class="list-body">
+                        @forelse($topItems as $ti)
+                            <div class="list-row">
+                                <span class="lr-id">#{{ $ti->item_id }}</span>
+                                <div class="lr-bar">
+                                    @php
+                                        $max = max($topItems->pluck('uses')->toArray() ?: [1]);
+                                        $pct = $max ? ($ti->uses / $max) * 100 : 0;
+                                    @endphp
+                                    <span class="bar">
+                                        <span class="fill" style="width:{{ $pct }}%;"></span>
+                                    </span>
+                                </div>
+                                <span class="lr-val">{{ $ti->uses }}</span>
                             </div>
-                            <span class="lr-val">{{ $ti->uses }}</span>
-                        </div>
-                    @empty
-                        <div class="empty-alt">No usage data yet.</div>
-                    @endforelse
+                        @empty
+                            <div class="empty-alt">No usage data yet.</div>
+                        @endforelse
+                    </div>
                 </div>
-            </div>
 
-            <div class="panel panel-list">
-                <div class="panel-head">
-                    <h3>Top Sales Items (Revenue)</h3>
-                </div>
-                <div class="list-body">
-                    @php
-                        $topSalesItems = $topSalesItems ?? collect();
-                        $maxRev = $topSalesItems->count() ? $topSalesItems->max('revenue') : 1;
-                    @endphp
-                    @forelse($topSalesItems as $row)
-                        <div class="list-row">
-                            <span class="lr-id">#{{ $row->item_id }}</span>
-                            <div class="lr-bar">
-                                @php
-                                    $pct = $maxRev ? ($row->revenue / $maxRev) * 100 : 0;
-                                @endphp
-                                <span class="bar">
-                                    <span class="fill fill-gold" style="width:{{ $pct }}%;"></span>
-                                </span>
-                            </div>
-                            <span class="lr-val">₱{{ number_format($row->revenue, 2) }}</span>
-                        </div>
-                    @empty
-                        <div class="empty-alt">No sales yet.</div>
-                    @endforelse
-                </div>
-            </div>
-
-            <div class="panel panel-list">
-                <div class="panel-head">
-                    <h3>Top Service Types</h3>
-                </div>
-                <div class="list-body">
-                    @php
-                        $topServices = $topServices ?? collect();
-                        $maxSvc = $topServices->count() ? $topServices->max('count') : 1;
-                    @endphp
-                    @forelse($topServices as $svc)
+                <div class="panel panel-list">
+                    <div class="panel-head">
+                        <h3>Top Sales Items (Revenue)</h3>
+                    </div>
+                    <div class="list-body">
                         @php
-                            $pct = $maxSvc ? ($svc->count / $maxSvc) * 100 : 0;
+                            $topSalesItems = $topSalesItems ?? collect();
+                            $maxRev = $topSalesItems->count() ? $topSalesItems->max('revenue') : 1;
                         @endphp
-                        <div class="list-row">
-                            <span class="lr-id">{{ $svc->name }}</span>
-                            <div class="lr-bar">
-                                <span class="bar">
-                                    <span class="fill fill-cyan" style="width:{{ $pct }}%;"></span>
-                                </span>
+                        @forelse($topSalesItems as $row)
+                            <div class="list-row">
+                                <span class="lr-id">#{{ $row->item_id }}</span>
+                                <div class="lr-bar">
+                                    @php
+                                        $pct = $maxRev ? ($row->revenue / $maxRev) * 100 : 0;
+                                    @endphp
+                                    <span class="bar">
+                                        <span class="fill fill-gold" style="width:{{ $pct }}%;"></span>
+                                    </span>
+                                </div>
+                                <span class="lr-val">₱{{ number_format($row->revenue, 2) }}</span>
                             </div>
-                            <span class="lr-val">{{ $svc->count }}</span>
-                        </div>
-                    @empty
-                        <div class="empty-alt">No service data.</div>
-                    @endforelse
+                        @empty
+                            <div class="empty-alt">No sales yet.</div>
+                        @endforelse
+                    </div>
+                </div>
+
+                <div class="panel panel-list">
+                    <div class="panel-head">
+                        <h3>Top Service Types</h3>
+                    </div>
+                    <div class="list-body">
+                        @php
+                            $topServices = $topServices ?? collect();
+                            $maxSvc = $topServices->count() ? $topServices->max('count') : 1;
+                        @endphp
+                        @forelse($topServices as $svc)
+                            @php
+                                $pct = $maxSvc ? ($svc->count / $maxSvc) * 100 : 0;
+                            @endphp
+                            <div class="list-row">
+                                <span class="lr-id">{{ $svc->name }}</span>
+                                <div class="lr-bar">
+                                    <span class="bar">
+                                        <span class="fill fill-cyan" style="width:{{ $pct }}%;"></span>
+                                    </span>
+                                </div>
+                                <span class="lr-val">{{ $svc->count }}</span>
+                            </div>
+                        @empty
+                            <div class="empty-alt">No service data.</div>
+                        @endforelse
+                    </div>
                 </div>
             </div>
+
+            <!-- Mobile Repsonsiveness Style -->
+            <style>
+                @media (max-width: 900px) {
+                    .charts-row, .stats-row {
+                        grid-template-columns: 1fr !important;
+                    }
+                }
+            </style>
         </div>
 
         <!-- Bottom Panels -->
