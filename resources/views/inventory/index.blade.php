@@ -17,17 +17,29 @@
 @endsection
 
 @section('content')
-    <h2 class="text-accent">INVENTORY</h2>
+    <h2 class="text-accent">{{ request('view') === 'archived' ? 'ARCHIVED ITEMS' : 'INVENTORY' }}</h2>
 
     <div class="page-actions" style="display:flex;gap:10px;margin-bottom:10px;">
         <button type="button" class="btn btn-secondary" id="openCategoriesBtn"
             style="flex:1;display:flex;justify-content:center;align-items:center;">
             <i class="bi bi-folder2-open"></i> Categories
         </button>
-        <button type="button" class="btn btn-primary" data-action="register-item"
-            style="flex:1;display:flex;justify-content:center;align-items:center;">
-            <i class="bi bi-plus-lg"></i> Add Item
-        </button>
+
+        @if(request('view') === 'archived')
+            <a href="{{ route('inventory.index') }}" class="btn btn-secondary"
+                style="flex:1;display:flex;justify-content:center;align-items:center; text-decoration:none;">
+                <i class="bi bi-arrow-left"></i> &nbsp; Back to Inventory
+            </a>
+        @else
+            <a href="{{ route('inventory.index', ['view' => 'archived']) }}" class="btn btn-secondary"
+                style="flex:1;display:flex;justify-content:center;align-items:center; text-decoration:none;">
+                <i class="bi bi-archive"></i> &nbsp; Archives
+            </a>
+            <button type="button" class="btn btn-primary" data-action="register-item"
+                style="flex:1;display:flex;justify-content:center;align-items:center;">
+                <i class="bi bi-plus-lg"></i> Add Item
+            </button>
+        @endif
     </div>
 
     <div class="glass-card glass-card-wide">
@@ -122,23 +134,36 @@
                             <td class="text-end">₱{{ number_format($item->unit_price, 2) }}</td>
                             <td>
                                 <div class="d-flex gap-2">
-                                    <a href="{{ route('inventory.edit', $item->item_id) }}" class="btn btn-edit" title="Edit">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </a>
-                                    <form action="{{ route('inventory.destroy', $item->item_id) }}" method="POST"
-                                        onsubmit="return confirm('Are you sure you want to delete this item?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="btn btn-delete" title="Delete">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </form>
+                                    @if(request('view') === 'archived')
+                                        <form action="{{ route('inventory.restore', $item->item_id) }}" method="POST"
+                                            onsubmit="return confirm('Restore this item?');">
+                                            @csrf
+                                            <button class="btn btn-success" title="Restore"
+                                                style="background:#22c55e !important; border-color:#16a34a !important;">
+                                                <i class="bi bi-arrow-counterclockwise"></i>
+                                            </button>
+                                        </form>
+                                    @else
+                                        <a href="{{ route('inventory.edit', $item->item_id) }}" class="btn btn-edit" title="Edit">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <form action="{{ route('inventory.destroy', $item->item_id) }}" method="POST"
+                                            onsubmit="return confirm('Are you sure you want to delete this item?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button class="btn btn-delete" title="Delete">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    @endif
                                 </div>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="empty-row text-center">No items found.</td>
+                            <td colspan="7" class="empty-row text-center">
+                                {{ request('view') === 'archived' ? 'No archived items found.' : 'No items found.' }}
+                            </td>
                         </tr>
                     @endforelse
                 </tbody>
