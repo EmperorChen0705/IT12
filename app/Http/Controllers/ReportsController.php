@@ -84,11 +84,11 @@ class ReportsController extends Controller
         // 1. Current Stock Query
         $stockQuery = Item::query();
         if ($request->input('status') === 'low') {
-            $stockQuery->where('quantity', '<=', 10)->where('quantity', '>', 0);
+            $stockQuery->where('quantity', '<=', 5)->where('quantity', '>', 0);
         } elseif ($request->input('status') === 'out') {
             $stockQuery->where('quantity', '<=', 0);
         } elseif ($request->input('status') === 'good') {
-            $stockQuery->where('quantity', '>', 10);
+            $stockQuery->where('quantity', '>', 5);
         }
 
         // Export Logic handling
@@ -247,7 +247,7 @@ class ReportsController extends Controller
             fputcsv($out, ['--- CURRENT STOCK STATUS ---']);
             fputcsv($out, ['Item ID', 'Name', 'Quantity', 'Unit Price', 'Total Value', 'Status']);
             foreach ($inventory as $item) {
-                $status = $item->quantity <= 0 ? 'Out of Stock' : ($item->quantity <= 10 ? 'Low Stock' : 'Good');
+                $status = $item->quantity <= 0 ? 'Out of Stock' : ($item->quantity <= 5 ? 'Low Stock' : 'Good');
                 fputcsv($out, [
                     $item->item_id,
                     $item->name,

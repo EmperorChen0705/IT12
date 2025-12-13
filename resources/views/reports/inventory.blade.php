@@ -66,11 +66,11 @@
                                 <td>{{ $item->quantity }} {{ $item->unit }}</td>
                                 <td class="text-end">{{ number_format($item->unit_price, 2) }}</td>
                                 <td class="text-end">{{ number_format($item->quantity * $item->unit_price, 2) }}</td>
-                                <td>10 (Default)</td>
+                                <td>5 (Default)</td>
                                 <td>
                                     @if($item->quantity <= 0)
                                         <span class="badge bg-danger">Out of Stock</span>
-                                    @elseif($item->quantity <= 10)
+                                    @elseif($item->quantity <= 5)
                                         <span class="badge bg-warning text-dark">Low Stock</span>
                                     @else
                                         <span class="badge bg-success">Good</span>
