@@ -7,12 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 class Booking extends Model
 {
     protected $primaryKey = 'booking_id';
-    public $incrementing  = false;
-    protected $keyType    = 'string';
+    public $incrementing = false;
+    protected $keyType = 'string';
 
     protected $fillable = [
         'booking_id',
         'customer_name',
+        'vehicle_make',
+        'vehicle_model',
+        'plate_number',
         'email',
         'contact_number',
         'service_type',
@@ -27,8 +30,8 @@ class Booking extends Model
     {
         static::creating(function ($m) {
             if (!$m->booking_id) {
-                $last = static::orderBy('booking_id','desc')->first();
-                $n = $last ? (int) preg_replace('/\D/','', $last->booking_id) : 0;
+                $last = static::orderBy('booking_id', 'desc')->first();
+                $n = $last ? (int) preg_replace('/\D/', '', $last->booking_id) : 0;
                 $m->booking_id = 'BKG' . str_pad($n + 1, 4, '0', STR_PAD_LEFT);
             }
             if (!$m->status) {

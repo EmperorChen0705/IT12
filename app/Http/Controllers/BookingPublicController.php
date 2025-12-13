@@ -21,6 +21,9 @@ class BookingPublicController extends Controller
     {
         $data = $request->validate([
             'customer_name' => ['required', 'string', 'max:150'],
+            'vehicle_make' => ['nullable', 'string', 'max:50'],
+            'vehicle_model' => ['nullable', 'string', 'max:50'],
+            'plate_number' => ['nullable', 'string', 'max:20'],
             'contact_number' => ['required', 'string', 'max:60'],
             'email' => ['nullable', 'email', 'max:150'],
             'service_type' => ['required', 'string', 'max:120'],

@@ -105,7 +105,8 @@ Route::middleware('auth')->group(function () {
 
     // Reports (Admin Only)
     Route::get('/reports', [ReportsController::class, 'index'])->middleware('role:admin')->name('reports.index');
-    Route::get('/reports/export', [ReportsController::class, 'export'])->middleware('role:admin')->name('reports.export');
+    Route::get('/reports/bookings', [ReportsController::class, 'bookings'])->middleware('role:admin')->name('reports.bookings');
+    Route::get('/reports/inventory', [ReportsController::class, 'inventory'])->middleware('role:admin')->name('reports.inventory');
 
     // Manager Elevation (Admin Only)
     Route::middleware('role:admin')->prefix('managers')->group(function () {

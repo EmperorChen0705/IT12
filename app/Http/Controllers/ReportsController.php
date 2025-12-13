@@ -3,6 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\ActivityLog;
+use App\Models\Booking;
+use App\Models\Item;
+use App\Models\StockIn;
+use App\Models\StockOut;
+use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -18,220 +23,258 @@ class ReportsController extends Controller
             return $next($request);
         });
     }
-    public function index(Request $request)
+
+    public function index()
     {
-        // Inputs
-        $event = trim((string) $request->input('event_type'));
-        $search = trim((string) $request->input('search'));
-        $userId = $request->input('user_id');
-        $dateFrom = $request->input('date_from');
-        $dateTo = $request->input('date_to');
-        $export = $request->input('export'); // csv
-
-        // Date normalization
-        $rangeStart = $dateFrom ? Carbon::parse($dateFrom)->startOfDay() : null;
-        $rangeEnd = $dateTo ? Carbon::parse($dateTo)->endOfDay() : null;
-
-        // Base query
-        $q = ActivityLog::with('user')->orderByDesc('occurred_at');
-
-        if ($event)
-            $q->where('event_type', $event);
-        if ($userId)
-            $q->where('user_id', $userId);
-
-        if ($search) {
-            $q->where(function ($x) use ($search) {
-                $x->where('description', 'like', "%$search%")
-                    ->orWhere('event_type', 'like', "%$search%")
-                    ->orWhere('subject_id', 'like', "%$search%")
-                    ->orWhere('subject_type', 'like', "%$search%");
-            });
-        }
-
-        if ($rangeStart)
-            $q->where('occurred_at', '>=', $rangeStart);
-        if ($rangeEnd)
-            $q->where('occurred_at', '<=', $rangeEnd);
-
-        // CSV export (stream)
-        if ($export === 'csv') {
-            $filename = 'activity_logs_' . now()->format('Ymd_His') . '.csv';
-            $headers = [
-                'Content-Type' => 'text/csv',
-                'Content-Disposition' => "attachment; filename=\"$filename\"",
-            ];
-            return response()->streamDownload(function () use ($q) {
-                $out = fopen('php://output', 'w');
-                fputcsv($out, ['Time', 'Event', 'User', 'SubjectType', 'SubjectId', 'Description', 'Meta']);
-                $q->chunk(500, function ($chunk) use ($out) {
-                    foreach ($chunk as $log) {
-                        fputcsv($out, [
-                            $log->occurred_at,
-                            $log->event_type,
-                            $log->user?->name,
-                            $log->subject_type,
-                            $log->subject_id,
-                            $log->description,
-                            $log->meta ? json_encode($log->meta, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : '',
-                        ]);
-                    }
-                });
-                fclose($out);
-            }, $filename, $headers);
-        }
-
-        $logs = $q->paginate(25)->appends($request->query());
-
-        // Month metrics (fixed month)
-        $startMonth = now()->startOfMonth();
-        $endMonth = now()->endOfMonth();
-        $monthBase = ActivityLog::whereBetween('occurred_at', [$startMonth, $endMonth]);
-
-        $appointmentsThisMonth = (clone $monthBase)->where('event_type', 'booking.appointed')->count();
-        $servicesCompletedMonth = (clone $monthBase)->where('event_type', 'service.completed')->count();
-        $suppliersAddedMonth = (clone $monthBase)->where('event_type', 'supplier.created')->count();
-        $itemsAddedMonth = (clone $monthBase)->where('event_type', 'item.created')->count();
-        $daysElapsed = now()->day;
-        $avgAppointmentsPerDay = $daysElapsed ? round($appointmentsThisMonth / $daysElapsed, 2) : 0;
-
-        // Range metrics (if a custom date filter is applied; else mirror month stats)
-        $rangeDefined = $rangeStart || $rangeEnd;
-        $rangeBase = ActivityLog::query();
-        if ($rangeStart)
-            $rangeBase->where('occurred_at', '>=', $rangeStart);
-        if ($rangeEnd)
-            $rangeBase->where('occurred_at', '<=', $rangeEnd);
-
-        $rangeAppointments = $rangeDefined ? (clone $rangeBase)->where('event_type', 'booking.appointed')->count() : $appointmentsThisMonth;
-        $rangeServices = $rangeDefined ? (clone $rangeBase)->where('event_type', 'service.completed')->count() : $servicesCompletedMonth;
-
-        // Top items used (global or within range if range filter applied)
-        $itemsQuery = ActivityLog::select(
-            DB::raw("JSON_UNQUOTE(JSON_EXTRACT(meta,'$.item_id')) as item_id"),
-            DB::raw("COUNT(*) as uses")
-        )
-            ->where('event_type', 'service.item_used')
-            ->whereNotNull('meta');
-        if ($rangeStart)
-            $itemsQuery->where('occurred_at', '>=', $rangeStart);
-        if ($rangeEnd)
-            $itemsQuery->where('occurred_at', '<=', $rangeEnd);
-        $topItems = $itemsQuery->groupBy('item_id')->orderByDesc('uses')->limit(5)->get();
-
-        // Event type distribution (top 2)
-        $eventTypeCounts = ActivityLog::select('event_type', DB::raw('COUNT(*) as total'))
-            ->when($rangeStart, fn($qq) => $qq->where('occurred_at', '>=', $rangeStart))
-            ->when($rangeEnd, fn($qq) => $qq->where('occurred_at', '<=', $rangeEnd))
-            ->groupBy('event_type')
-            ->orderByDesc('total')
-            ->limit(2)
-            ->get();
-
-        // Distinct event types for filter dropdown
-        $eventTypes = ActivityLog::select('event_type')->distinct()->orderBy('event_type')->pluck('event_type');
-
-        // Distinct users
-        $users = ActivityLog::select('user_id')
-            ->whereNotNull('user_id')
-            ->distinct()
-            ->with('user:id,name')
-            ->get()
-            ->pluck('user')
-            ->filter()
-            ->unique('id')
-            ->values();
-
-        return view('reports.index', compact(
-            'logs',
-            'event',
-            'search',
-            'userId',
-            'dateFrom',
-            'dateTo',
-            'appointmentsThisMonth',
-            'servicesCompletedMonth',
-            'suppliersAddedMonth',
-            'itemsAddedMonth',
-            'avgAppointmentsPerDay',
-            'topItems',
-            'eventTypes',
-            'users',
-            'rangeAppointments',
-            'rangeServices',
-            'eventTypeCounts',
-            'rangeDefined'
-        ));
+        return redirect()->route('reports.bookings');
     }
 
-    public function export(Request $request)
+    public function bookings(Request $request)
     {
-        // Get same filter inputs as index
-        $event = trim((string) $request->input('event_type'));
-        $search = trim((string) $request->input('search'));
-        $userId = $request->input('user_id');
+        $query = Booking::with(['service', 'service.items']);
+
+        // Filters
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+        if ($request->filled('date_from')) {
+            $query->where('preferred_date', '>=', $request->date_from);
+        }
+        if ($request->filled('date_to')) {
+            $query->where('preferred_date', '<=', $request->date_to);
+        }
+
+        // CSV Export
+        if ($request->input('export') === 'csv') {
+            return $this->exportBookingsCsv($query->get());
+        }
+
+        $bookings = $query->latest('booking_id')->paginate(20)->appends($request->query());
+
+        // Derive Technician for visible bookings
+        $serviceIds = $bookings->pluck('service.id')->filter()->toArray();
+        $technicianMap = [];
+        if (!empty($serviceIds)) {
+            $logs = ActivityLog::where('subject_type', Service::class)
+                ->whereIn('subject_id', $serviceIds)
+                ->where('event_type', 'service.completed')
+                ->with('user')
+                ->get();
+            foreach ($logs as $log) {
+                if ($log->user) {
+                    $technicianMap[$log->subject_id] = $log->user->name;
+                }
+            }
+        }
+
+        // Attach derived data
+        foreach ($bookings as $b) {
+            if ($b->service && isset($technicianMap[$b->service->id])) {
+                $b->technician_name = $technicianMap[$b->service->id];
+            } else {
+                $b->technician_name = 'Not Assigned';
+            }
+        }
+
+        return view('reports.bookings', compact('bookings'));
+    }
+
+    public function inventory(Request $request)
+    {
+        // 1. Current Stock Query
+        $stockQuery = Item::query();
+        if ($request->input('status') === 'low') {
+            $stockQuery->where('quantity', '<=', 10)->where('quantity', '>', 0);
+        } elseif ($request->input('status') === 'out') {
+            $stockQuery->where('quantity', '<=', 0);
+        } elseif ($request->input('status') === 'good') {
+            $stockQuery->where('quantity', '>', 10);
+        }
+
+        // Export Logic handling
+        if ($request->input('export') === 'csv') {
+            return $this->exportInventoryCsv($stockQuery->get(), $this->getRecentMovements($request, 1000));
+        }
+
+        $inventory = $stockQuery->orderBy('name')->paginate(20, ['*'], 'stock_page')->appends($request->query());
+
+        // 2. Movements (StockIn + StockOut)
+        // We'll manually merge the last N records for display
+        $movements = $this->getRecentMovements($request);
+
+        return view('reports.inventory', compact('inventory', 'movements'));
+
+    }
+
+    private function getRecentMovements(Request $request, $limit = 50)
+    {
         $dateFrom = $request->input('date_from');
         $dateTo = $request->input('date_to');
 
-        // Date normalization
-        $rangeStart = $dateFrom ? Carbon::parse($dateFrom)->startOfDay() : null;
-        $rangeEnd = $dateTo ? Carbon::parse($dateTo)->endOfDay() : null;
+        // Stock Outs
+        $outQuery = StockOut::with(['item', 'user'])
+            ->select('stockout_id as id', 'stockout_date as date', 'quantity', 'item_id', 'user_id', 'reference_id', 'reference_type', DB::raw("'out' as direction"));
 
-        // Base query - get all records without pagination
-        $q = ActivityLog::with('user')->orderByDesc('occurred_at');
+        if ($dateFrom)
+            $outQuery->where('stockout_date', '>=', $dateFrom);
+        if ($dateTo)
+            $outQuery->where('stockout_date', '<=', $dateTo);
 
-        if ($event)
-            $q->where('event_type', $event);
-        if ($userId)
-            $q->where('user_id', $userId);
+        $outs = $outQuery->latest('stockout_date')->limit($limit)->get();
 
-        if ($search) {
-            $q->where(function ($x) use ($search) {
-                $x->where('description', 'like', "%$search%")
-                    ->orWhere('event_type', 'like', "%$search%")
-                    ->orWhere('subject_id', 'like', "%$search%")
-                    ->orWhere('subject_type', 'like', "%$search%");
-            });
+        // Stock Ins
+        $inQuery = StockIn::with(['item', 'supplier'])
+            ->select('stockin_id as id', 'stockin_date as date', 'quantity', 'price', 'total_price', 'item_id', 'supplier_id', DB::raw("'in' as direction"));
+
+        if ($dateFrom)
+            $inQuery->where('stockin_date', '>=', $dateFrom);
+        if ($dateTo)
+            $inQuery->where('stockin_date', '<=', $dateTo);
+
+        $ins = $inQuery->latest('stockin_date')->limit($limit)->get();
+
+        // Merge and Sort
+        $merged = collect();
+
+        foreach ($outs as $out) {
+            // Check if it's service usage
+            $type = 'Manual Out'; // Default
+            $refCode = 'N/A';
+            if ($out->reference_type === Service::class) {
+                $type = 'Service Usage';
+                // Try to find service ref code - N+1 optimization: simplified for now or eager load if possible.
+                // Since it's limited report, individual query or cache might be okay.
+                // For report, let's just use ID or fetch service lightly.
+                $service = Service::find($out->reference_id);
+                $refCode = $service ? $service->reference_code : $out->reference_id;
+            }
+
+            $merged->push([
+                'date' => $out->date, // cast?
+                'timestamp' => Carbon::parse($out->date)->timestamp,
+                'type' => $type,
+                'ref_id' => $out->reference_id ?? $out->id,
+                'ref_code' => $refCode,
+                'item_name' => $out->item->name ?? 'Unknown Item',
+                'quantity' => $out->quantity,
+                'user' => $out->user->name ?? 'Unknown',
+                'description' => 'Stock Out',
+                // Pricing for Out: Reference Item Unit Price at that time?
+                // Or current Item unit price?
+                // User requirement: "Items used with their price".
+                // StockOut doesn't store price. Use Item's current price as fallback.
+                'unit_price' => $out->item->unit_price ?? 0,
+                'total_price' => ($out->item->unit_price ?? 0) * $out->quantity,
+            ]);
         }
 
-        if ($rangeStart)
-            $q->where('occurred_at', '>=', $rangeStart);
-        if ($rangeEnd)
-            $q->where('occurred_at', '<=', $rangeEnd);
-
-        // Get all logs for export
-        $logs = $q->get();
-
-        // Get stock-out records with date filtering
-        $stockOutQuery = \App\Models\StockOut::with(['item', 'user'])
-            ->orderByDesc('stockout_date')
-            ->orderByDesc('stockout_id');
-
-        if ($rangeStart)
-            $stockOutQuery->where('stockout_date', '>=', $rangeStart);
-        if ($rangeEnd)
-            $stockOutQuery->where('stockout_date', '<=', $rangeEnd);
-
-        $stockOuts = $stockOutQuery->get();
-
-        // Get user name if filtered by user
-        $userName = null;
-        if ($userId) {
-            $user = \App\Models\User::find($userId);
-            $userName = $user ? $user->name : null;
+        foreach ($ins as $in) {
+            $merged->push([
+                'date' => $in->date,
+                'timestamp' => Carbon::parse($in->date)->timestamp,
+                'type' => 'Restock',
+                'ref_id' => $in->id,
+                'ref_code' => $in->id,
+                'item_name' => $in->item->name ?? 'Unknown Item',
+                'quantity' => $in->quantity,
+                'user' => $in->supplier->name ?? 'Supplier', // Or user who encoded? StockIn doesn't have user_id, it has supplier_id.
+                'description' => 'Stock In',
+                'unit_price' => $in->price,
+                'total_price' => $in->total_price,
+            ]);
         }
 
-        return view('reports.export', compact(
-            'logs',
-            'stockOuts',
-            'event',
-            'search',
-            'userId',
-            'userName',
-            'dateFrom',
-            'dateTo',
-            'rangeStart',
-            'rangeEnd'
-        ));
+        return $merged->sortByDesc('timestamp')->take($limit);
+    }
+
+    private function exportBookingsCsv($bookings)
+    {
+        $filename = 'booking_report_' . now()->format('Ymd_His') . '.csv';
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"$filename\"",
+        ];
+
+        return response()->streamDownload(function () use ($bookings) {
+            $out = fopen('php://output', 'w');
+            fputcsv($out, ['Booking ID', 'Customer Name', 'Contact', 'Email', 'Service Type', 'Status', 'Preferred Date', 'Notes', 'Assigned Technician']);
+
+            // Logic for technician map same as main view (duplicated for export simplicity or extract method)
+            $serviceIds = $bookings->pluck('service.id')->filter()->toArray();
+            $technicianMap = [];
+            if (!empty($serviceIds)) {
+                $logs = ActivityLog::where('subject_type', Service::class)
+                    ->whereIn('subject_id', $serviceIds)
+                    ->where('event_type', 'service.completed')
+                    ->with('user')
+                    ->get();
+                foreach ($logs as $log) {
+                    if ($log->user)
+                        $technicianMap[$log->subject_id] = $log->user->name;
+                }
+            }
+
+            foreach ($bookings as $b) {
+                $tech = ($b->service && isset($technicianMap[$b->service->id])) ? $technicianMap[$b->service->id] : 'Not Assigned';
+                fputcsv($out, [
+                    $b->booking_id,
+                    $b->customer_name,
+                    $b->contact_number,
+                    $b->email,
+                    $b->service_type,
+                    $b->status,
+                    $b->preferred_date,
+                    $b->notes,
+                    $tech
+                ]);
+            }
+            fclose($out);
+        }, $filename, $headers);
+    }
+
+    private function exportInventoryCsv($inventory, $movements)
+    {
+        $filename = 'inventory_report_' . now()->format('Ymd_His') . '.csv';
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"$filename\"",
+        ];
+
+        return response()->streamDownload(function () use ($inventory, $movements) {
+            $out = fopen('php://output', 'w');
+
+            // Section 1: Stock
+            fputcsv($out, ['--- CURRENT STOCK STATUS ---']);
+            fputcsv($out, ['Item ID', 'Name', 'Quantity', 'Unit Price', 'Total Value', 'Status']);
+            foreach ($inventory as $item) {
+                $status = $item->quantity <= 0 ? 'Out of Stock' : ($item->quantity <= 10 ? 'Low Stock' : 'Good');
+                fputcsv($out, [
+                    $item->item_id,
+                    $item->name,
+                    $item->quantity,
+                    $item->unit_price,
+                    $item->quantity * $item->unit_price,
+                    $status
+                ]);
+            }
+
+            fputcsv($out, []); // Spacer
+            fputcsv($out, ['--- RECENT MOVEMENTS ---']);
+            fputcsv($out, ['Date', 'Type', 'Reference', 'Item', 'Quantity', 'Unit Price', 'Total Price', 'User/Supplier']);
+            foreach ($movements as $mov) {
+                fputcsv($out, [
+                    $mov['date'],
+                    $mov['type'],
+                    $mov['ref_code'],
+                    $mov['item_name'],
+                    $mov['quantity'],
+                    $mov['unit_price'],
+                    $mov['total_price'],
+                    $mov['user']
+                ]);
+            }
+
+            fclose($out);
+        }, $filename, $headers);
     }
 }

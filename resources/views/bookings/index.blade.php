@@ -104,7 +104,7 @@
                                 'appointed' => 'var(--green-500)',
                                 default => 'var(--gray-500)',
                             };
-                            
+
                             // Service status badge color
                             $serviceBadgeColor = $srv ? match ($srv->status) {
                                 'pending' => 'var(--gray-500)',
@@ -112,7 +112,7 @@
                                 'completed' => 'var(--green-500)',
                                 default => 'var(--gray-500)',
                             } : null;
-                            
+
                             $receiptPayload = [
                                 'booking_id' => $b->booking_id,
                                 'customer_name' => $b->customer_name,
@@ -251,56 +251,56 @@
             function renderReceipt(data) {
                 let html = '';
                 html += `<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:10px;">
-                                        <div>
-                                            <div style="font-weight:600;font-size:.8rem;">Booking #${escapeHtml(data.booking_id ?? '')}</div>
-                                            <div>${escapeHtml(data.customer_name ?? '')}</div>
-                                            <div>${escapeHtml(data.email ?? '—')}</div>
-                                            <div>${escapeHtml(data.contact_number ?? '')}</div>
-                                        </div>
-                                        <div>
-                                            <div><strong>Status:</strong> ${escapeHtml(data.status ?? '')}</div>
-                                            <div><strong>Date:</strong> ${escapeHtml(data.preferred_date ?? '')}</div>
-                                            <div><strong>Time:</strong> ${escapeHtml(data.preferred_time ?? '')}</div>
-                                            <div><strong>Service Type:</strong> ${escapeHtml(data.service_type ?? '')}</div>
-                                        </div>
-                                    </div>`;
-
-                if (data.service) {
-                    html += `<hr style="border:0;border-top:1px solid var(--gray-700);margin:8px 0;">
-                                        <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;">
                                             <div>
-                                                <div><strong>Service Ref:</strong> ${escapeHtml(data.service.reference_code ?? '')}</div>
-                                                <div><strong>Service Status:</strong> ${escapeHtml(data.service.status ?? '')}</div>
-                                                <div><strong>Started:</strong> ${escapeHtml(data.service.started_at ?? '—')}</div>
-                                                <div><strong>Completed:</strong> ${escapeHtml(data.service.completed_at ?? '—')}</div>
+                                                <div style="font-weight:600;font-size:.8rem;">Booking #${escapeHtml(data.booking_id ?? '')}</div>
+                                                <div>${escapeHtml(data.customer_name ?? '')}</div>
+                                                <div>${escapeHtml(data.email ?? '—')}</div>
+                                                <div>${escapeHtml(data.contact_number ?? '')}</div>
                                             </div>
                                             <div>
-                                                <div><strong>Labor Fee:</strong> ${formatMoney(data.service.labor_fee)}</div>
-                                                <div><strong>Subtotal:</strong> ${formatMoney(data.service.subtotal)}</div>
-                                                <div><strong>Total:</strong> ${formatMoney(data.service.total)}</div>
+                                                <div><strong>Status:</strong> ${escapeHtml(data.status ?? '')}</div>
+                                                <div><strong>Date:</strong> ${escapeHtml(data.preferred_date ?? '')}</div>
+                                                <div><strong>Time:</strong> ${escapeHtml(data.preferred_time ?? '')}</div>
+                                                <div><strong>Service Type:</strong> ${escapeHtml(data.service_type ?? '')}</div>
                                             </div>
                                         </div>`;
 
+                if (data.service) {
+                    html += `<hr style="border:0;border-top:1px solid var(--gray-700);margin:8px 0;">
+                                            <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+                                                <div>
+                                                    <div><strong>Service Ref:</strong> ${escapeHtml(data.service.reference_code ?? '')}</div>
+                                                    <div><strong>Service Status:</strong> ${escapeHtml(data.service.status ?? '')}</div>
+                                                    <div><strong>Started:</strong> ${escapeHtml(data.service.started_at ?? '—')}</div>
+                                                    <div><strong>Completed:</strong> ${escapeHtml(data.service.completed_at ?? '—')}</div>
+                                                </div>
+                                                <div>
+                                                    <div><strong>Labor Fee:</strong> ${formatMoney(data.service.labor_fee)}</div>
+                                                    <div><strong>Subtotal:</strong> ${formatMoney(data.service.subtotal)}</div>
+                                                    <div><strong>Total:</strong> ${formatMoney(data.service.total)}</div>
+                                                </div>
+                                            </div>`;
+
                     if (data.service.items && data.service.items.length) {
                         html += `<div style="margin-top:10px;">
-                                                <h3 style="margin:0 0 6px;font-size:.7rem;letter-spacing:1px;text-transform:uppercase;">Items</h3>
-                                                <table style="width:100%;border-collapse:collapse;font-size:.68rem;">
-                                                    <thead>
-                                                        <tr style="text-align:left;background:var(--gray-800);">
-                                                            <th style="padding:6px;">Name</th>
-                                                            <th style="padding:6px;">Qty</th>
-                                                            <th style="padding:6px;text-align:right;">Unit</th>
-                                                            <th style="padding:6px;text-align:right;">Line Total</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>`;
+                                                    <h3 style="margin:0 0 6px;font-size:.7rem;letter-spacing:1px;text-transform:uppercase;">Items</h3>
+                                                    <table style="width:100%;border-collapse:collapse;font-size:.68rem;">
+                                                        <thead>
+                                                            <tr style="text-align:left;background:var(--gray-800);">
+                                                                <th style="padding:6px;">Name</th>
+                                                                <th style="padding:6px;">Qty</th>
+                                                                <th style="padding:6px;text-align:right;">Unit</th>
+                                                                <th style="padding:6px;text-align:right;">Line Total</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>`;
                         data.service.items.forEach(it => {
                             html += `<tr>
-                                                    <td style="padding:4px 6px;">${escapeHtml(it.name ?? '')}</td>
-                                                    <td style="padding:4px 6px;">${it.quantity}</td>
-                                                    <td style="padding:4px 6px;text-align:right;">${formatMoney(it.unit_price)}</td>
-                                                    <td style="padding:4px 6px;text-align:right;">${formatMoney(it.line_total)}</td>
-                                                </tr>`;
+                                                        <td style="padding:4px 6px;">${escapeHtml(it.name ?? '')}</td>
+                                                        <td style="padding:4px 6px;">${it.quantity}</td>
+                                                        <td style="padding:4px 6px;text-align:right;">${formatMoney(it.unit_price)}</td>
+                                                        <td style="padding:4px 6px;text-align:right;">${formatMoney(it.line_total)}</td>
+                                                    </tr>`;
                         });
                         html += `</tbody></table></div>`;
                     }
@@ -336,6 +336,30 @@
                             style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Full
                             Name *</label>
                         <input name="customer_name" class="form-input" required
+                            style="background:white; color:black; border:none; border-radius:8px; padding:12px; font-size:0.9rem; width:100%;">
+                    </div>
+                </div>
+
+                <div class="form-row" style="display:flex; gap:20px; margin-bottom:20px;">
+                    <div class="form-group" style="flex:1;">
+                        <label
+                            style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Vehicle
+                            Make</label>
+                        <input name="vehicle_make" class="form-input"
+                            style="background:white; color:black; border:none; border-radius:8px; padding:12px; font-size:0.9rem; width:100%;">
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label
+                            style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Vehicle
+                            Model</label>
+                        <input name="vehicle_model" class="form-input"
+                            style="background:white; color:black; border:none; border-radius:8px; padding:12px; font-size:0.9rem; width:100%;">
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label
+                            style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Plate
+                            Number</label>
+                        <input name="plate_number" class="form-input"
                             style="background:white; color:black; border:none; border-radius:8px; padding:12px; font-size:0.9rem; width:100%;">
                     </div>
                 </div>

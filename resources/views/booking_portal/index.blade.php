@@ -166,6 +166,21 @@
                 </div>
 
                 <div class="form-row uniform">
+                    <div class="form-group" style="margin-right:15px;">
+                        <label>Car Make (Optional)</label>
+                        <input name="vehicle_make" class="form-input" value="{{ old('vehicle_make') }}">
+                    </div>
+                    <div class="form-group" style="margin-right:15px;">
+                        <label>Car Model (Optional)</label>
+                        <input name="vehicle_model" class="form-input" value="{{ old('vehicle_model') }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Plate Number (Optional)</label>
+                        <input name="plate_number" class="form-input" value="{{ old('plate_number') }}">
+                    </div>
+                </div>
+
+                <div class="form-row uniform">
                     <div class="form-group" style="margin-right:25px;">
                         <label>Contact Number *</label>
                         <input name="contact_number" class="form-input" required value="{{ old('contact_number') }}">
