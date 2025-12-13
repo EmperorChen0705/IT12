@@ -3,6 +3,16 @@
 @section('title', 'Booking Reports')
 
 @section('content')
+    <div class="reports-nav mb-4"
+        style="display:flex; gap:10px; border-bottom:1px solid #444; padding-bottom:15px; margin-bottom: 20px;">
+        <a href="{{ route('reports.index') }}"
+            class="btn {{ Route::is('reports.index') ? 'btn-primary' : 'btn-secondary' }}">Activity Log</a>
+        <a href="{{ route('reports.bookings') }}"
+            class="btn {{ Route::is('reports.bookings') ? 'btn-primary' : 'btn-secondary' }}">Bookings Report</a>
+        <a href="{{ route('reports.inventory') }}"
+            class="btn {{ Route::is('reports.inventory') ? 'btn-primary' : 'btn-secondary' }}">Inventory Report</a>
+    </div>
+
     <div class="report-header">
         <h1>Booking Reports</h1>
         <div class="report-actions">
@@ -57,7 +67,8 @@
                             @endif
                             @if($booking->notes)
                                 <div class="small fst-italic text-muted">Notes:
-                                    {{ \Illuminate\Support\Str::limit($booking->notes, 50) }}</div>
+                                    {{ \Illuminate\Support\Str::limit($booking->notes, 50) }}
+                                </div>
                             @endif
                         </td>
                         <td>

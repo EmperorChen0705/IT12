@@ -3,6 +3,16 @@
 @section('title', 'Inventory Reports')
 
 @section('content')
+    <div class="reports-nav mb-4"
+        style="display:flex; gap:10px; border-bottom:1px solid #444; padding-bottom:15px; margin-bottom: 20px;">
+        <a href="{{ route('reports.index') }}"
+            class="btn {{ Route::is('reports.index') ? 'btn-primary' : 'btn-secondary' }}">Activity Log</a>
+        <a href="{{ route('reports.bookings') }}"
+            class="btn {{ Route::is('reports.bookings') ? 'btn-primary' : 'btn-secondary' }}">Bookings Report</a>
+        <a href="{{ route('reports.inventory') }}"
+            class="btn {{ Route::is('reports.inventory') ? 'btn-primary' : 'btn-secondary' }}">Inventory Report</a>
+    </div>
+
     <div class="report-header mb-4">
         <h1>Inventory Reports</h1>
         <div class="report-actions">

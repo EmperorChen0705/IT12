@@ -19,6 +19,16 @@
 @section('content')
     <h2 class="text-accent">REPORTS</h2>
 
+    <div class="reports-nav mb-4"
+        style="display:flex; gap:10px; border-bottom:1px solid #444; padding-bottom:15px; margin-bottom: 20px;">
+        <a href="{{ route('reports.index') }}"
+            class="btn {{ Route::is('reports.index') ? 'btn-primary' : 'btn-secondary' }}">Activity Log</a>
+        <a href="{{ route('reports.bookings') }}"
+            class="btn {{ Route::is('reports.bookings') ? 'btn-primary' : 'btn-secondary' }}">Bookings Report</a>
+        <a href="{{ route('reports.inventory') }}"
+            class="btn {{ Route::is('reports.inventory') ? 'btn-primary' : 'btn-secondary' }}">Inventory Report</a>
+    </div>
+
     <div class="metrics-grid"
         style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;margin-bottom:18px;">
         <div class="metric-card">
