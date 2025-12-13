@@ -321,7 +321,7 @@
     <!-- Create Booking Modal (Admin) -->
     <div class="modal hidden" id="createBookingModal" data-modal>
         <div class="modal-content"
-            style="max-width:1000px; background-color:#222; border:1px solid #333; color:white; border-radius:12px; padding:30px;">
+            style="width: 100%; max-width:1000px; background-color:#222; border:1px solid #333; color:white; border-radius:12px; padding:30px;">
             <h2
                 style="text-align:center; color:#ef4444; margin-bottom:20px; font-weight:500; font-size:1.5rem; letter-spacing:0.5px;">
                 Booking Request</h2>
