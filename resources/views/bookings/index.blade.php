@@ -321,152 +321,131 @@
     <!-- Create Booking Modal (Admin) -->
     <div class="modal hidden" id="createBookingModal" data-modal>
         <div class="modal-content"
-            style="max-width:800px; background-color:#222; border:1px solid #333; color:white; border-radius:12px; padding:30px;">
+            style="max-width:1000px; background-color:#222; border:1px solid #333; color:white; border-radius:12px; padding:30px;">
             <h2
-                style="text-align:center; color:#ef4444; margin-bottom:30px; font-weight:500; font-size:1.5rem; letter-spacing:0.5px;">
+                style="text-align:center; color:#ef4444; margin-bottom:20px; font-weight:500; font-size:1.5rem; letter-spacing:0.5px;">
                 Booking Request</h2>
 
             <form action="{{ route('booking.portal.store') }}" method="POST" id="adminBookingForm">
                 @csrf
                 <input type="hidden" name="is_admin_booking" value="1">
 
-                <div class="form-row" style="margin-bottom:20px;">
-                    <div class="form-group" style="flex:1;">
-                        <label
-                            style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Full
-                            Name *</label>
-                        <input name="customer_name" class="form-input" required
-                            style="background:white; color:black; border:none; border-radius:8px; padding:12px; font-size:0.9rem; width:100%;">
-                    </div>
-                </div>
+                <div style="display:flex; flex-wrap:wrap; gap:30px;">
+                    <!-- LEFT COLUMN: Customer & Vehicle -->
+                    <div style="flex:1; min-width:300px;">
+                        <h4 style="color:#ef4444; margin-bottom:15px; font-size:0.9rem; text-transform:uppercase; border-bottom:1px solid #444; padding-bottom:5px;">Customer & Vehicle</h4>
+                        
+                        <!-- Customer Info -->
+                         <div class="form-row" style="margin-bottom:15px;">
+                            <div class="form-group" style="flex:1;">
+                                <label style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Full Name *</label>
+                                <input name="customer_name" class="form-input" required
+                                    style="background:white; color:black; border:none; border-radius:8px; padding:10px; font-size:0.9rem; width:100%;">
+                            </div>
+                        </div>
 
-                <div class="form-row" style="display:flex; gap:20px; margin-bottom:20px;">
-                    <div class="form-group" style="flex:1;">
-                        <label
-                            style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Vehicle
-                            Make</label>
-                        <input name="vehicle_make" class="form-input"
-                            style="background:white; color:black; border:none; border-radius:8px; padding:12px; font-size:0.9rem; width:100%;">
-                    </div>
-                    <div class="form-group" style="flex:1;">
-                        <label
-                            style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Vehicle
-                            Model</label>
-                        <input name="vehicle_model" class="form-input"
-                            style="background:white; color:black; border:none; border-radius:8px; padding:12px; font-size:0.9rem; width:100%;">
-                    </div>
-                    <div class="form-group" style="flex:1;">
-                        <label
-                            style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Plate
-                            Number</label>
-                        <input name="plate_number" class="form-input"
-                            style="background:white; color:black; border:none; border-radius:8px; padding:12px; font-size:0.9rem; width:100%;">
-                    </div>
-                </div>
+                         <div class="form-row" style="display:flex; gap:15px; margin-bottom:15px;">
+                            <div class="form-group" style="flex:1;">
+                                <label style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Contact Number *</label>
+                                <input name="contact_number" class="form-input" required
+                                    style="background:white; color:black; border:none; border-radius:8px; padding:10px; font-size:0.9rem; width:100%;">
+                            </div>
+                            <div class="form-group" style="flex:1;">
+                                <label style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Channel *</label>
+                                <div style="position:relative;">
+                                    <select name="channel" class="form-input" required
+                                        style="background:white; color:black; border:none; border-radius:8px; padding:10px; font-size:0.9rem; width:100%; -webkit-appearance:none; appearance:none;">
+                                        <option value="walk-in">Walk-In</option>
+                                        <option value="phone">Phone Call</option>
+                                        <option value="facebook">Facebook / Messenger</option>
+                                    </select>
+                                    <span style="position:absolute; right:15px; top:50%; transform:translateY(-50%); color:black; pointer-events:none;"><i class="bi bi-chevron-down"></i></span>
+                                </div>
+                            </div>
+                        </div>
 
-                <div class="form-row" style="display:flex; gap:20px; margin-bottom:20px;">
-                    <div class="form-group" style="flex:1;">
-                        <label
-                            style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Contact
-                            Number *</label>
-                        <input name="contact_number" class="form-input" required
-                            style="background:white; color:black; border:none; border-radius:8px; padding:12px; font-size:0.9rem; width:100%;">
-                    </div>
-                    <div class="form-group" style="flex:1;">
-                        <label
-                            style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Channel
-                            *</label>
-                        <div style="position:relative;">
-                            <select name="channel" class="form-input" required
-                                style="background:white; color:black; border:none; border-radius:8px; padding:12px; font-size:0.9rem; width:100%; -webkit-appearance:none; appearance:none;">
-                                <option value="walk-in">Walk-In</option>
-                                <option value="phone">Phone Call</option>
-                                <option value="facebook">Facebook / Messenger</option>
-                            </select>
-                            <span
-                                style="position:absolute; right:15px; top:50%; transform:translateY(-50%); color:black; pointer-events:none;">
-                                <i class="bi bi-chevron-down"></i>
-                            </span>
+                        <!-- Vehicle Info -->
+                        <div class="form-row" style="margin-bottom:15px;">
+                             <label style="color:#fff; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px; display:block;">Vehicle Details (Optional)</label>
+                             <div style="display:flex; gap:10px;">
+                                <div class="form-group" style="flex:1;">
+                                    <input name="vehicle_make" placeholder="Make" class="form-input"
+                                        style="background:white; color:black; border:none; border-radius:8px; padding:10px; font-size:0.9rem; width:100%;">
+                                </div>
+                                <div class="form-group" style="flex:1;">
+                                    <input name="vehicle_model" placeholder="Model" class="form-input"
+                                        style="background:white; color:black; border:none; border-radius:8px; padding:10px; font-size:0.9rem; width:100%;">
+                                </div>
+                                <div class="form-group" style="flex:1;">
+                                    <input name="plate_number" placeholder="Plate" class="form-input"
+                                        style="background:white; color:black; border:none; border-radius:8px; padding:10px; font-size:0.9rem; width:100%;">
+                                </div>
+                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="form-row" style="display:flex; gap:20px; margin-bottom:20px;">
-                    <div class="form-group" style="flex:1;">
-                        <label
-                            style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Service
-                            Type *</label>
-                        <div style="position:relative;">
-                            <select name="service_type" class="form-input" required
-                                style="background:white; color:#ef4444; border:none; border-radius:8px; padding:12px; font-size:0.9rem; width:100%; -webkit-appearance:none; appearance:none;">
-                                <option value="" disabled selected>-- select service --</option>
-                                @foreach($serviceTypes ?? [] as $st)
-                                    <option value="{{ $st->name }}">{{ $st->name }}</option>
-                                @endforeach
-                            </select>
-                            <span
-                                style="position:absolute; right:15px; top:50%; transform:translateY(-50%); color:#ef4444; pointer-events:none;">
-                                <i class="bi bi-chevron-down"></i>
-                            </span>
+                    <!-- RIGHT COLUMN: Service & Schedule -->
+                    <div style="flex:1; min-width:300px;">
+                        <h4 style="color:#ef4444; margin-bottom:15px; font-size:0.9rem; text-transform:uppercase; border-bottom:1px solid #444; padding-bottom:5px;">Service & Schedule</h4>
+
+                        <div class="form-row" style="margin-bottom:15px;">
+                            <div class="form-group" style="flex:1;">
+                                <label style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Service Type *</label>
+                                <div style="position:relative;">
+                                    <select name="service_type" class="form-input" required
+                                        style="background:white; color:#ef4444; border:none; border-radius:8px; padding:10px; font-size:0.9rem; width:100%; -webkit-appearance:none; appearance:none;">
+                                        <option value="" disabled selected>-- select service --</option>
+                                        @foreach($serviceTypes ?? [] as $st)
+                                            <option value="{{ $st->name }}">{{ $st->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    <span style="position:absolute; right:15px; top:50%; transform:translateY(-50%); color:#ef4444; pointer-events:none;"><i class="bi bi-chevron-down"></i></span>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group" style="flex:1;">
-                        <label
-                            style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Preferred
-                            Date *</label>
-                        <div style="position:relative;">
-                            <input name="preferred_date" type="date" class="form-input" required min="{{ date('Y-m-d') }}"
-                                style="background:white; color:#ef4444; border:none; border-radius:8px; padding:12px; font-size:0.9rem; width:100%;">
+
+                         <div class="form-row" style="display:flex; gap:15px; margin-bottom:15px;">
+                            <div class="form-group" style="flex:1;">
+                                <label style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Preferred Date *</label>
+                                <div style="position:relative;">
+                                    <input name="preferred_date" type="date" class="form-input" required min="{{ date('Y-m-d') }}"
+                                        style="background:white; color:#ef4444; border:none; border-radius:8px; padding:10px; font-size:0.9rem; width:100%;">
+                                </div>
+                            </div>
+                            <div class="form-group" style="flex:1;">
+                                <label style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Preferred Time *</label>
+                                <div style="position:relative;">
+                                    <select name="preferred_time" class="form-input" required
+                                        style="background:white; color:#ef4444; border:none; border-radius:8px; padding:10px; font-size:0.9rem; width:100%; -webkit-appearance:none; appearance:none;">
+                                        <option value="" disabled selected>-- : -- --</option>
+                                        <option value="08:00">08:00 AM</option>
+                                        <option value="09:00">09:00 AM</option>
+                                        <option value="10:00">10:00 AM</option>
+                                        <option value="11:00">11:00 AM</option>
+                                        <option value="13:00">01:00 PM</option>
+                                        <option value="14:00">02:00 PM</option>
+                                        <option value="15:00">03:00 PM</option>
+                                        <option value="16:00">04:00 PM</option>
+                                    </select>
+                                    <span style="position:absolute; right:15px; top:50%; transform:translateY(-50%); color:black; pointer-events:none;"><i class="bi bi-clock"></i></span>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
 
-                <div class="form-row" style="display:flex; gap:20px; margin-bottom:20px;">
-                    <div class="form-group" style="flex:1;">
-                        <label
-                            style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Preferred
-                            Time *</label>
-                        <div style="position:relative;">
-                            <select name="preferred_time" class="form-input" required
-                                style="background:white; color:#ef4444; border:none; border-radius:8px; padding:12px; font-size:0.9rem; width:100%; -webkit-appearance:none; appearance:none;">
-                                <option value="" disabled selected>-- : -- --</option>
-                                <option value="08:00">08:00 AM</option>
-                                <option value="09:00">09:00 AM</option>
-                                <option value="10:00">10:00 AM</option>
-                                <option value="11:00">11:00 AM</option>
-                                <option value="13:00">01:00 PM</option>
-                                <option value="14:00">02:00 PM</option>
-                                <option value="15:00">03:00 PM</option>
-                                <option value="16:00">04:00 PM</option>
-                            </select>
-                            <span
-                                style="position:absolute; right:15px; top:50%; transform:translateY(-50%); color:black; pointer-events:none;">
-                                <i class="bi bi-clock"></i>
-                            </span>
+                         <div class="form-row" style="margin-bottom:0;">
+                            <div class="form-group" style="flex:1;">
+                                <label style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Additional Notes</label>
+                                <textarea name="notes" class="form-input" rows="3"
+                                    style="background:white; color:black; border:none; border-radius:8px; padding:10px; font-size:0.9rem; width:100%; resize:vertical;"></textarea>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group" style="flex:1;">
-                        <!-- Spacer -->
+
                     </div>
                 </div>
 
-                <div class="form-row" style="margin-bottom:30px;">
-                    <div class="form-group" style="flex:1;">
-                        <label
-                            style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Additional
-                            Notes (Optional)</label>
-                        <textarea name="notes" class="form-input" rows="4"
-                            style="background:white; color:black; border:none; border-radius:8px; padding:12px; font-size:0.9rem; width:100%; resize:vertical;"></textarea>
-                    </div>
-                </div>
-
-                <p style="color:#6b7280; font-size:0.75rem; margin-bottom:20px;">
-                    We'll review availability & confirm via your preferred contact method.
-                </p>
-
-                <div class="button-row" style="display:flex; gap:10px; justify-content:flex-end;">
+                <div class="button-row" style="display:flex; gap:10px; justify-content:flex-end; margin-top:25px; border-top:1px solid #333; padding-top:20px;">
                     <button type="button" data-close
-                        style="background:#dc2626; color:white; border:none; border-radius:6px; padding:10px 24px; font-weight:600; cursor:pointer;">
+                        style="background:#444; color:white; border:none; border-radius:6px; padding:10px 24px; font-weight:600; cursor:pointer;">
                         Cancel
                     </button>
                     <button type="submit" id="submitBookingBtn"
