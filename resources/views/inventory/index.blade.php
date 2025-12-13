@@ -44,23 +44,7 @@
 
     <div class="glass-card glass-card-wide">
 
-        @if(session('success'))
-            <div class="alert alert-success mb-3">{{ session('success') }}</div>
-        @endif
-        @if($errors->any() && old('_from') === 'createItem')
-            <div class="alert alert-danger mb-3">
-                <ul class="m-0 ps-3" style="font-size:.7rem;">
-                    @foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach
-                </ul>
-            </div>
-        @endif
-        @if($errors->any() && !old('_from') && !old('_categoryForm'))
-            <div class="alert alert-danger mb-3">
-                <ul class="m-0 ps-3" style="font-size:.7rem;">
-                    @foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach
-                </ul>
-            </div>
-        @endif
+
 
         <div class="toolbar-top d-flex flex-wrap align-items-end gap-3 mb-3">
             <div class="search-bar-wrapper" style="flex:1 1 380px;">
@@ -107,6 +91,18 @@
                 @endif
             </form>
         </div>
+
+        @if(session('success'))
+            <div class="alert alert-success mb-3">{{ session('success') }}</div>
+        @endif
+        @if($errors->any() && !old('_from') && !old('_categoryForm'))
+            <div class="alert alert-danger mb-3">
+                <ul class="m-0 ps-3" style="font-size:.7rem;">
+                    @foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach
+                </ul>
+            </div>
+        @endif
+
 
         <div class="table-responsive">
             <table class="table align-middle">
@@ -194,6 +190,13 @@
         <div class="modal-content" style="max-width:640px;">
             <h2 style="margin-bottom:14px;">Add Item</h2>
             <form action="{{ route('inventory.store') }}" method="POST">
+                @if($errors->any() && old('_from') === 'createItem')
+                    <div class="alert alert-danger mb-3">
+                        <ul class="m-0 ps-3" style="font-size:.7rem;">
+                            @foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach
+                        </ul>
+                    </div>
+                @endif
                 @csrf
                 <input type="hidden" name="_from" value="createItem">
                 <div class="form-row">
