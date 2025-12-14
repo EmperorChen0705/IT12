@@ -111,10 +111,10 @@
                 style="flex:1;display:flex;justify-content:center;align-items:center;">
                 Reset
             </a>
-            <a href="{{ route('reports.export', request()->query()) }}" class="btn btn-secondary"
+            {{-- <a href="{{ route('reports.export', request()->query()) }}" class="btn btn-secondary"
                 style="flex:1;display:flex;justify-content:center;align-items:center;" target="_blank">
                 <i class="bi bi-printer"></i> Export Report
-            </a>
+            </a> --}}
         </div>
 
         <div class="table-responsive">
