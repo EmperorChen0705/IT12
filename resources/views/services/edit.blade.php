@@ -234,9 +234,5 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 @endif
-<div class="button-row" style="margin-top:18px;display:flex;gap:10px;justify-content:flex-end;">
-    @if($service->status === \App\Models\Service::STATUS_COMPLETED)
-        <a href="{{ route('payments.create', ['booking_id' => $service->booking_id]) }}" class="btn btn-primary">Record Payment</a>
-    @endif
-</div>
+
 @endsection

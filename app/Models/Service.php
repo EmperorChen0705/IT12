@@ -68,10 +68,7 @@ class Service extends Model
         return $this->hasMany(ServiceItem::class);
     }
 
-    public function payments(): HasMany
-    {
-        return $this->hasMany(Payment::class);
-    }
+
 
     public function scopeStatus($query, string $status)
     {
@@ -93,10 +90,7 @@ class Service extends Model
         }
     }
 
-    public function paidTotal(): float
-    {
-        return (float) ($this->payments()->sum('amount') ?? 0);
-    }
+
 
     public function markStarted(): void
     {

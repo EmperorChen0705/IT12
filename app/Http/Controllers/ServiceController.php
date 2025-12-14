@@ -9,7 +9,7 @@ use App\Models\Booking;
 use App\Models\Item;
 use App\Models\ActivityLog;
 use App\Models\StockOut;
-use App\Models\Payment;
+
 use App\Models\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -296,58 +296,7 @@ class ServiceController extends Controller
         return back()->with('success', 'Status updated.');
     }
 
-    public function addPayment(Request $request, Service $service)
-    {
-        if ($service->status === Service::STATUS_CANCELLED) {
-            return back()->withErrors('Cannot add payment to a cancelled service.');
-        }
 
-        $booking = Booking::where('booking_id', $service->booking_id)->first();
-
-        $data = $request->validate([
-            'customer_name' => ['required', 'string', 'max:150'],
-            'email' => ['required', 'email', 'max:150'],
-            'contact_number' => ['required', 'string', 'max:60'],
-            'method' => ['required', 'in:cash,bank_transfer,gcash'],
-            'amount' => ['required', 'numeric', 'min:0.01'],
-            'reference' => ['nullable', 'string', 'max:255'],
-            'notes' => ['nullable', 'string'],
-        ]);
-
-        $paid = $service->payments()->sum('amount');
-        $due = ($service->total ?? 0) - $paid;
-        if ($data['amount'] > $due && $service->total !== null) {
-            return back()->withErrors('Payment exceeds remaining balance.')->withInput();
-        }
-
-        $payment = Payment::create([
-            'service_id' => $service->id,
-            'booking_id' => $service->booking_id,
-            'user_id' => auth()->id(),
-            'customer_name' => $data['customer_name'],
-            'email' => $data['email'],
-            'contact_number' => $data['contact_number'],
-            'method' => $data['method'],
-            'amount' => $data['amount'],
-            'reference' => $data['reference'] ?? null,
-            'notes' => $data['notes'] ?? null,
-            'paid_at' => now(),
-        ]);
-
-        ActivityLog::record(
-            'payment.recorded',
-            $service,
-            'Payment recorded',
-            [
-                'service_id' => $service->id,
-                'booking_id' => $service->booking_id,
-                'amount' => $payment->amount,
-                'method' => $payment->method,
-            ]
-        );
-
-        return redirect()->route('services.edit', $service)->with('success', 'Payment added.');
-    }
 
     private function validateService(Request $request, bool $creating): array
     {

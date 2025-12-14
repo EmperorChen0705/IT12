@@ -254,8 +254,7 @@
                 </li>
                 <li><a href="{{ route('suppliers.index') }}" class="nav-link"><i class="bi bi-person-fill-down"></i>
                         Suppliers</a></li>
-                <li><a href="{{ route('payments.index') }}" class="nav-link"><i class="bi bi-credit-card"></i>
-                        Payments</a></li>
+
                 @if($user->role === 'admin')
                     <li><a href="{{ route('reports.index') }}" class="nav-link"><i class="bi bi-list-columns"></i>
                             Reports</a></li>
