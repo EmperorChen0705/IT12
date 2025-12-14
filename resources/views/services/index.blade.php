@@ -16,13 +16,6 @@
             style="flex:1;display:flex;justify-content:center;align-items:center;">
         <i class="bi bi-list-ul"></i> Service Types
     </button>
-    <button type="button"
-            class="btn btn-primary"
-            data-action="register-service"
-            @if($booking && !$booking->service) data-booking="{{ $booking->booking_id }}" @endif
-            style="flex:1;display:flex;justify-content:center;align-items:center;">
-        <i class="bi bi-plus-lg"></i> New Service
-    </button>
 </div>
 
 @if(session('success'))
