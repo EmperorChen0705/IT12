@@ -78,6 +78,8 @@
                 <th class="text-end">Labor</th>
                 <th class="text-end">Total</th>
                 <th>Started</th>
+                <th>Expected End</th>
+                <th>Actual End</th>
                 <th style="width:200px;">Actions</th>
             </tr>
             </thead>
@@ -122,6 +124,27 @@
                     <td class="text-end">₱{{ number_format($service->labor_fee ?? 0,2) }}</td>
                     <td class="text-end">₱{{ number_format($service->total,2) }}</td>
                     <td>{{ $service->started_at? $service->started_at->format('m/d H:i'):'—' }}</td>
+                    <td>
+                        @if($service->expected_end_date)
+                            <span style="font-size:0.8rem; color:var(--gray-300);">
+                                {{ $service->expected_end_date->format('M d, Y') }}
+                            </span>
+                            <div style="font-size:0.65rem; color:var(--gray-500);">
+                                ({{ $service->expected_end_date->diffForHumans() }})
+                            </div>
+                        @else
+                            <span class="text-muted">—</span>
+                        @endif
+                    </td>
+                    <td>
+                        @if($service->completed_at)
+                            <span style="color:var(--green-500); font-weight:bold;">
+                                {{ $service->completed_at->format('M d, Y') }}
+                            </span>
+                        @else
+                            <span class="text-muted">—</span>
+                        @endif
+                    </td>
                     <td>
                         <div class="d-flex gap-1">
                             @if($service->status === \App\Models\Service::STATUS_COMPLETED)

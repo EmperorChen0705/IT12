@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Service extends Model
 {
     use SoftDeletes;
-    
+
     protected $fillable = [
         'booking_id',
         'reference_code',
@@ -21,20 +21,22 @@ class Service extends Model
         'notes',
         'started_at',
         'completed_at',
+        'expected_end_date',
     ];
 
     protected $casts = [
-        'labor_fee'    => 'decimal:2',
-        'subtotal'     => 'decimal:2',
-        'total'        => 'decimal:2',
-        'started_at'   => 'datetime',
+        'labor_fee' => 'decimal:2',
+        'subtotal' => 'decimal:2',
+        'total' => 'decimal:2',
+        'started_at' => 'datetime',
         'completed_at' => 'datetime',
+        'expected_end_date' => 'datetime',
     ];
 
-    public const STATUS_PENDING     = 'pending';
+    public const STATUS_PENDING = 'pending';
     public const STATUS_IN_PROGRESS = 'in_progress';
-    public const STATUS_COMPLETED   = 'completed';
-    public const STATUS_CANCELLED   = 'cancelled';
+    public const STATUS_COMPLETED = 'completed';
+    public const STATUS_CANCELLED = 'cancelled';
 
     protected static function booted(): void
     {
@@ -78,7 +80,7 @@ class Service extends Model
     {
         $subtotal = $this->items->sum('line_total');
         $this->subtotal = $subtotal;
-        $this->total = $subtotal + ($this->labor_fee ?? 0);
+        $this->total = $subtotal + (float) ($this->labor_fee ?? 0);
         if ($save) {
             $this->save();
         }

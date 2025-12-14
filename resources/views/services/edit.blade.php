@@ -40,10 +40,16 @@
                 <input class="form-input" value="{{ ucfirst(str_replace('_',' ',$service->status)) }}" disabled>
             </div>
             <div class="form-group">
-                <label>Labor Fee</label>
                 <input name="labor_fee" type="number" step="0.01" min="0"
                        class="form-input"
                        value="{{ old('labor_fee',$service->labor_fee) }}"
+                       @if($service->status==='completed') disabled @endif>
+            </div>
+            <div class="form-group">
+                <label>Expected End</label>
+                <input name="expected_end_date" type="datetime-local"
+                       class="form-input"
+                       value="{{ old('expected_end_date', $service->expected_end_date?->format('Y-m-d\TH:i')) }}"
                        @if($service->status==='completed') disabled @endif>
             </div>
         </div>

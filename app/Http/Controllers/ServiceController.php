@@ -55,6 +55,7 @@ class ServiceController extends Controller
                 'notes' => $validated['notes'] ?? null,
                 'subtotal' => 0,
                 'total' => 0,
+                'expected_end_date' => now()->addDays(rand(2, 5)),
             ]);
 
             $this->syncItemsAndTotals($service, $validated['items']);
@@ -92,6 +93,7 @@ class ServiceController extends Controller
             $service->update([
                 'labor_fee' => $validated['labor_fee'] ?? 0,
                 'notes' => $validated['notes'] ?? null,
+                'expected_end_date' => $validated['expected_end_date'] ?? null,
             ]);
 
             $service->items()->delete();
@@ -302,6 +304,7 @@ class ServiceController extends Controller
             'items.*.item_id' => ['required', 'distinct', 'exists:items,item_id'],
             'items.*.quantity' => ['required', 'integer', 'min:1'],
             'items.*.unit_price' => ['nullable', 'numeric', 'min:0'],
+            'expected_end_date' => ['nullable', 'date'],
         ]);
     }
 
@@ -375,8 +378,8 @@ class ServiceController extends Controller
         }
 
         $service->items()->saveMany($lineItems);
-        $service->subtotal = $subtotal;
-        $service->total = $subtotal + ($service->labor_fee ?? 0);
+        $service->subtotal = (float) $subtotal;
+        $service->total = (float) ($subtotal + ($service->labor_fee ?? 0));
         $service->save();
     }
 
