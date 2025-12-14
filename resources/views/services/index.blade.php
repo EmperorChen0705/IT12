@@ -185,7 +185,7 @@
 <div class="modal hidden"
      id="createServiceModal"
      data-modal
-     @if($errors->any() && old('_from') === 'createService') data-auto-open="true" @endif>
+     @if(($errors->any() && old('_from') === 'createService') || (request('action') === 'create' && $booking)) data-auto-open="true" @endif>
     <div class="modal-content service-modal-wide">
         <h2 style="margin-bottom:14px;">New Service</h2>
         <form action="{{ route('services.store') }}" method="POST" id="serviceCreateForm">
@@ -205,10 +205,12 @@
                                 <option value="">-- choose booking --</option>
                                 @foreach(\App\Models\Booking::doesntHave('service')
                                     ->orderByDesc('created_at')
-                                    ->limit(50)->get(['booking_id']) as $bk)
+                                    ->limit(50)->get(['booking_id','customer_name','vehicle_make','vehicle_model','service_type']) as $bk)
                                     <option value="{{ $bk->booking_id }}"
                                         @selected(old('booking_id')===$bk->booking_id)>
-                                        {{ $bk->booking_id }}
+                                        #{{ $bk->booking_id }} — {{ $bk->customer_name }}
+                                        ({{ $bk->vehicle_make }} {{ $bk->vehicle_model }})
+                                        [{{ $bk->service_type }}]
                                     </option>
                                 @endforeach
                             </select>

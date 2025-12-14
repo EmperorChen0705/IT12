@@ -186,6 +186,13 @@
                                             <i class="bi bi-calendar-check"></i> Appoint
                                         </button>
                                     @endif
+
+                                    @if(!$srv && in_array($b->status, ['pending', 'approved']))
+                                        <a href="{{ route('services.index', ['booking_id' => $b->booking_id, 'action' => 'create']) }}"
+                                            class="btn btn-primary btn-sm" title="Create Service">
+                                            <i class="bi bi-tools"></i> Create Svc
+                                        </a>
+                                    @endif
                                 </div>
                             </td>
                         </tr>
@@ -251,56 +258,56 @@
             function renderReceipt(data) {
                 let html = '';
                 html += `<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:10px;">
-                                            <div>
-                                                <div style="font-weight:600;font-size:.8rem;">Booking #${escapeHtml(data.booking_id ?? '')}</div>
-                                                <div>${escapeHtml(data.customer_name ?? '')}</div>
-                                                <div>${escapeHtml(data.email ?? '—')}</div>
-                                                <div>${escapeHtml(data.contact_number ?? '')}</div>
-                                            </div>
-                                            <div>
-                                                <div><strong>Status:</strong> ${escapeHtml(data.status ?? '')}</div>
-                                                <div><strong>Date:</strong> ${escapeHtml(data.preferred_date ?? '')}</div>
-                                                <div><strong>Time:</strong> ${escapeHtml(data.preferred_time ?? '')}</div>
-                                                <div><strong>Service Type:</strong> ${escapeHtml(data.service_type ?? '')}</div>
-                                            </div>
-                                        </div>`;
-
-                if (data.service) {
-                    html += `<hr style="border:0;border-top:1px solid var(--gray-700);margin:8px 0;">
-                                            <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;">
                                                 <div>
-                                                    <div><strong>Service Ref:</strong> ${escapeHtml(data.service.reference_code ?? '')}</div>
-                                                    <div><strong>Service Status:</strong> ${escapeHtml(data.service.status ?? '')}</div>
-                                                    <div><strong>Started:</strong> ${escapeHtml(data.service.started_at ?? '—')}</div>
-                                                    <div><strong>Completed:</strong> ${escapeHtml(data.service.completed_at ?? '—')}</div>
+                                                    <div style="font-weight:600;font-size:.8rem;">Booking #${escapeHtml(data.booking_id ?? '')}</div>
+                                                    <div>${escapeHtml(data.customer_name ?? '')}</div>
+                                                    <div>${escapeHtml(data.email ?? '—')}</div>
+                                                    <div>${escapeHtml(data.contact_number ?? '')}</div>
                                                 </div>
                                                 <div>
-                                                    <div><strong>Labor Fee:</strong> ${formatMoney(data.service.labor_fee)}</div>
-                                                    <div><strong>Subtotal:</strong> ${formatMoney(data.service.subtotal)}</div>
-                                                    <div><strong>Total:</strong> ${formatMoney(data.service.total)}</div>
+                                                    <div><strong>Status:</strong> ${escapeHtml(data.status ?? '')}</div>
+                                                    <div><strong>Date:</strong> ${escapeHtml(data.preferred_date ?? '')}</div>
+                                                    <div><strong>Time:</strong> ${escapeHtml(data.preferred_time ?? '')}</div>
+                                                    <div><strong>Service Type:</strong> ${escapeHtml(data.service_type ?? '')}</div>
                                                 </div>
                                             </div>`;
 
+                if (data.service) {
+                    html += `<hr style="border:0;border-top:1px solid var(--gray-700);margin:8px 0;">
+                                                <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+                                                    <div>
+                                                        <div><strong>Service Ref:</strong> ${escapeHtml(data.service.reference_code ?? '')}</div>
+                                                        <div><strong>Service Status:</strong> ${escapeHtml(data.service.status ?? '')}</div>
+                                                        <div><strong>Started:</strong> ${escapeHtml(data.service.started_at ?? '—')}</div>
+                                                        <div><strong>Completed:</strong> ${escapeHtml(data.service.completed_at ?? '—')}</div>
+                                                    </div>
+                                                    <div>
+                                                        <div><strong>Labor Fee:</strong> ${formatMoney(data.service.labor_fee)}</div>
+                                                        <div><strong>Subtotal:</strong> ${formatMoney(data.service.subtotal)}</div>
+                                                        <div><strong>Total:</strong> ${formatMoney(data.service.total)}</div>
+                                                    </div>
+                                                </div>`;
+
                     if (data.service.items && data.service.items.length) {
                         html += `<div style="margin-top:10px;">
-                                                    <h3 style="margin:0 0 6px;font-size:.7rem;letter-spacing:1px;text-transform:uppercase;">Items</h3>
-                                                    <table style="width:100%;border-collapse:collapse;font-size:.68rem;">
-                                                        <thead>
-                                                            <tr style="text-align:left;background:var(--gray-800);">
-                                                                <th style="padding:6px;">Name</th>
-                                                                <th style="padding:6px;">Qty</th>
-                                                                <th style="padding:6px;text-align:right;">Unit</th>
-                                                                <th style="padding:6px;text-align:right;">Line Total</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>`;
+                                                        <h3 style="margin:0 0 6px;font-size:.7rem;letter-spacing:1px;text-transform:uppercase;">Items</h3>
+                                                        <table style="width:100%;border-collapse:collapse;font-size:.68rem;">
+                                                            <thead>
+                                                                <tr style="text-align:left;background:var(--gray-800);">
+                                                                    <th style="padding:6px;">Name</th>
+                                                                    <th style="padding:6px;">Qty</th>
+                                                                    <th style="padding:6px;text-align:right;">Unit</th>
+                                                                    <th style="padding:6px;text-align:right;">Line Total</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>`;
                         data.service.items.forEach(it => {
                             html += `<tr>
-                                                        <td style="padding:4px 6px;">${escapeHtml(it.name ?? '')}</td>
-                                                        <td style="padding:4px 6px;">${it.quantity}</td>
-                                                        <td style="padding:4px 6px;text-align:right;">${formatMoney(it.unit_price)}</td>
-                                                        <td style="padding:4px 6px;text-align:right;">${formatMoney(it.line_total)}</td>
-                                                    </tr>`;
+                                                            <td style="padding:4px 6px;">${escapeHtml(it.name ?? '')}</td>
+                                                            <td style="padding:4px 6px;">${it.quantity}</td>
+                                                            <td style="padding:4px 6px;text-align:right;">${formatMoney(it.unit_price)}</td>
+                                                            <td style="padding:4px 6px;text-align:right;">${formatMoney(it.line_total)}</td>
+                                                        </tr>`;
                         });
                         html += `</tbody></table></div>`;
                     }
@@ -333,25 +340,33 @@
                 <div style="display:flex; flex-wrap:wrap; gap:30px;">
                     <!-- LEFT COLUMN: Customer & Vehicle -->
                     <div style="flex:1; min-width:300px;">
-                        <h4 style="color:#ef4444; margin-bottom:15px; font-size:0.9rem; text-transform:uppercase; border-bottom:1px solid #444; padding-bottom:5px;">Customer & Vehicle</h4>
-                        
+                        <h4
+                            style="color:#ef4444; margin-bottom:15px; font-size:0.9rem; text-transform:uppercase; border-bottom:1px solid #444; padding-bottom:5px;">
+                            Customer & Vehicle</h4>
+
                         <!-- Customer Info -->
-                         <div class="form-row" style="margin-bottom:15px;">
+                        <div class="form-row" style="margin-bottom:15px;">
                             <div class="form-group" style="flex:1;">
-                                <label style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Full Name *</label>
+                                <label
+                                    style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Full
+                                    Name *</label>
                                 <input name="customer_name" class="form-input" required
                                     style="background:white; color:black; border:none; border-radius:8px; padding:10px; font-size:0.9rem; width:100%;">
                             </div>
                         </div>
 
-                         <div class="form-row" style="display:flex; gap:15px; margin-bottom:15px;">
+                        <div class="form-row" style="display:flex; gap:15px; margin-bottom:15px;">
                             <div class="form-group" style="flex:1;">
-                                <label style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Contact Number *</label>
+                                <label
+                                    style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Contact
+                                    Number *</label>
                                 <input name="contact_number" class="form-input" required
                                     style="background:white; color:black; border:none; border-radius:8px; padding:10px; font-size:0.9rem; width:100%;">
                             </div>
                             <div class="form-group" style="flex:1;">
-                                <label style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Channel *</label>
+                                <label
+                                    style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Channel
+                                    *</label>
                                 <div style="position:relative;">
                                     <select name="channel" class="form-input" required
                                         style="background:white; color:black; border:none; border-radius:8px; padding:10px; font-size:0.9rem; width:100%; -webkit-appearance:none; appearance:none;">
@@ -359,15 +374,19 @@
                                         <option value="phone">Phone Call</option>
                                         <option value="facebook">Facebook / Messenger</option>
                                     </select>
-                                    <span style="position:absolute; right:15px; top:50%; transform:translateY(-50%); color:black; pointer-events:none;"><i class="bi bi-chevron-down"></i></span>
+                                    <span
+                                        style="position:absolute; right:15px; top:50%; transform:translateY(-50%); color:black; pointer-events:none;"><i
+                                            class="bi bi-chevron-down"></i></span>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Vehicle Info -->
                         <div class="form-row" style="margin-bottom:15px;">
-                             <label style="color:#fff; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px; display:block;">Vehicle Details (Optional)</label>
-                             <div style="display:flex; gap:10px;">
+                            <label
+                                style="color:#fff; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px; display:block;">Vehicle
+                                Details (Optional)</label>
+                            <div style="display:flex; gap:10px;">
                                 <div class="form-group" style="flex:1;">
                                     <input name="vehicle_make" placeholder="Make" class="form-input"
                                         style="background:white; color:black; border:none; border-radius:8px; padding:10px; font-size:0.9rem; width:100%;">
@@ -380,17 +399,21 @@
                                     <input name="plate_number" placeholder="Plate" class="form-input"
                                         style="background:white; color:black; border:none; border-radius:8px; padding:10px; font-size:0.9rem; width:100%;">
                                 </div>
-                             </div>
+                            </div>
                         </div>
                     </div>
 
                     <!-- RIGHT COLUMN: Service & Schedule -->
                     <div style="flex:1; min-width:300px;">
-                        <h4 style="color:#ef4444; margin-bottom:15px; font-size:0.9rem; text-transform:uppercase; border-bottom:1px solid #444; padding-bottom:5px;">Service & Schedule</h4>
+                        <h4
+                            style="color:#ef4444; margin-bottom:15px; font-size:0.9rem; text-transform:uppercase; border-bottom:1px solid #444; padding-bottom:5px;">
+                            Service & Schedule</h4>
 
                         <div class="form-row" style="margin-bottom:15px;">
                             <div class="form-group" style="flex:1;">
-                                <label style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Service Type *</label>
+                                <label
+                                    style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Service
+                                    Type *</label>
                                 <div style="position:relative;">
                                     <select name="service_type" class="form-input" required
                                         style="background:white; color:#ef4444; border:none; border-radius:8px; padding:10px; font-size:0.9rem; width:100%; -webkit-appearance:none; appearance:none;">
@@ -399,21 +422,28 @@
                                             <option value="{{ $st->name }}">{{ $st->name }}</option>
                                         @endforeach
                                     </select>
-                                    <span style="position:absolute; right:15px; top:50%; transform:translateY(-50%); color:#ef4444; pointer-events:none;"><i class="bi bi-chevron-down"></i></span>
+                                    <span
+                                        style="position:absolute; right:15px; top:50%; transform:translateY(-50%); color:#ef4444; pointer-events:none;"><i
+                                            class="bi bi-chevron-down"></i></span>
                                 </div>
                             </div>
                         </div>
 
-                         <div class="form-row" style="display:flex; gap:15px; margin-bottom:15px;">
+                        <div class="form-row" style="display:flex; gap:15px; margin-bottom:15px;">
                             <div class="form-group" style="flex:1;">
-                                <label style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Preferred Date *</label>
+                                <label
+                                    style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Preferred
+                                    Date *</label>
                                 <div style="position:relative;">
-                                    <input name="preferred_date" type="date" class="form-input" required min="{{ date('Y-m-d') }}"
+                                    <input name="preferred_date" type="date" class="form-input" required
+                                        min="{{ date('Y-m-d') }}"
                                         style="background:white; color:#ef4444; border:none; border-radius:8px; padding:10px; font-size:0.9rem; width:100%;">
                                 </div>
                             </div>
                             <div class="form-group" style="flex:1;">
-                                <label style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Preferred Time *</label>
+                                <label
+                                    style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Preferred
+                                    Time *</label>
                                 <div style="position:relative;">
                                     <select name="preferred_time" class="form-input" required
                                         style="background:white; color:#ef4444; border:none; border-radius:8px; padding:10px; font-size:0.9rem; width:100%; -webkit-appearance:none; appearance:none;">
@@ -427,14 +457,18 @@
                                         <option value="15:00">03:00 PM</option>
                                         <option value="16:00">04:00 PM</option>
                                     </select>
-                                    <span style="position:absolute; right:15px; top:50%; transform:translateY(-50%); color:black; pointer-events:none;"><i class="bi bi-clock"></i></span>
+                                    <span
+                                        style="position:absolute; right:15px; top:50%; transform:translateY(-50%); color:black; pointer-events:none;"><i
+                                            class="bi bi-clock"></i></span>
                                 </div>
                             </div>
                         </div>
 
-                         <div class="form-row" style="margin-bottom:0;">
+                        <div class="form-row" style="margin-bottom:0;">
                             <div class="form-group" style="flex:1;">
-                                <label style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Additional Notes</label>
+                                <label
+                                    style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Additional
+                                    Notes</label>
                                 <textarea name="notes" class="form-input" rows="3"
                                     style="background:white; color:black; border:none; border-radius:8px; padding:10px; font-size:0.9rem; width:100%; resize:vertical;"></textarea>
                             </div>
@@ -443,7 +477,8 @@
                     </div>
                 </div>
 
-                <div class="button-row" style="display:flex; gap:10px; justify-content:flex-end; margin-top:25px; border-top:1px solid #333; padding-top:20px;">
+                <div class="button-row"
+                    style="display:flex; gap:10px; justify-content:flex-end; margin-top:25px; border-top:1px solid #333; padding-top:20px;">
                     <button type="button" data-close
                         style="background:#444; color:white; border:none; border-radius:6px; padding:10px 24px; font-weight:600; cursor:pointer;">
                         Cancel
