@@ -237,9 +237,9 @@
                 
                 @if(auth()->user()->canAccessAdmin())
                 <div class="form-group" style="flex:0 0 200px;">
-                    <label>Technician (Optional)</label>
-                    <select name="technician_id" class="form-input">
-                        <option value="">-- Unassigned --</option>
+                    <label>Technician (Required)</label>
+                    <select name="technician_id" class="form-input" required>
+                        <option value="">-- Select Technician --</option>
                         @foreach($technicians ?? [] as $t)
                             <option value="{{ $t->id }}">{{ $t->first_name }} {{ $t->last_name }}</option>
                         @endforeach

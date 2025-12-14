@@ -53,11 +53,17 @@ class ServiceController extends Controller
             $status = Service::STATUS_PENDING;
             $techId = null;
 
-            if (isset($validated['technician_id']) && auth()->user()->canAccessAdmin()) {
-                // Check limit if scheduling immediately
+            if (auth()->user()->canAccessAdmin()) {
+                if (empty($validated['technician_id'])) {
+                    throw \Illuminate\Validation\ValidationException::withMessages([
+                        'technician_id' => 'Technician assignment is mandatory.'
+                    ]);
+                }
+
+                // Check limit
                 $currentActive = Service::whereIn('status', [Service::STATUS_IN_PROGRESS, Service::STATUS_SCHEDULED])->count();
                 if ($currentActive >= 10) {
-                    throw new \Exception('Active service limit reached (10/10). Cannot schedule immediately.');
+                    throw new \Exception('Active service limit reached (10/10). Cannot schedule new service.');
                 }
                 $status = Service::STATUS_SCHEDULED;
                 $techId = $validated['technician_id'];
