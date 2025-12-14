@@ -24,9 +24,73 @@ class ReportsController extends Controller
         });
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        return redirect()->route('reports.bookings');
+        // Activity Log Query
+        $query = ActivityLog::with('user')->orderBy('occurred_at', 'desc');
+
+        $dateFrom = $request->input('date_from');
+        $dateTo = $request->input('date_to');
+        $userId = $request->input('user_id');
+        $event = $request->input('event_type');
+        $search = $request->input('search');
+
+        if ($dateFrom)
+            $query->whereDate('occurred_at', '>=', $dateFrom);
+        if ($dateTo)
+            $query->whereDate('occurred_at', '<=', $dateTo);
+        if ($userId)
+            $query->where('user_id', $userId);
+        if ($event)
+            $query->where('event_type', $event);
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('description', 'like', "%{$search}%")
+                    ->orWhere('subject_type', 'like', "%{$search}%")
+                    ->orWhere('subject_id', 'like', "%{$search}%");
+            });
+        }
+
+        $logs = $query->paginate(20)->withQueryString();
+        $users = \App\Models\User::orderBy('name')->get();
+        $eventTypes = ActivityLog::distinct()->pluck('event_type')->filter()->values();
+
+        // Metrics (Simple implementation)
+        $appointmentsThisMonth = Booking::whereYear('created_at', now()->year)->whereMonth('created_at', now()->month)->count();
+        $servicesCompletedMonth = Service::whereYear('completed_at', now()->year)->whereMonth('completed_at', now()->month)->where('status', Service::STATUS_COMPLETED)->count();
+        $itemsAddedMonth = Item::whereYear('created_at', now()->year)->whereMonth('created_at', now()->month)->count();
+
+        // Avg Appointments per day (this month)
+        $daysInMonth = now()->day;
+        $avgAppointmentsPerDay = $daysInMonth > 0 ? round($appointmentsThisMonth / $daysInMonth, 1) : 0;
+
+        // Top Items Used (this month) via Service
+        $topItems = DB::table('service_items')
+            ->join('services', 'service_items.service_id', '=', 'services.id')
+            ->whereYear('services.completed_at', now()->year)
+            ->whereMonth('services.completed_at', now()->month)
+            ->select('service_items.item_id', DB::raw('sum(service_items.quantity) as uses'))
+            ->groupBy('service_items.item_id')
+            ->orderByDesc('uses')
+            ->limit(5)
+            ->get();
+
+
+        return view('reports.index', compact(
+            'logs',
+            'users',
+            'eventTypes',
+            'dateFrom',
+            'dateTo',
+            'userId',
+            'event',
+            'search',
+            'appointmentsThisMonth',
+            'servicesCompletedMonth',
+            'itemsAddedMonth',
+            'avgAppointmentsPerDay',
+            'topItems'
+        ));
     }
 
     public function bookings(Request $request)
