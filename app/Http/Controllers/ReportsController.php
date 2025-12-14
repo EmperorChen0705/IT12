@@ -11,6 +11,7 @@ use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ReportsController extends Controller
 {
@@ -49,6 +50,13 @@ class ReportsController extends Controller
                     ->orWhere('subject_type', 'like', "%{$search}%")
                     ->orWhere('subject_id', 'like', "%{$search}%");
             });
+        }
+
+        if ($request->input('export') === 'pdf') {
+            $logs = $query->get();
+            $user = $userId ? \App\Models\User::find($userId) : null;
+            $pdf = Pdf::loadView('reports.pdf.activity', compact('logs', 'dateFrom', 'dateTo', 'user', 'event'));
+            return $pdf->download('activity_log.pdf');
         }
 
         $logs = $query->paginate(20)->withQueryString();
@@ -113,6 +121,20 @@ class ReportsController extends Controller
             return $this->exportBookingsCsv($query->get());
         }
 
+        if ($request->input('export') === 'pdf') {
+            $bookings = $query->get();
+            foreach ($bookings as $b) {
+                if ($b->service && $b->service->technician) {
+                    $b->technician_name = $b->service->technician->first_name . ' ' . $b->service->technician->last_name;
+                } else {
+                    $b->technician_name = 'Not Assigned';
+                }
+            }
+            $status = $request->input('status');
+            $pdf = Pdf::loadView('reports.pdf.bookings', compact('bookings', 'status'));
+            return $pdf->download('booking_report.pdf');
+        }
+
         $bookings = $query->latest('booking_id')->paginate(20)->appends($request->query());
 
         // Derive Technician from relation
@@ -142,6 +164,13 @@ class ReportsController extends Controller
         // Export Logic handling
         if ($request->input('export') === 'csv') {
             return $this->exportInventoryCsv($stockQuery->get(), $this->getRecentMovements($request, 1000));
+        }
+
+        if ($request->input('export') === 'pdf') {
+            $items = $stockQuery->get();
+            $lowStock = $request->input('status') === 'low';
+            $pdf = Pdf::loadView('reports.pdf.inventory', compact('items', 'lowStock'));
+            return $pdf->download('inventory_report.pdf');
         }
 
         $inventory = $stockQuery->orderBy('name')->paginate(20, ['*'], 'stock_page')->appends($request->query());
