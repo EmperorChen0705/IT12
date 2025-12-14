@@ -50,9 +50,23 @@ class ServiceController extends Controller
                 abort(422, 'Booking already has a service.');
             }
 
+            $status = Service::STATUS_PENDING;
+            $techId = null;
+
+            if (isset($validated['technician_id']) && auth()->user()->canAccessAdmin()) {
+                // Check limit if scheduling immediately
+                $currentActive = Service::whereIn('status', [Service::STATUS_IN_PROGRESS, Service::STATUS_SCHEDULED])->count();
+                if ($currentActive >= 10) {
+                    throw new \Exception('Active service limit reached (10/10). Cannot schedule immediately.');
+                }
+                $status = Service::STATUS_SCHEDULED;
+                $techId = $validated['technician_id'];
+            }
+
             $service = Service::create([
                 'booking_id' => $booking->booking_id,
-                'status' => Service::STATUS_PENDING,
+                'status' => $status,
+                'technician_id' => $techId,
                 'labor_fee' => $validated['labor_fee'] ?? 0,
                 'notes' => $validated['notes'] ?? null,
                 'subtotal' => 0,
@@ -76,7 +90,6 @@ class ServiceController extends Controller
 
     public function edit(Service $service)
     {
-        $service->load('items.item', 'booking');
         $service->load('items.item', 'booking');
         $technicians = Employee::orderBy('last_name')->get();
         return view('services.edit', compact('service', 'technicians'));

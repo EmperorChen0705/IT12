@@ -234,6 +234,19 @@
                     <input name="labor_fee" type="number" step="0.01" min="0"
                            class="form-input" value="{{ old('labor_fee',0) }}">
                 </div>
+                
+                @if(auth()->user()->canAccessAdmin())
+                <div class="form-group" style="flex:0 0 200px;">
+                    <label>Technician (Optional)</label>
+                    <select name="technician_id" class="form-input">
+                        <option value="">-- Unassigned --</option>
+                        @foreach($technicians ?? [] as $t)
+                            <option value="{{ $t->id }}">{{ $t->first_name }} {{ $t->last_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                @endif
+
                 <div class="form-group" style="flex:1;">
                     <label>Notes</label>
                     <input name="notes" class="form-input" value="{{ old('notes') }}">
