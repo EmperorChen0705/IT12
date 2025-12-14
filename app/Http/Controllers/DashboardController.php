@@ -30,7 +30,7 @@ class DashboardController extends Controller
             ->limit(10)
             ->get();
 
-        $ongoingServices = Service::with(['booking', 'items'])
+        $ongoingServices = Service::with(['booking', 'items', 'technician'])
             ->whereIn('status', [Service::STATUS_IN_PROGRESS ?? 'in_progress'])
             ->orderBy('started_at')
             ->limit(10)

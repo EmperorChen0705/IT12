@@ -10,6 +10,7 @@ use App\Models\Item;
 use App\Models\ActivityLog;
 use App\Models\StockOut;
 use App\Models\Payment;
+use App\Models\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -30,8 +31,9 @@ class ServiceController extends Controller
         }
 
         $serviceTypes = ServiceType::orderBy('name')->get();
+        $technicians = Employee::orderBy('last_name')->get();
 
-        return view('services.index', compact('services', 'booking', 'serviceTypes'));
+        return view('services.index', compact('services', 'booking', 'serviceTypes', 'technicians'));
     }
 
     public function store(Request $request)
@@ -75,7 +77,9 @@ class ServiceController extends Controller
     public function edit(Service $service)
     {
         $service->load('items.item', 'booking');
-        return view('services.edit', compact('service'));
+        $service->load('items.item', 'booking');
+        $technicians = Employee::orderBy('last_name')->get();
+        return view('services.edit', compact('service', 'technicians'));
     }
 
     public function update(Request $request, Service $service)
@@ -93,7 +97,11 @@ class ServiceController extends Controller
             $service->update([
                 'labor_fee' => $validated['labor_fee'] ?? 0,
                 'notes' => $validated['notes'] ?? null,
+
                 'expected_end_date' => $validated['expected_end_date'] ?? null,
+                'technician_id' => (auth()->user()->canAccessAdmin() && isset($validated['technician_id']))
+                    ? $validated['technician_id']
+                    : $service->technician_id,
             ]);
 
             $service->items()->delete();
@@ -128,21 +136,47 @@ class ServiceController extends Controller
                 'required',
                 Rule::in([
                     Service::STATUS_PENDING,
+                    Service::STATUS_SCHEDULED,
                     Service::STATUS_IN_PROGRESS,
                     Service::STATUS_COMPLETED,
                     Service::STATUS_CANCELLED
                 ])
+            ],
+            'technician_id' => [
+                'nullable',
+                Rule::requiredIf(fn() => $request->status === Service::STATUS_SCHEDULED),
+                'exists:employees,id'
             ]
         ]);
 
         DB::transaction(function () use ($service, $request) {
             $new = $request->status;
 
-            // Check-in limit: maximum 10 concurrent in-progress services
-            if ($new === Service::STATUS_IN_PROGRESS && $service->status !== Service::STATUS_IN_PROGRESS) {
-                $currentCheckedIn = Service::where('status', Service::STATUS_IN_PROGRESS)->count();
-                if ($currentCheckedIn >= 10) {
-                    throw new \Exception('Check-in limit reached (10/10). Please wait for a service to be checked out before checking in again.');
+            // Handle Scheduling (Admin Only)
+            if ($new === Service::STATUS_SCHEDULED) {
+                if (!auth()->user()->canAccessAdmin()) {
+                    throw new \Exception('Only admins can assign technicians.');
+                }
+
+                // Active Service Limit Check (Scheduled services count as active)
+                $currentActive = Service::whereIn('status', [Service::STATUS_IN_PROGRESS, Service::STATUS_SCHEDULED])->count();
+                if ($service->status !== Service::STATUS_SCHEDULED && $service->status !== Service::STATUS_IN_PROGRESS) {
+                    if ($currentActive >= 10) {
+                        throw new \Exception('Active service limit reached (10/10). Cannot schedule new service.');
+                    }
+                }
+
+                $service->technician_id = $request->technician_id;
+            }
+
+            // Check-in limit logic (modified to include scheduled)
+            if ($new === Service::STATUS_IN_PROGRESS) {
+                // If it wasn't already active (i.e. coming from pending/cancelled), check limit
+                if (!in_array($service->status, [Service::STATUS_IN_PROGRESS, Service::STATUS_SCHEDULED])) {
+                    $currentActive = Service::whereIn('status', [Service::STATUS_IN_PROGRESS, Service::STATUS_SCHEDULED])->count();
+                    if ($currentActive >= 10) {
+                        throw new \Exception('Active service limit reached (10/10). Please wait for a service to be checked out.');
+                    }
                 }
             }
 
@@ -155,7 +189,11 @@ class ServiceController extends Controller
                 $service->completed_at = now();
             }
 
-            if ($service->status === Service::STATUS_PENDING && $new === Service::STATUS_IN_PROGRESS) {
+            if (isset($request->technician_id) && auth()->user()->canAccessAdmin()) {
+                $service->technician_id = $request->technician_id;
+            }
+
+            if (($service->status === Service::STATUS_PENDING || $service->status === Service::STATUS_SCHEDULED) && $new === Service::STATUS_IN_PROGRESS) {
                 $service->started_at = now();
             }
 
@@ -305,6 +343,7 @@ class ServiceController extends Controller
             'items.*.quantity' => ['required', 'integer', 'min:1'],
             'items.*.unit_price' => ['nullable', 'numeric', 'min:0'],
             'expected_end_date' => ['nullable', 'date'],
+            'technician_id' => ['nullable', 'exists:employees,id'],
         ]);
     }
 

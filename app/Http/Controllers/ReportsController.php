@@ -31,7 +31,7 @@ class ReportsController extends Controller
 
     public function bookings(Request $request)
     {
-        $query = Booking::with(['service', 'service.items']);
+        $query = Booking::with(['service.technician', 'service.items']);
 
         // Filters
         if ($request->filled('status')) {
@@ -51,26 +51,10 @@ class ReportsController extends Controller
 
         $bookings = $query->latest('booking_id')->paginate(20)->appends($request->query());
 
-        // Derive Technician for visible bookings
-        $serviceIds = $bookings->pluck('service.id')->filter()->toArray();
-        $technicianMap = [];
-        if (!empty($serviceIds)) {
-            $logs = ActivityLog::where('subject_type', Service::class)
-                ->whereIn('subject_id', $serviceIds)
-                ->where('event_type', 'service.completed')
-                ->with('user')
-                ->get();
-            foreach ($logs as $log) {
-                if ($log->user) {
-                    $technicianMap[$log->subject_id] = $log->user->name;
-                }
-            }
-        }
-
-        // Attach derived data
+        // Derive Technician from relation
         foreach ($bookings as $b) {
-            if ($b->service && isset($technicianMap[$b->service->id])) {
-                $b->technician_name = $technicianMap[$b->service->id];
+            if ($b->service && $b->service->technician) {
+                $b->technician_name = $b->service->technician->first_name . ' ' . $b->service->technician->last_name;
             } else {
                 $b->technician_name = 'Not Assigned';
             }
@@ -199,23 +183,11 @@ class ReportsController extends Controller
             $out = fopen('php://output', 'w');
             fputcsv($out, ['Booking ID', 'Customer Name', 'Contact', 'Email', 'Service Type', 'Status', 'Preferred Date', 'Notes', 'Assigned Technician']);
 
-            // Logic for technician map same as main view (duplicated for export simplicity or extract method)
-            $serviceIds = $bookings->pluck('service.id')->filter()->toArray();
-            $technicianMap = [];
-            if (!empty($serviceIds)) {
-                $logs = ActivityLog::where('subject_type', Service::class)
-                    ->whereIn('subject_id', $serviceIds)
-                    ->where('event_type', 'service.completed')
-                    ->with('user')
-                    ->get();
-                foreach ($logs as $log) {
-                    if ($log->user)
-                        $technicianMap[$log->subject_id] = $log->user->name;
-                }
-            }
-
             foreach ($bookings as $b) {
-                $tech = ($b->service && isset($technicianMap[$b->service->id])) ? $technicianMap[$b->service->id] : 'Not Assigned';
+                $tech = 'Not Assigned';
+                if ($b->service && $b->service->technician) {
+                    $tech = $b->service->technician->first_name . ' ' . $b->service->technician->last_name;
+                }
                 fputcsv($out, [
                     $b->booking_id,
                     $b->customer_name,

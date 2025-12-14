@@ -51,7 +51,7 @@
             </div>
 
             <div class="dm-card wide">
-                <div class="dm-label">Active Services Cost Count</div>
+                <div class="dm-label">Active Services (Load)</div>
                 <div class="dm-value">{{ $activeServicesCount }} / 10</div>
                 <div class="dm-sub">
                     <span class="dot {{ $activeServicesCount >= 10 ? 'dot-red' : 'dot-green' }}"></span>
@@ -97,7 +97,14 @@
                             <span class="lr-id">{{ \Carbon\Carbon::parse($bk->preferred_time)->format('h:i A') }}</span>
                             <div class="lr-details" style="flex:1; margin-left:10px;">
                                 <div style="font-weight:600;">{{ $bk->customer_name }}</div>
-                                <div style="font-size:0.8rem; opacity:0.7;">{{ $bk->service_type }}</div>
+                                <div style="font-size:0.8rem; opacity:0.7;">
+                                    {{ $bk->service_type }}
+                                    @if($bk->service && $bk->service->technician)
+                                        <span style="color:var(--text-accent); margin-left:6px;">
+                                            <i class="bi bi-tools"></i> {{ $bk->service->technician->first_name }}
+                                        </span>
+                                    @endif
+                                </div>
                             </div>
                             <span class="lr-status badge-{{ $bk->status }}">{{ ucfirst($bk->status) }}</span>
                         </div>
@@ -118,8 +125,14 @@
                             <span class="lr-id">#{{ $svc->booking_id }}</span>
                             <div class="lr-details" style="flex:1; margin-left:10px;">
                                 <div style="font-weight:600;">{{ $svc->booking->customer_name ?? 'Unknown' }}</div>
-                                <div style="font-size:0.8rem; opacity:0.7;">Started
-                                    {{ $svc->started_at ? $svc->started_at->diffForHumans() : 'Recently' }}</div>
+                                <div style="font-size:0.8rem; opacity:0.7;">
+                                    @if($svc->technician)
+                                        <span style="color:var(--text-accent); margin-right:6px;">
+                                            <i class="bi bi-tools"></i> {{ $svc->technician->first_name }}
+                                        </span>
+                                    @endif
+                                    Started {{ $svc->started_at ? $svc->started_at->diffForHumans() : 'Recently' }}
+                                </div>
                             </div>
                             <span class="lr-val">{{ $svc->status }}</span>
                         </div>

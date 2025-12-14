@@ -65,6 +65,7 @@
             <tr>
                 <th>Ref</th>
                 <th>Booking</th>
+                <th>Technician</th>
                 <th>Status</th>
                 <th class="text-end">Items</th>
                 <th class="text-end">Subtotal</th>
@@ -81,16 +82,25 @@
                 <tr>
                     <td>{{ $service->reference_code }}</td>
                     <td>#{{ $service->booking_id }}</td>
+                    <td>
+                        @if($service->technician)
+                            <span style="font-weight:600;color:var(--text-main);">{{ $service->technician->first_name }} {{ $service->technician->last_name }}</span>
+                        @else
+                            <span class="text-muted" style="font-size:0.8rem;font-style:italic;">Unassigned</span>
+                        @endif
+                    </td>
                     <td style="min-width:130px;">
                         @php
                             $statusColors = [
                                 \App\Models\Service::STATUS_PENDING => 'var(--yellow-500)',
+                                \App\Models\Service::STATUS_SCHEDULED => 'var(--purple-500)',
                                 \App\Models\Service::STATUS_IN_PROGRESS => 'var(--blue-500)',
                                 \App\Models\Service::STATUS_COMPLETED => 'var(--green-500)',
                                 \App\Models\Service::STATUS_CANCELLED => 'var(--red-500)',
                             ];
                             $statusLabels = [
                                 \App\Models\Service::STATUS_PENDING => 'Pending',
+                                \App\Models\Service::STATUS_SCHEDULED => 'Scheduled',
                                 \App\Models\Service::STATUS_IN_PROGRESS => 'In Progress',
                                 \App\Models\Service::STATUS_COMPLETED => 'Completed',
                                 \App\Models\Service::STATUS_CANCELLED => 'Cancelled',
@@ -145,6 +155,14 @@
                                     <i class="bi bi-pencil-square"></i>
                                 </a>
                             @elseif($service->status === \App\Models\Service::STATUS_PENDING)
+                                 <button type="button" 
+                                    class="btn btn-secondary btn-sm" 
+                                    data-action="schedule-service" 
+                                    data-id="{{ $service->id }}" 
+                                    data-ref="{{ $service->reference_code }}">
+                                    Schedule
+                                </button>
+                            @elseif($service->status === \App\Models\Service::STATUS_SCHEDULED)
                                 <form action="{{ route('services.status',$service) }}" method="POST" class="d-inline">
                                     @csrf
                                     <input type="hidden" name="status" value="{{ \App\Models\Service::STATUS_IN_PROGRESS }}">
@@ -258,7 +276,58 @@
             </div>
         </form>
     </div>
+    </div>
 </div>
+
+<!-- Schedule Service Modal -->
+<div class="modal hidden" id="scheduleServiceModal" data-modal>
+    <div class="modal-content" style="max-width:400px;">
+        <h2 style="margin-bottom:14px;">Schedule Service</h2>
+        <p style="margin-bottom:14px; color:var(--gray-400); font-size:0.9rem;">
+            Assign a technician to service <strong id="schedSvcRef"></strong>.
+        </p>
+        <form id="scheduleServiceForm" method="POST" action="">
+            @csrf
+            <input type="hidden" name="status" value="{{ \App\Models\Service::STATUS_SCHEDULED }}">
+            
+            <div class="form-group mb-3">
+                <label>Technician (Required)</label>
+                <select name="technician_id" class="form-input" required>
+                    <option value="">-- Select Technician --</option>
+                    @foreach($technicians as $tech)
+                        <option value="{{ $tech->id }}">{{ $tech->first_name }} {{ $tech->last_name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="button-row" style="display:flex;gap:10px;justify-content:flex-end;">
+                <button type="button" class="btn-secondary" data-close>Cancel</button>
+                <button type="submit" class="btn-primary">Confirm Schedule</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const schedModal = document.getElementById('scheduleServiceModal');
+    const schedForm = document.getElementById('scheduleServiceForm');
+    const schedRef = document.getElementById('schedSvcRef');
+
+    document.addEventListener('click', e => {
+        const btn = e.target.closest('[data-action="schedule-service"]');
+        if (btn) {
+            const id = btn.dataset.id;
+            const ref = btn.dataset.ref;
+            
+            schedForm.action = "{{ route('services.status', '__ID__') }}".replace('__ID__', id);
+            schedRef.textContent = ref;
+            
+            window._systemUI?.openModalById('scheduleServiceModal');
+        }
+    });
+});
+</script>
 
 <template id="lineItemTemplate">
     <tr class="li-row">

@@ -22,6 +22,7 @@ class Service extends Model
         'started_at',
         'completed_at',
         'expected_end_date',
+        'technician_id',
     ];
 
     protected $casts = [
@@ -34,6 +35,7 @@ class Service extends Model
     ];
 
     public const STATUS_PENDING = 'pending';
+    public const STATUS_SCHEDULED = 'scheduled';
     public const STATUS_IN_PROGRESS = 'in_progress';
     public const STATUS_COMPLETED = 'completed';
     public const STATUS_CANCELLED = 'cancelled';
@@ -54,6 +56,11 @@ class Service extends Model
     public function booking(): BelongsTo
     {
         return $this->belongsTo(Booking::class, 'booking_id', 'booking_id');
+    }
+
+    public function technician(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class, 'technician_id');
     }
 
     public function items(): HasMany
