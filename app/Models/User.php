@@ -18,6 +18,7 @@ class User extends Authenticatable
         'password',
         'role',
         'is_manager',
+        'is_inventory_officer',
         'elevated_until',
         'elevated_by',
     ];

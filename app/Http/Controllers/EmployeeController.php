@@ -57,6 +57,8 @@ class EmployeeController extends Controller
             'contact_number' => ['required', 'string', 'max:40'],
             'sss_number' => ['required', 'string', 'max:40', 'unique:employees,sss_number'],
             'profile_picture' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'is_manager' => ['nullable', 'boolean'],
+            'is_inventory_officer' => ['nullable', 'boolean'],
         ]);
 
         DB::transaction(function () use ($request, $data) {
@@ -67,6 +69,8 @@ class EmployeeController extends Controller
                 'email' => $data['email'],
                 'password' => $data['password'],
                 'role' => 'employee',
+                'is_manager' => $request->boolean('is_manager'),
+                'is_inventory_officer' => $request->boolean('is_inventory_officer'),
             ]);
 
             $profilePath = $request->hasFile('profile_picture')

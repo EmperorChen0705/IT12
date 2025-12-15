@@ -401,6 +401,32 @@
                                 </div>
                             </div>
 
+                            <h4 class="section-heading" style="margin:14px 0 8px;">Roles</h4>
+                            <div class="form-row">
+                                <div class="form-group" style="flex:1 0 100%;">
+                                    <div style="display:flex; gap:20px; flex-wrap:wrap;">
+                                        <label style="display:flex; align-items:center; gap:8px; cursor:not-allowed;">
+                                            <input type="checkbox" checked disabled style="accent-color:var(--primary);">
+                                            <span>Technician (Default)</span>
+                                            <input type="hidden" name="role" value="employee">
+                                        </label>
+                                        <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                                            <input type="checkbox" name="is_manager" value="1"
+                                                style="accent-color:var(--primary);">
+                                            <span>Manager</span>
+                                        </label>
+                                        <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                                            <input type="checkbox" name="is_inventory_officer" value="1"
+                                                style="accent-color:var(--primary);">
+                                            <span>Inventory Officer</span>
+                                        </label>
+                                    </div>
+                                    <small style="color:var(--gray-500); display:block; margin-top:5px;">
+                                        Assign additional responsibilities. Technician role is mandatory.
+                                    </small>
+                                </div>
+                            </div>
+
                             <div class="button-row"
                                 style="margin-top:18px; display:flex; gap:10px; justify-content:flex-end;">
                                 <button type="button" class="btn-secondary" data-close>Cancel</button>
