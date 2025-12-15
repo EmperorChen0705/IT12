@@ -52,10 +52,10 @@
     <table>
         <thead>
             <tr>
-                <th style="width: 80px;">SKU</th>
                 <th>Item Name</th>
-                <th>Category</th>
-                <th style="text-align:right;">Stock</th>
+                <th style="text-align:right;">Current Stock</th>
+                <th style="text-align:right;">Unit Price</th>
+                <th style="text-align:right;">Total Value</th>
                 <th style="text-align:right;">Reorder Lvl</th>
                 <th>Status</th>
             </tr>
@@ -63,16 +63,18 @@
         <tbody>
             @foreach($items as $item)
                 <tr>
-                    <td>{{ $item->sku }}</td>
                     <td>{{ $item->name }}</td>
-                    <td>{{ $item->category }}</td>
-                    <td style="text-align:right;">{{ $item->stock_quantity }}</td>
-                    <td style="text-align:right;">{{ $item->reorder_level }}</td>
+                    <td style="text-align:right;">{{ $item->quantity }} {{ $item->unit }}</td>
+                    <td style="text-align:right;">{{ number_format($item->unit_price, 2) }}</td>
+                    <td style="text-align:right;">{{ number_format($item->quantity * $item->unit_price, 2) }}</td>
+                    <td style="text-align:right;">5 (Default)</td>
                     <td>
-                        @if($item->stock_quantity <= $item->reorder_level)
-                            <span style="color:red; font-weight:bold;">Low Stock</span>
+                        @if($item->quantity <= 0)
+                            <span style="color:red; font-weight:bold;">Out of Stock</span>
+                        @elseif($item->quantity <= 5)
+                            <span style="color:orange; font-weight:bold;">Low Stock</span>
                         @else
-                            In Stock
+                            <span style="color:green;">Good</span>
                         @endif
                     </td>
                 </tr>

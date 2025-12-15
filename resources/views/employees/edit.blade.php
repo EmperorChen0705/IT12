@@ -131,6 +131,42 @@
                     </div>
                 </div>
 
+                <h4 class="section-heading mt-4">Administrative Access</h4>
+                <div class="glass-card inner-card mb-4" style="background:#222; padding:20px;">
+                    <div class="form-group mb-3">
+                        <label class="form-label mb-2">Access Level</label>
+                        <div class="d-flex gap-3 flex-wrap">
+                            <label class="radio-card d-flex align-items-center gap-2" style="cursor:pointer;">
+                                <input type="radio" name="admin_access_type" value="none"
+                                    {{ $employee->user->role !== 'admin' && !$employee->user->isElevated() ? 'checked' : '' }}
+                                    onchange="toggleAdminExpiry()">
+                                <span>No Admin Access</span>
+                            </label>
+
+                            <label class="radio-card d-flex align-items-center gap-2" style="cursor:pointer;">
+                                <input type="radio" name="admin_access_type" value="permanent"
+                                    {{ $employee->user->role === 'admin' ? 'checked' : '' }}
+                                    onchange="toggleAdminExpiry()">
+                                <span>Permanent Admin</span>
+                            </label>
+
+                            <label class="radio-card d-flex align-items-center gap-2" style="cursor:pointer;">
+                                <input type="radio" name="admin_access_type" value="temporary"
+                                    {{ $employee->user->isElevated() ? 'checked' : '' }}
+                                    onchange="toggleAdminExpiry()">
+                                <span>Temporary (Elevated)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div id="adminExpirySection" class="form-group mb-3 {{ $employee->user->isElevated() ? '' : 'hidden' }}">
+                        <label class="form-label" for="admin_expires_at">Access Expiration Date</label>
+                        <input type="datetime-local" id="admin_expires_at" name="admin_expires_at" class="form-control dark-input"
+                            value="{{ $employee->user->elevated_until ? $employee->user->elevated_until->format('Y-m-d\TH:i') : '' }}">
+                        <small class="text-muted d-block mt-1">Access will adhere to 'Strict Admin' rules until this date.</small>
+                    </div>
+                </div>
+
                 <div class="button-row mt-4" style="display:flex;gap:10px;justify-content:flex-end;">
                     <a href="{{ route('employees.index') }}" class="btn-secondary"
                         style="display:inline-flex;align-items:center;justify-content:center;min-width:180px;padding:10px 22px;">
@@ -141,6 +177,23 @@
                         Update Employee
                     </button>
                 </div>
+
+                <script>
+                    function toggleAdminExpiry() {
+                        const type = document.querySelector('input[name="admin_access_type"]:checked').value;
+                        const expirySection = document.getElementById('adminExpirySection');
+                        if (type === 'temporary') {
+                            expirySection.classList.remove('hidden');
+                            document.getElementById('admin_expires_at').required = true;
+                        } else {
+                            expirySection.classList.add('hidden');
+                            document.getElementById('admin_expires_at').required = false;
+                            document.getElementById('admin_expires_at').value = '';
+                        }
+                    }
+                    // Initial run
+                    // toggleAdminExpiry(); // Don't run this initially as it might clear existing value if not careful, rely on blade logic for initial hidden state
+                </script>
             </form>
         </div>
     </div>

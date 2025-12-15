@@ -122,9 +122,27 @@ class EmployeeController extends Controller
             'contact_number' => ['required', 'string', 'max:40'],
             'sss_number' => ['required', 'string', 'max:40', Rule::unique('employees', 'sss_number')->ignore($employee->id)],
             'profile_picture' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'admin_access_type' => ['nullable', 'string', 'in:none,permanent,temporary'],
+            'admin_expires_at' => ['nullable', 'date', 'after:now', 'required_if:admin_access_type,temporary'],
         ]);
 
         DB::transaction(function () use ($request, $data, $employee) {
+
+            // Admin Access Logic
+            if (isset($data['admin_access_type'])) {
+                if ($data['admin_access_type'] === 'permanent') {
+                    $employee->user->role = 'admin';
+                    $employee->user->elevated_until = null;
+                } elseif ($data['admin_access_type'] === 'temporary') {
+                    $employee->user->role = 'employee'; // Ensure base role is employee
+                    $employee->user->elevated_until = $data['admin_expires_at'];
+                    // We might track 'elevated_by' here if we had the admin ID handy, but Auth::id() works
+                    $employee->user->elevated_by = auth()->id();
+                } else { // none
+                    $employee->user->role = 'employee';
+                    $employee->user->elevated_until = null;
+                }
+            }
 
             $employee->user->name = $data['name'];
             $employee->user->email = $data['email'];
@@ -152,7 +170,7 @@ class EmployeeController extends Controller
                 'employee.updated',
                 $employee,
                 'Employee updated: ' . $employee->first_name . ' ' . $employee->last_name,
-                ['employee_id' => $employee->id]
+                ['employee_id' => $employee->id, 'admin_access' => $data['admin_access_type'] ?? 'unchanged']
             );
         });
 
