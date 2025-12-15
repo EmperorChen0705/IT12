@@ -318,7 +318,7 @@
 
             @if($user->canAccessAdmin())
                 <div class="modal hidden" id="createEmployeeModal" data-modal>
-                    <div class="modal-content" style="width: 900px; max-width: 95%;">
+                    <div class="modal-content" style="width: 700px; max-width: 95%;">
                         <h2 style="margin-bottom:14px;">Register Employee</h2>
 
                         @if($errors->any() && url()->current() === route('system'))
