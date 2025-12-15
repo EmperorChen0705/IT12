@@ -12,8 +12,8 @@ class SupplierController extends Controller
     {
         // Only admins can create, update, or delete suppliers
         $this->middleware(function ($request, $next) {
-            if (!auth()->user()->canAccessAdmin()) {
-                abort(403, 'Only administrators can manage suppliers.');
+            if (!auth()->user()->canAccessAdmin() && !auth()->user()->is_inventory_officer) {
+                abort(403, 'Only administrators or inventory officers can manage suppliers.');
             }
             return $next($request);
         })->except(['index']);

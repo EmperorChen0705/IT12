@@ -241,35 +241,44 @@
         </div>
         <center>
             <ul>
-                @if($user->canAccessAdmin())
-                    <li><a href="{{ route('system') }}" class="nav-link"><i class="bi bi-activity"></i> Dashboard</a></li>
-                @endif
-                <li><a href="{{ route('inventory.index') }}" class="nav-link"><i class="bi bi-inboxes-fill"></i>
-                        Inventory</a></li>
-                <li><a href="{{ route('stock_in.index') }}" class="nav-link"><i class="bi bi-dropbox"></i> Stock-In</a>
-                </li>
-                <li><a href="{{ route('bookings.index') }}" class="nav-link"><i class="bi bi-person-lines-fill"></i>
-                        Bookings</a></li>
-                <li><a href="{{ route('services.index') }}" class="nav-link"><i class="bi bi-wrench"></i> Service</a>
-                </li>
-                <li><a href="{{ route('suppliers.index') }}" class="nav-link"><i class="bi bi-person-fill-down"></i>
-                        Suppliers</a></li>
-
-                @if($user->role === 'admin')
-                    <li><a href="{{ route('reports.index') }}" class="nav-link"><i class="bi bi-list-columns"></i>
-                            Reports</a></li>
-                @endif
-                @if($user->canAccessAdmin())
-                    <li><a href="{{ route('employees.index') }}" class="nav-link"><i class="bi bi-people-fill"></i>
-                            Employees</a></li>
-                    @if($user->role === 'admin')
-                        <li><a href="{{ route('managers.index') }}" class="nav-link"><i class="bi bi-shield-lock"></i>
-                                Managers</a></li>
+                <ul>
+                    @if($user->canAccessAdmin() || $user->is_manager)
+                        <li><a href="{{ route('system') }}" class="nav-link"><i class="bi bi-activity"></i> Dashboard</a>
+                        </li>
                     @endif
-                    <li><a href="{{ route('backups.index') }}" class="nav-link"><i class="bi bi-database"></i>
-                            Backups</a></li>
-                @endif
-            </ul>
+
+                    @if($user->canAccessAdmin() || $user->is_inventory_officer)
+                        <li><a href="{{ route('inventory.index') }}" class="nav-link"><i class="bi bi-inboxes-fill"></i>
+                                Inventory</a></li>
+                        <li><a href="{{ route('stock_in.index') }}" class="nav-link"><i class="bi bi-dropbox"></i>
+                                Stock-In</a></li>
+                    @endif
+
+                    @if($user->canAccessAdmin() || $user->is_manager)
+                        <li><a href="{{ route('bookings.index') }}" class="nav-link"><i class="bi bi-person-lines-fill"></i>
+                                Bookings</a></li>
+                        <li><a href="{{ route('services.index') }}" class="nav-link"><i class="bi bi-wrench"></i>
+                                Service</a></li>
+                    @endif
+
+                    @if($user->canAccessAdmin() || $user->is_inventory_officer)
+                        <li><a href="{{ route('suppliers.index') }}" class="nav-link"><i class="bi bi-person-fill-down"></i>
+                                Suppliers</a></li>
+                    @endif
+
+                    @if($user->canAccessAdmin() || $user->is_manager)
+                        <li><a href="{{ route('reports.index') }}" class="nav-link"><i class="bi bi-list-columns"></i>
+                                Reports</a></li>
+                    @endif
+
+                    {{-- STRICT ADMIN ONLY (No Elevated Access) --}}
+                    @if($user->role === 'admin')
+                        <li><a href="{{ route('employees.index') }}" class="nav-link"><i class="bi bi-people-fill"></i>
+                                Employees</a></li>
+                        <li><a href="{{ route('backups.index') }}" class="nav-link"><i class="bi bi-database"></i>
+                                Backups</a></li>
+                    @endif
+                </ul>
         </center>
     </div>
 

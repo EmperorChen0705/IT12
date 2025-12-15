@@ -12,6 +12,10 @@ class ItemController extends Controller
 {
     public function index(Request $request)
     {
+        if (!auth()->user()->canAccessAdmin() && !auth()->user()->is_inventory_officer) {
+            abort(403, 'Unauthorized access to Inventory.');
+        }
+
         $search = $request->input('search');
         $categoryFilter = $request->input('category_filter');
 

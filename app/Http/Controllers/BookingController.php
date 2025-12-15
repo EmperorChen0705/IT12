@@ -12,6 +12,10 @@ class BookingController extends Controller
 {
     public function index(Request $request)
     {
+        if (!auth()->user()->canAccessAdmin() && !auth()->user()->is_manager) {
+            abort(403, 'Unauthorized access to Bookings.');
+        }
+
         $search = $request->input('search');
         $status = $request->input('status');
 

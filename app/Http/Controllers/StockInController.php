@@ -13,6 +13,10 @@ class StockInController extends Controller
 {
     public function index(Request $request)
     {
+        if (!auth()->user()->canAccessAdmin() && !auth()->user()->is_inventory_officer) {
+            abort(403, 'Unauthorized access to Stock-In.');
+        }
+
         $search = $request->input('search');
 
         $stockIns = StockIn::with(['item', 'supplier'])

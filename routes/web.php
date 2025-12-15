@@ -99,22 +99,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/system/bookings', [BookingController::class, 'index'])->name('bookings.index');
     Route::post('/bookings/{booking}/appoint', [BookingController::class, 'appoint'])->name('bookings.appoint');
 
-    // Reports (Admin Only)
-    Route::get('/reports', [ReportsController::class, 'index'])->middleware('role:admin')->name('reports.index');
-    Route::get('/reports/bookings', [ReportsController::class, 'bookings'])->middleware('role:admin')->name('reports.bookings');
-    Route::get('/reports/inventory', [ReportsController::class, 'inventory'])->middleware('role:admin')->name('reports.inventory');
-
-    // Manager Elevation (Admin Only)
-    Route::middleware('role:admin')->prefix('managers')->group(function () {
-        Route::get('/', [\App\Http\Controllers\ManagerController::class, 'index'])->name('managers.index');
-        Route::post('/{user}/designate', [\App\Http\Controllers\ManagerController::class, 'designate'])->name('managers.designate');
-        Route::delete('/{user}/designate', [\App\Http\Controllers\ManagerController::class, 'undesignate'])->name('managers.undesignate');
-        Route::post('/{user}/elevate', [\App\Http\Controllers\ManagerController::class, 'grantElevation'])->name('managers.elevate');
-        Route::post('/{user}/quick-toggle', [\App\Http\Controllers\ManagerController::class, 'quickToggle'])->name('managers.quick_toggle');
-        Route::delete('/{user}/elevate', [\App\Http\Controllers\ManagerController::class, 'revokeElevation'])->name('managers.revoke');
-        Route::post('/revoke-all', [\App\Http\Controllers\ManagerController::class, 'revokeAll'])->name('managers.revoke_all');
-        Route::get('/history', [\App\Http\Controllers\ManagerController::class, 'history'])->name('managers.history');
-    });
+    // Reports (Admin & Manager)
+    Route::get('/reports', [ReportsController::class, 'index'])->name('reports.index');
+    Route::get('/reports/bookings', [ReportsController::class, 'bookings'])->name('reports.bookings');
+    Route::get('/reports/inventory', [ReportsController::class, 'inventory'])->name('reports.inventory');
 
     // Backups (Admin Only)
     Route::middleware('role:admin')->prefix('backups')->group(function () {

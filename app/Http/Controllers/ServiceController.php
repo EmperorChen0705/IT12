@@ -19,6 +19,10 @@ class ServiceController extends Controller
 {
     public function index(Request $request)
     {
+        if (!auth()->user()->canAccessAdmin() && !auth()->user()->is_manager) {
+            abort(403, 'Unauthorized access to Services.');
+        }
+
         $services = Service::with(['booking', 'items.item'])
             ->latest()
             ->paginate(25);

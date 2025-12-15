@@ -14,8 +14,11 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        if (!auth()->user()->canAccessAdmin()) {
-            return redirect()->route('bookings.index');
+        if (!auth()->user()->canAccessAdmin() && !auth()->user()->is_manager) {
+            if (auth()->user()->is_inventory_officer) {
+                return redirect()->route('inventory.index');
+            }
+            return redirect()->route('booking.portal');
         }
 
         // Metrics

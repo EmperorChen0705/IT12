@@ -18,8 +18,11 @@ class ReportsController extends Controller
     public function __construct()
     {
         $this->middleware(function ($request, $next) {
-            if (!auth()->check() || !auth()->user()->canAccessAdmin()) {
+            if (!auth()->check()) {
                 abort(403, 'Unauthorized access.');
+            }
+            if (!auth()->user()->canAccessAdmin() && !auth()->user()->is_manager) {
+                return redirect()->route('bookings.index');
             }
             return $next($request);
         });
@@ -163,7 +166,8 @@ class ReportsController extends Controller
         if ($request->input('export') === 'pdf') {
             $items = $stockQuery->get();
             $lowStock = $request->input('status') === 'low';
-            $pdf = Pdf::loadView('reports.pdf.inventory', compact('items', 'lowStock'));
+            $pdf = Pdf::loadView('reports.pdf.inventory', compact('items', 'lowStock'))
+                ->setPaper('a4', 'landscape');
             return $pdf->download('inventory_report.pdf');
         }
 
