@@ -43,10 +43,11 @@ class EmployeeController extends Controller
         }
 
         // Sorting logic
-        if ($request->input('sort') === 'newest') {
-            $query->latest(); // created_at desc
+        // Default to Newest to ensure created employees are visible immediately
+        if ($request->input('sort') === 'alpha') {
+            $query->orderBy('last_name')->orderBy('first_name');
         } else {
-            $query->orderBy('last_name'); // default alphabetical
+            $query->latest(); // created_at desc
         }
 
         $employees = $query->paginate(10);
@@ -106,7 +107,7 @@ class EmployeeController extends Controller
         });
 
         return redirect()
-            ->route('employees.index', ['sort' => 'newest'])
+            ->route('employees.index')
             ->with('success', 'Employee created: ' . $employee->first_name . ' ' . $employee->last_name);
     }
 

@@ -37,6 +37,20 @@
                     <button type="submit" class="btn btn-primary btn-search-main">
                         Search
                     </button>
+
+                    <!-- Sort Toggle -->
+                    <div style="margin-left: auto; display: flex; gap: 5px;">
+                        <a href="{{ route('employees.index', array_merge(request()->all(), ['sort' => 'newest'])) }}"
+                            class="btn {{ !request('sort') || request('sort') === 'newest' ? 'btn-secondary' : 'btn-light' }}"
+                            title="Show Newest First">
+                            <i class="bi bi-calendar-event"></i> Newest
+                        </a>
+                        <a href="{{ route('employees.index', array_merge(request()->all(), ['sort' => 'alpha'])) }}"
+                            class="btn {{ request('sort') === 'alpha' ? 'btn-secondary' : 'btn-light' }}"
+                            title="Sort Alphabetically">
+                            <i class="bi bi-sort-alpha-down"></i> A-Z
+                        </a>
+                    </div>
                 </form>
 
                 <div class="search-meta">
