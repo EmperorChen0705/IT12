@@ -135,26 +135,29 @@
                 <div class="glass-card inner-card mb-4" style="background:#222; padding:20px;">
                     <div class="form-group mb-3">
                         <label class="form-label mb-2">Access Level</label>
-                        <div class="d-flex gap-3 flex-wrap">
-                            <label class="radio-card d-flex align-items-center gap-2" style="cursor:pointer;">
+                        <div style="display:flex; flex-direction:column; gap:10px;">
+                            <label class="radio-card" style="display:flex; align-items:center; gap:10px; cursor:pointer; background:rgba(255,255,255,0.05); padding:10px 15px; border-radius:8px; border:1px solid #333;">
                                 <input type="radio" name="admin_access_type" value="none"
                                     {{ $employee->user->role !== 'admin' && !$employee->user->isElevated() ? 'checked' : '' }}
-                                    onchange="toggleAdminExpiry()">
-                                <span>No Admin Access</span>
+                                    onchange="toggleAdminExpiry()"
+                                    style="accent-color: var(--brand-red); width:auto; margin:0;">
+                                <span style="font-weight:600; font-size:0.85rem; color:#eee;">No Admin Access</span>
                             </label>
 
-                            <label class="radio-card d-flex align-items-center gap-2" style="cursor:pointer;">
+                            <label class="radio-card" style="display:flex; align-items:center; gap:10px; cursor:pointer; background:rgba(255,255,255,0.05); padding:10px 15px; border-radius:8px; border:1px solid #333;">
                                 <input type="radio" name="admin_access_type" value="permanent"
                                     {{ $employee->user->role === 'admin' ? 'checked' : '' }}
-                                    onchange="toggleAdminExpiry()">
-                                <span>Permanent Admin</span>
+                                    onchange="toggleAdminExpiry()"
+                                    style="accent-color: var(--brand-red); width:auto; margin:0;">
+                                <span style="font-weight:600; font-size:0.85rem; color:#eee;">Permanent Admin</span>
                             </label>
 
-                            <label class="radio-card d-flex align-items-center gap-2" style="cursor:pointer;">
+                            <label class="radio-card" style="display:flex; align-items:center; gap:10px; cursor:pointer; background:rgba(255,255,255,0.05); padding:10px 15px; border-radius:8px; border:1px solid #333;">
                                 <input type="radio" name="admin_access_type" value="temporary"
                                     {{ $employee->user->isElevated() ? 'checked' : '' }}
-                                    onchange="toggleAdminExpiry()">
-                                <span>Temporary (Elevated)</span>
+                                    onchange="toggleAdminExpiry()"
+                                    style="accent-color: var(--brand-red); width:auto; margin:0;">
+                                <span style="font-weight:600; font-size:0.85rem; color:#eee;">Temporary (Elevated)</span>
                             </label>
                         </div>
                     </div>
