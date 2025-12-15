@@ -11,9 +11,9 @@ class AuthController extends Controller
     {
         if (Auth::check()) {
             if (Auth::user()->role === 'admin') {
-                return redirect()->route('system'); 
+                return redirect()->route('system');
             } elseif (Auth::user()->role === 'employee') {
-                return redirect()->route('inventory.index'); 
+                return redirect()->route('inventory.index');
             }
         }
         return view('login.login');
@@ -28,15 +28,24 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
             session(['first_login' => true]);
-            if (Auth::user()->role === 'admin') {
+
+            $user = Auth::user();
+
+            // Admin & Managers -> Dashboard
+            if ($user->canAccessAdmin() || $user->is_manager) {
                 return redirect()->route('system');
-            } elseif (Auth::user()->role === 'employee') {
+            }
+            // Inventory Officer -> Inventory
+            elseif ($user->is_inventory_officer) {
                 return redirect()->route('inventory.index');
             }
+
+            // Others (Technicians/Regular) -> Booking Portal (or Home)
+            return redirect()->route('booking.portal');
         }
 
         return back()->withErrors([
-            'name' => 'The provided credentials do not match our records.',
+            'email' => 'The provided credentials do not match our records.',
         ])->withInput();
     }
 
@@ -47,7 +56,7 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
         return redirect()->route('login');
     }
-    
+
     public function viewProfile()
     {
         $user = Auth::user();
