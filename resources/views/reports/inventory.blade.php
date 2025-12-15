@@ -35,8 +35,7 @@
                     </select>
                 </div>
                 <button type="submit" class="btn btn-primary">Filter</button>
-                <a href="{{ route('reports.inventory', array_merge(request()->all(), ['export' => 'csv'])) }}"
-                    class="btn btn-secondary">Export CSV</a>
+
                 <a href="{{ route('reports.inventory', array_merge(request()->all(), ['export' => 'pdf'])) }}"
                     class="btn btn-secondary">Export PDF</a>
             </form>

@@ -116,10 +116,7 @@ class ReportsController extends Controller
             $query->where('preferred_date', '<=', $request->date_to);
         }
 
-        // CSV Export
-        if ($request->input('export') === 'csv') {
-            return $this->exportBookingsCsv($query->get());
-        }
+
 
         if ($request->input('export') === 'pdf') {
             $bookings = $query->get();
@@ -161,10 +158,7 @@ class ReportsController extends Controller
             $stockQuery->where('quantity', '>', 5);
         }
 
-        // Export Logic handling
-        if ($request->input('export') === 'csv') {
-            return $this->exportInventoryCsv($stockQuery->get(), $this->getRecentMovements($request, 1000));
-        }
+
 
         if ($request->input('export') === 'pdf') {
             $items = $stockQuery->get();
@@ -262,84 +256,5 @@ class ReportsController extends Controller
         }
 
         return $merged->sortByDesc('timestamp')->take($limit);
-    }
-
-    private function exportBookingsCsv($bookings)
-    {
-        $filename = 'booking_report_' . now()->format('Ymd_His') . '.csv';
-        $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => "attachment; filename=\"$filename\"",
-        ];
-
-        return response()->streamDownload(function () use ($bookings) {
-            $out = fopen('php://output', 'w');
-            fputcsv($out, ['Booking ID', 'Customer Name', 'Contact', 'Email', 'Service Type', 'Status', 'Preferred Date', 'Notes', 'Assigned Technician']);
-
-            foreach ($bookings as $b) {
-                $tech = 'Not Assigned';
-                if ($b->service && $b->service->technician) {
-                    $tech = $b->service->technician->first_name . ' ' . $b->service->technician->last_name;
-                }
-                fputcsv($out, [
-                    $b->booking_id,
-                    $b->customer_name,
-                    $b->contact_number,
-                    $b->email,
-                    $b->service_type,
-                    $b->status,
-                    $b->preferred_date,
-                    $b->notes,
-                    $tech
-                ]);
-            }
-            fclose($out);
-        }, $filename, $headers);
-    }
-
-    private function exportInventoryCsv($inventory, $movements)
-    {
-        $filename = 'inventory_report_' . now()->format('Ymd_His') . '.csv';
-        $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => "attachment; filename=\"$filename\"",
-        ];
-
-        return response()->streamDownload(function () use ($inventory, $movements) {
-            $out = fopen('php://output', 'w');
-
-            // Section 1: Stock
-            fputcsv($out, ['--- CURRENT STOCK STATUS ---']);
-            fputcsv($out, ['Item ID', 'Name', 'Quantity', 'Unit Price', 'Total Value', 'Status']);
-            foreach ($inventory as $item) {
-                $status = $item->quantity <= 0 ? 'Out of Stock' : ($item->quantity <= 5 ? 'Low Stock' : 'Good');
-                fputcsv($out, [
-                    $item->item_id,
-                    $item->name,
-                    $item->quantity,
-                    $item->unit_price,
-                    $item->quantity * $item->unit_price,
-                    $status
-                ]);
-            }
-
-            fputcsv($out, []); // Spacer
-            fputcsv($out, ['--- RECENT MOVEMENTS ---']);
-            fputcsv($out, ['Date', 'Type', 'Reference', 'Item', 'Quantity', 'Unit Price', 'Total Price', 'User/Supplier']);
-            foreach ($movements as $mov) {
-                fputcsv($out, [
-                    $mov['date'],
-                    $mov['type'],
-                    $mov['ref_code'],
-                    $mov['item_name'],
-                    $mov['quantity'],
-                    $mov['unit_price'],
-                    $mov['total_price'],
-                    $mov['user']
-                ]);
-            }
-
-            fclose($out);
-        }, $filename, $headers);
     }
 }
