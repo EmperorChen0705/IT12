@@ -330,7 +330,7 @@
                     <div class="modal-content" style="width: 850px; max-width: 95%;">
                         <h2 style="margin-bottom:14px;">Register Employee</h2>
 
-                        @if($errors->any() && url()->current() === route('system'))
+                        @if($errors->any())
                             <div class="alert alert-danger mb-2">
                                 <ul class="m-0 ps-3" style="font-size:.7rem;">
                                     @foreach($errors->all() as $e)
@@ -339,7 +339,7 @@
                                 </ul>
                             </div>
                         @endif
-                        @if(session('success') && url()->current() === route('system'))
+                        @if(session('success') && (session('success') === 'Employee created.' || str_contains(session('success'), 'Employee created')))
                             <div class="alert alert-success mb-2">{{ session('success') }}</div>
                         @endif
 
