@@ -107,7 +107,20 @@ class ServiceController extends Controller
 
     public function update(Request $request, Service $service)
     {
+        // Allow Admin to update Payment Status even if completed
         if ($service->status === Service::STATUS_COMPLETED) {
+            if ($request->has('payment_status') && auth()->user()->canAccessAdmin()) {
+                $request->validate(['payment_status' => 'required|in:None,Partial,Full']);
+                $service->booking->update(['payment_status' => $request->payment_status]);
+                ActivityLog::record(
+                    'booking.payment_status_updated',
+                    $service->booking,
+                    'Payment status updated to ' . $request->payment_status,
+                    ['payment_status' => $request->payment_status]
+                );
+                return back()->with('success', 'Payment status updated.');
+            }
+
             return back()->withErrors('Completed service cannot be modified.');
         }
 

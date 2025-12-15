@@ -63,20 +63,30 @@
                 <th>Service Type</th>
                 <th>Plate Number</th>
                 <th>Status</th>
+                <th>Payment</th>
                 <th>Date</th>
             </tr>
         </thead>
         <tbody>
             @foreach($bookings as $booking)
                 <tr>
-                    <td>{{ $booking->id }}</td>
+                    <td>{{ $booking->booking_id }}</td>
                     <td>
-                        {{ $booking->first_name }} {{ $booking->last_name }}<br>
+                        {{ $booking->customer_name }}<br>
                         <span style="color:#666;font-size:9px;">{{ $booking->email }}</span>
                     </td>
                     <td>{{ $booking->service_type }}</td>
                     <td>{{ $booking->plate_number ?? '—' }}</td>
                     <td>{{ ucfirst($booking->status) }}</td>
+                    <td>
+                        @if($booking->payment_status === 'Full')
+                            <span style="color:green;font-weight:bold;">Full</span>
+                        @elseif($booking->payment_status === 'Partial')
+                            <span style="color:orange;font-weight:bold;">Partial</span>
+                        @else
+                            <span style="color:gray;">None</span>
+                        @endif
+                    </td>
                     <td>{{ $booking->created_at->format('Y-m-d') }}</td>
                 </tr>
             @endforeach

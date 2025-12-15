@@ -39,6 +39,23 @@
                 <label>Status</label>
                 <input class="form-input" value="{{ ucfirst(str_replace('_',' ',$service->status)) }}" disabled>
             </div>
+            
+            @if(auth()->user()->canAccessAdmin())
+                <div class="form-group">
+                    <label style="color:var(--accent-color);">Payment Status</label>
+                    @if($service->status === \App\Models\Service::STATUS_COMPLETED)
+                        <select name="payment_status" class="form-input" style="border-color:var(--accent-color);">
+                            <option value="None" @selected($service->booking->payment_status === 'None')>None</option>
+                            <option value="Partial" @selected($service->booking->payment_status === 'Partial')>Partial</option>
+                            <option value="Full" @selected($service->booking->payment_status === 'Full')>Full</option>
+                        </select>
+                    @else
+                        <input class="form-input" value="{{ $service->booking->payment_status ?? 'None' }}" disabled 
+                               title="Editable only after Check-Out">
+                    @endif
+                </div>
+            @endif
+
             <div class="form-group">
                 <input name="labor_fee" type="number" step="0.01" min="0"
                        class="form-input"

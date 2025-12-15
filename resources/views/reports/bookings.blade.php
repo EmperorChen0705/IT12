@@ -44,6 +44,7 @@
                     <th>Vehicle / Service</th>
                     <th>Dates</th>
                     <th>Status</th>
+                    <th>Payment</th>
                     <th>Assigned Technician</th>
                 </tr>
             </thead>
@@ -86,6 +87,12 @@
                             <span
                                 class="badge bg-{{ $booking->status === 'completed' ? 'success' : ($booking->status === 'pending' ? 'warning' : 'secondary') }}">
                                 {{ ucfirst($booking->status) }}
+                            </span>
+                        </td>
+                        <td>
+                            <span
+                                class="badge {{ match ($booking->payment_status) { 'Full' => 'bg-success', 'Partial' => 'bg-warning', default => 'bg-secondary'} }}">
+                                {{ $booking->payment_status ?? 'None' }}
                             </span>
                         </td>
                         <td>

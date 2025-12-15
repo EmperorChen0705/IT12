@@ -23,6 +23,7 @@ class Booking extends Model
         'preferred_time',
         'notes',
         'status',
+        'payment_status',
         'channel',
     ];
 
