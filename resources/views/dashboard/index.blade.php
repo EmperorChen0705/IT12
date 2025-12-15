@@ -39,21 +39,21 @@
         <!-- ROW 1: New Metrics (2x2 Grid) -->
         <div class="dash-metrics" style="grid-template-columns: repeat(2, 1fr); gap: 20px;">
             <!-- Row 1, Col 1 -->
-            <div class="dm-card wide">
+            <div class="dm-card">
                 <div class="dm-label">Total Bookings</div>
                 <div class="dm-value">{{ number_format($totalBookings) }}</div>
                 <div class="dm-sub"><span class="dot dot-blue"></span>All time recordings</div>
             </div>
 
             <!-- Row 1, Col 2 -->
-            <div class="dm-card wide">
+            <div class="dm-card">
                 <div class="dm-label">Pending Bookings</div>
                 <div class="dm-value">{{ number_format($pendingBookingsCount) }}</div>
                 <div class="dm-sub"><span class="dot dot-amber"></span>Awaiting action</div>
             </div>
 
             <!-- Row 2, Col 1 -->
-            <div class="dm-card wide">
+            <div class="dm-card">
                 <div class="dm-label">Active Services (Load)</div>
                 <div class="dm-value">{{ $activeServicesCount }} / 10</div>
                 <div class="dm-sub">
