@@ -210,7 +210,7 @@
 
         <!-- Mobile Repsonsiveness Style -->
         <style>
-            @media (max-width: 900px) {
+            @media (max-width: 768px) {
                 .dash-metrics {
                     grid-template-columns: 1fr !important;
                 }
