@@ -41,17 +41,42 @@
             </div>
             
             @if(auth()->user()->canAccessAdmin())
-                <div class="form-group">
-                    <label style="color:var(--accent-color);">Payment Status</label>
+                <div class="form-group" style="flex: 1 0 100%; margin-top: 10px; padding: 15px; border: 1px solid var(--accent-color); border-radius: 12px; background: rgba(239, 53, 53, 0.05);">
+                    <label style="color:var(--accent-color); font-weight: 600; margin-bottom: 10px; display: block;">Payment Status (Admin Only)</label>
+                    
                     @if($service->status === \App\Models\Service::STATUS_COMPLETED)
-                        <select name="payment_status" class="form-input" style="border-color:var(--accent-color);">
-                            <option value="None" @selected($service->booking->payment_status === 'None')>None</option>
-                            <option value="Partial" @selected($service->booking->payment_status === 'Partial')>Partial</option>
-                            <option value="Full" @selected($service->booking->payment_status === 'Full')>Full</option>
-                        </select>
+                        <div style="display: flex; gap: 20px;">
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                <input type="radio" name="payment_status" value="None" 
+                                    @checked($service->booking->payment_status === 'None')
+                                    style="accent-color: var(--accent-color); transform: scale(1.2);">
+                                <span style="color: #fff;">None</span>
+                            </label>
+                            
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                <input type="radio" name="payment_status" value="Partial" 
+                                    @checked($service->booking->payment_status === 'Partial')
+                                    style="accent-color: var(--accent-color); transform: scale(1.2);">
+                                <span style="color: #fff;">Partial</span>
+                            </label>
+                            
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                <input type="radio" name="payment_status" value="Full" 
+                                    @checked($service->booking->payment_status === 'Full')
+                                    style="accent-color: var(--accent-color); transform: scale(1.2);">
+                                <span style="color: #fff;">Full</span>
+                            </label>
+                        </div>
                     @else
-                        <input class="form-input" value="{{ $service->booking->payment_status ?? 'None' }}" disabled 
-                               title="Editable only after Check-Out">
+                        <div style="display: flex; gap: 20px; opacity: 0.6;">
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: not-allowed;">
+                                <input type="radio" checked disabled style="accent-color: var(--gray-500);">
+                                <span style="color: var(--gray-500);">{{ $service->booking->payment_status ?? 'None' }}</span>
+                            </label>
+                            <span style="font-size: 0.8rem; color: var(--gray-500); align-self: center;">
+                                (Editable only after Check-Out)
+                            </span>
+                        </div>
                     @endif
                 </div>
             @endif
