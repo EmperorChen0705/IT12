@@ -115,7 +115,7 @@
 
         @if(method_exists($employees, 'links'))
             <div class="mt-3 pagination-wrapper">
-                {{ $employees->appends(['search' => request('search')])->links() }}
+                {{ $employees->appends(['search' => request('search'), 'sort' => request('sort')])->links() }}
             </div>
         @endif
     </div>

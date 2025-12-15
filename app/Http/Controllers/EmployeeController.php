@@ -21,11 +21,12 @@ class EmployeeController extends Controller
             return $next($request);
         });
     }
-    public function index()
+    public function index(Request $request)
     {
-        $query = Employee::with('user')->orderBy('last_name');
+        $query = Employee::with('user');
 
-        if ($search = request('search')) {
+        // Search logic
+        if ($search = $request->input('search')) {
             $like = '%' . $search . '%';
             $query->where(function ($q) use ($like) {
                 $q->where('first_name', 'like', $like)
@@ -39,6 +40,13 @@ class EmployeeController extends Controller
                             ->orWhere('email', 'like', $like)
                     );
             });
+        }
+
+        // Sorting logic
+        if ($request->input('sort') === 'newest') {
+            $query->latest(); // created_at desc
+        } else {
+            $query->orderBy('last_name'); // default alphabetical
         }
 
         $employees = $query->paginate(10);
@@ -98,7 +106,7 @@ class EmployeeController extends Controller
         });
 
         return redirect()
-            ->route('employees.index', ['search' => $employee->last_name])
+            ->route('employees.index', ['sort' => 'newest'])
             ->with('success', 'Employee created: ' . $employee->first_name . ' ' . $employee->last_name);
     }
 
