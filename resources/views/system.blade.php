@@ -318,7 +318,7 @@
 
             @if($user->canAccessAdmin())
                 <div class="modal hidden" id="createEmployeeModal" data-modal>
-                    <div class="modal-content" style="width: 700px; max-width: 95%;">
+                    <div class="modal-content" style="width: 850px; max-width: 95%;">
                         <h2 style="margin-bottom:14px;">Register Employee</h2>
 
                         @if($errors->any() && url()->current() === route('system'))
@@ -338,99 +338,97 @@
                             id="employeeCreateForm">
                             @csrf
 
-                            <h4 class="section-heading" style="margin:10px 0 8px;">Account</h4>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>Name</label>
-                                    <input name="name" class="form-input" required value="{{ old('name') }}">
+                            <div style="display:flex; gap:30px; align-items:flex-start;">
+                                <div style="flex:1;">
+                                    <h4 class="section-heading" style="margin:0 0 12px;">Account</h4>
+                                    <div class="form-group" style="margin-bottom:10px;">
+                                        <label>Name</label>
+                                        <input name="name" class="form-input" required value="{{ old('name') }}">
+                                    </div>
+                                    <div class="form-group" style="margin-bottom:10px;">
+                                        <label>Email</label>
+                                        <input name="email" type="email" class="form-input" required
+                                            value="{{ old('email') }}">
+                                    </div>
+                                    <div class="form-row" style="margin-bottom:0;">
+                                        <div class="form-group">
+                                            <label>Password</label>
+                                            <input name="password" type="password" class="form-input" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Confirm</label>
+                                            <input name="password_confirmation" type="password" class="form-input" required>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="form-group">
-                                    <label>Email</label>
-                                    <input name="email" type="email" class="form-input" required value="{{ old('email') }}">
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>Password</label>
-                                    <input name="password" type="password" class="form-input" required>
-                                </div>
-                                <div class="form-group">
-                                    <label>Confirm</label>
-                                    <input name="password_confirmation" type="password" class="form-input" required>
-                                </div>
-                            </div>
 
-                            <h4 class="section-heading" style="margin:14px 0 8px;">Information</h4>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>First Name</label>
-                                    <input name="first_name" class="form-input" required value="{{ old('first_name') }}">
-                                </div>
-                                <div class="form-group">
-                                    <label>Last Name</label>
-                                    <input name="last_name" class="form-input" required value="{{ old('last_name') }}">
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group" style="flex:1 0 100%;">
-                                    <label>Address</label>
-                                    <input name="address" class="form-input" required value="{{ old('address') }}">
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>Contact #</label>
-                                    <input name="contact_number" class="form-input" required
-                                        value="{{ old('contact_number') }}">
-                                </div>
-                                <div class="form-group">
-                                    <label>SSS #</label>
-                                    <input name="sss_number" class="form-input" required value="{{ old('sss_number') }}">
-                                </div>
-                            </div>
-
-                            <div class="form-row" style="margin-top:10px;">
-                                <div class="form-group" style="flex:1 0 100%;">
-                                    <label>Profile Picture (optional)</label>
-                                    <input type="file" name="profile_picture" accept="image/*" class="form-input"
-                                        id="createProfileInput">
-                                    <div id="createProfilePreview" style="margin-top:6px; display:none;">
-                                        <img src="" alt="Preview"
-                                            style="height:60px;width:60px;border-radius:10px;object-fit:cover;border:1px solid var(--gray-300);">
+                                <div style="flex:1;">
+                                    <h4 class="section-heading" style="margin:0 0 12px;">Information</h4>
+                                    <div class="form-row" style="margin-bottom:10px;">
+                                        <div class="form-group">
+                                            <label>First Name</label>
+                                            <input name="first_name" class="form-input" required
+                                                value="{{ old('first_name') }}">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Last Name</label>
+                                            <input name="last_name" class="form-input" required
+                                                value="{{ old('last_name') }}">
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style="margin-bottom:10px;">
+                                        <label>Address</label>
+                                        <input name="address" class="form-input" required value="{{ old('address') }}">
+                                    </div>
+                                    <div class="form-row" style="margin-bottom:10px;">
+                                        <div class="form-group">
+                                            <label>Contact #</label>
+                                            <input name="contact_number" class="form-input" required
+                                                value="{{ old('contact_number') }}">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>SSS #</label>
+                                            <input name="sss_number" class="form-input" required
+                                                value="{{ old('sss_number') }}">
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style="margin-bottom:0;">
+                                        <label>Profile Picture</label>
+                                        <input type="file" name="profile_picture" accept="image/*" class="form-input"
+                                            id="createProfileInput">
+                                        <div id="createProfilePreview" style="margin-top:6px; display:none;">
+                                            <img src="" alt="Preview"
+                                                style="height:40px;width:40px;border-radius:6px;object-fit:cover;border:1px solid var(--gray-300);">
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <h4 class="section-heading" style="margin:14px 0 8px;">Roles</h4>
-                            <div class="form-row">
-                                <div class="form-group" style="flex:1 0 100%;">
-                                    <div style="display:flex; gap:20px; flex-wrap:wrap;">
-                                        <label style="display:flex; align-items:center; gap:8px; cursor:not-allowed;">
+                            <div style="margin-top:20px; padding-top:15px; border-top:1px solid var(--gray-300);">
+                                <h4 class="section-heading" style="margin:0 0 10px; font-size: 0.9rem;">Roles</h4>
+                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                    <div style="display:flex; gap:20px;">
+                                        <label style="display:flex; align-items:center; gap:6px; cursor:not-allowed;">
                                             <input type="checkbox" checked disabled style="accent-color:var(--primary);">
-                                            <span>Technician (Default)</span>
+                                            <span style="font-size:0.85rem;">Technician</span>
                                             <input type="hidden" name="role" value="employee">
                                         </label>
-                                        <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                                        <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
                                             <input type="checkbox" name="is_manager" value="1"
                                                 style="accent-color:var(--primary);">
-                                            <span>Manager</span>
+                                            <span style="font-size:0.85rem;">Manager</span>
                                         </label>
-                                        <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                                        <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
                                             <input type="checkbox" name="is_inventory_officer" value="1"
                                                 style="accent-color:var(--primary);">
-                                            <span>Inventory Officer</span>
+                                            <span style="font-size:0.85rem;">Inventory Officer</span>
                                         </label>
                                     </div>
-                                    <small style="color:var(--gray-500); display:block; margin-top:5px;">
-                                        Assign additional responsibilities. Technician role is mandatory.
-                                    </small>
+                                    <div style="display:flex; gap:10px;">
+                                        <button type="button" class="btn-secondary" data-close>Cancel</button>
+                                        <button type="submit" class="btn-primary">Create</button>
+                                    </div>
                                 </div>
-                            </div>
-
-                            <div class="button-row"
-                                style="margin-top:18px; display:flex; gap:10px; justify-content:flex-end;">
-                                <button type="button" class="btn-secondary" data-close>Cancel</button>
-                                <button type="submit" class="btn-primary">Create</button>
                             </div>
                         </form>
                     </div>
