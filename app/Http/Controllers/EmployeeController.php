@@ -61,7 +61,7 @@ class EmployeeController extends Controller
             'is_inventory_officer' => ['nullable', 'boolean'],
         ]);
 
-        DB::transaction(function () use ($request, $data) {
+        $employee = DB::transaction(function () use ($request, $data) {
 
             // password cast hashes automatically
             $user = User::create([
@@ -93,9 +93,13 @@ class EmployeeController extends Controller
                 'Employee created: ' . $employee->first_name . ' ' . $employee->last_name,
                 ['employee_id' => $employee->id, 'user_id' => $user->id]
             );
+
+            return $employee;
         });
 
-        return redirect()->route('employees.index')->with('success', 'Employee created.');
+        return redirect()
+            ->route('employees.index', ['search' => $employee->last_name])
+            ->with('success', 'Employee created: ' . $employee->first_name . ' ' . $employee->last_name);
     }
 
     public function edit(Employee $employee)
