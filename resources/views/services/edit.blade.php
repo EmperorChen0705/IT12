@@ -111,7 +111,7 @@
                     <tr class="li-row">
                         <td>
                             <select name="items[][item_id]" class="form-input item-select"
-                                    required @if($service->status==='completed') disabled @endif>
+                                    required @if($service->status==='completed' || ($service->status === \App\Models\Service::STATUS_IN_PROGRESS && !auth()->user()->canAccessAdmin())) disabled @endif>
                                 <option value="">-- select --</option>
                                 @foreach(\App\Models\Item::orderBy('name')
                                     ->get(['item_id','name','unit_price','quantity']) as $inv)
@@ -127,14 +127,14 @@
                         <td><input type="number" name="items[][quantity]"
                                    class="form-input qty-input text-end"
                                    min="1" value="{{ $it->quantity }}"
-                                   @if($service->status==='completed') disabled @endif></td>
+                                   @if($service->status==='completed' || ($service->status === \App\Models\Service::STATUS_IN_PROGRESS && !auth()->user()->canAccessAdmin())) disabled @endif></td>
                         <td><input type="number" name="items[][unit_price]"
                                    class="form-input price-input text-end"
                                    step="0.01" min="0" value="{{ $it->unit_price }}"
-                                   @if($service->status==='completed') disabled @endif></td>
+                                   @if($service->status==='completed' || ($service->status === \App\Models\Service::STATUS_IN_PROGRESS && !auth()->user()->canAccessAdmin())) disabled @endif></td>
                         <td class="line-total-cell text-end">{{ number_format($it->line_total,2) }}</td>
                         <td>
-                            @if($service->status!=='completed')
+                            @if($service->status!=='completed' && !($service->status === \App\Models\Service::STATUS_IN_PROGRESS && !auth()->user()->canAccessAdmin()))
                                 <button type="button" class="btn btn-delete btn-sm remove-line">
                                     <i class="bi bi-x"></i>
                                 </button>
@@ -153,7 +153,7 @@
             </table>
         </div>
 
-        @if($service->status!=='completed')
+        @if($service->status!=='completed' && !($service->status === \App\Models\Service::STATUS_IN_PROGRESS && !auth()->user()->canAccessAdmin()))
             <button type="button" class="btn btn-secondary btn-sm" id="addLineItem" style="margin-top:8px;">
                 <i class="bi bi-plus-lg"></i> Add Item
             </button>

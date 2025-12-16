@@ -140,6 +140,30 @@ class ServiceController extends Controller
                     : $service->technician_id,
             ]);
 
+            // SECURITY: Prevent non-admins from modifying items if service is In Progress
+            if ($service->status === Service::STATUS_IN_PROGRESS && !auth()->user()->canAccessAdmin()) {
+                // Check if items are being modified. 
+                // Simple check: compare counts or IDs. For strictness, we just block 'syncItemsAndTotals' logic roughly 
+                // OR we can just skip the item sync block entirely if it's restricted.
+                // However, the form submits items. If we skip, they might be lost if we don't handle it right.
+                // Better to throw error if they try to change it.
+
+                // For now, let's assume the UI handles it, but as a safeguard, we should NOT process item updates 
+                // if the user shouldn't be touching them. 
+                // But since 'syncItemsAndTotals' wipes and recreates, we MUST process them if we want to keep them.
+                // The safest backend approach is: if restricted, DO NOT call syncItemsAndTotals, 
+                // AND ensure the existing items are preserved (which they are, because we referenced them).
+
+                // WAIT. The code calls `$service->items()->forceDelete()` below. 
+                // If we block item sync, we must ALSO block that delete.
+
+                // So, we wrap the item sync logic in a permission check.
+            } else {
+                // USE FORCE DELETE to remove rows physically, preventing unique constraint violations
+                $service->items()->forceDelete();
+                $this->syncItemsAndTotals($service, $validated['items']);
+            }
+
             // Handle Payment Status Update (for non-completed services)
             if ($request->has('payment_status') && auth()->user()->canAccessAdmin()) {
                 $service->booking->update(['payment_status' => $request->payment_status]);
@@ -151,9 +175,18 @@ class ServiceController extends Controller
                 );
             }
 
-            // USE FORCE DELETE to remove rows physically, preventing unique constraint violations
-            $service->items()->forceDelete();
-            $this->syncItemsAndTotals($service, $validated['items']);
+            // Note: Item sync logic moved to else block above or we need to restructure.
+            // Let's restructure to be cleaner.
+
+            // Allow item updates IF:
+            // 1. Service is NOT In Progress
+            // 2. OR User IS Admin
+            $canUpdateItems = ($service->status !== Service::STATUS_IN_PROGRESS) || auth()->user()->canAccessAdmin();
+
+            if ($canUpdateItems) {
+                $service->items()->forceDelete();
+                $this->syncItemsAndTotals($service, $validated['items']);
+            }
 
             ActivityLog::record(
                 'service.updated',
