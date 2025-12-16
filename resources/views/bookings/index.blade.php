@@ -224,7 +224,7 @@
     ])->links() }}
         </div>
         <!-- Removed duplicate table responsive block to fix structure -->
-        <span style="display:none;">
+
 
             <!-- Receipt Modal -->
             <div class="modal hidden" id="bookingReceiptModal" data-modal>
