@@ -14,7 +14,7 @@
     </div>
 
     <div class="report-header">
-        <h1>Booking Reports</h1>
+        <h1 style="color:var(--brand-red);">Booking Reports</h1>
         <div class="report-actions">
             <!-- Filter form could go here matching ReportsController logic -->
             <form action="{{ route('reports.bookings') }}" method="GET" class="filter-form">

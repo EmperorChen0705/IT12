@@ -14,7 +14,7 @@
     </div>
 
     <div class="report-header mb-4">
-        <h1>Inventory Reports</h1>
+        <h1 style="color:var(--brand-red);">Inventory Reports</h1>
         <div class="report-actions">
             <form action="{{ route('reports.inventory') }}" method="GET" class="filter-form d-flex gap-2 align-items-end">
                 <div>
