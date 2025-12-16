@@ -149,7 +149,7 @@
                         @endif
                     </td>
                     <td>
-                        <div class="d-flex gap-1">
+                        <div style="display:flex; gap:6px; align-items:center;">
                             {{-- Edit Button (Always Visible) --}}
                             <a href="{{ route('services.edit',$service) }}" class="btn btn-edit btn-sm" title="Edit Service">
                                 <i class="bi bi-pencil-square"></i>
@@ -165,7 +165,7 @@
                                     Schedule
                                 </button>
                             @elseif($service->status === \App\Models\Service::STATUS_SCHEDULED)
-                                <form action="{{ route('services.status',$service) }}" method="POST" class="d-inline">
+                                <form action="{{ route('services.status',$service) }}" method="POST" class="d-inline" style="margin:0;">
                                     @csrf
                                     <input type="hidden" name="status" value="{{ \App\Models\Service::STATUS_IN_PROGRESS }}">
                                     <button type="submit" class="btn btn-secondary btn-sm btn-icon" title="Check-In">
@@ -173,7 +173,7 @@
                                     </button>
                                 </form>
                             @elseif($service->status === \App\Models\Service::STATUS_IN_PROGRESS)
-                                <form action="{{ route('services.status',$service) }}" method="POST" class="d-inline">
+                                <form action="{{ route('services.status',$service) }}" method="POST" class="d-inline" style="margin:0;">
                                     @csrf
                                     <input type="hidden" name="status" value="{{ \App\Models\Service::STATUS_COMPLETED }}">
                                     <button type="submit" class="btn btn-primary btn-sm btn-icon" title="Check-Out" @if($service->items->isEmpty()) disabled @endif>
