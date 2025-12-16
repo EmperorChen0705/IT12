@@ -127,6 +127,7 @@ class ServiceController extends Controller
         $this->sanitizeItems($request);
         $validated = $this->validateService($request, false);
 
+        DB::transaction(function () use ($service, $validated, $request) {
             $this->restoreInventory($service);
 
             $service->update([
