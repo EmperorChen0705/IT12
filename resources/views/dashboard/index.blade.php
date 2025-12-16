@@ -177,40 +177,38 @@
         </div>
 
         <!-- ROW 4: Quick Actions (Preserved) -->
-        <div class="dash-bottom">
-            <div class="panel">
-                <div class="panel-head">
-                    <h3>Quick Actions</h3>
-                </div>
-                <div class="quick-actions-grid">
-                    <a href="{{ route('bookings.index') }}" class="qa-btn">
-                        <i class="bi bi-person-lines-fill"></i>Bookings
-                    </a>
-                    <a href="{{ route('services.index') }}" class="qa-btn">
-                        <i class="bi bi-wrench"></i>Services
-                    </a>
-                    @if(auth()->user()->canAccessAdmin() || auth()->user()->is_inventory_officer)
-                    <a href="{{ route('inventory.index') }}" class="qa-btn">
-                        <i class="bi bi-inboxes-fill"></i>Inventory
-                    </a>
-                    <a href="{{ route('stock_in.index') }}" class="qa-btn">
-                        <i class="bi bi-dropbox"></i>Stock-In
-                    </a>
-                    <a href="{{ route('suppliers.index') }}" class="qa-btn">
-                        <i class="bi bi-person-fill-down"></i>Suppliers
-                    </a>
-                    @endif
-                    <a href="{{ route('reports.index') }}" class="qa-btn">
-                        <i class="bi bi-list-columns"></i>Reports
-                    </a>
-                    @if(auth()->user()->canAccessAdmin() || auth()->user()->is_inventory_officer)
-                    <a href="{{ route('stock_out.index') }}" class="qa-btn">
-                        <i class="bi bi-box-arrow-up"></i>Stock-Out
-                    </a>
-                    @endif
+        @if(auth()->user()->canAccessAdmin() || auth()->user()->is_inventory_officer)
+            <div class="dash-bottom">
+                <div class="panel">
+                    <div class="panel-head">
+                        <h3>Quick Actions</h3>
+                    </div>
+                    <div class="quick-actions-grid">
+                        <a href="{{ route('bookings.index') }}" class="qa-btn">
+                            <i class="bi bi-person-lines-fill"></i>Bookings
+                        </a>
+                        <a href="{{ route('services.index') }}" class="qa-btn">
+                            <i class="bi bi-wrench"></i>Services
+                        </a>
+                        <a href="{{ route('inventory.index') }}" class="qa-btn">
+                            <i class="bi bi-inboxes-fill"></i>Inventory
+                        </a>
+                        <a href="{{ route('stock_in.index') }}" class="qa-btn">
+                            <i class="bi bi-dropbox"></i>Stock-In
+                        </a>
+                        <a href="{{ route('suppliers.index') }}" class="qa-btn">
+                            <i class="bi bi-person-fill-down"></i>Suppliers
+                        </a>
+                        <a href="{{ route('reports.index') }}" class="qa-btn">
+                            <i class="bi bi-list-columns"></i>Reports
+                        </a>
+                        <a href="{{ route('stock_out.index') }}" class="qa-btn">
+                            <i class="bi bi-box-arrow-up"></i>Stock-Out
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
+        @endif
 
         <!-- Mobile Repsonsiveness Style -->
         <style>
