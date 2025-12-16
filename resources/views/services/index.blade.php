@@ -150,11 +150,13 @@
                     </td>
                     <td>
                         <div class="d-flex gap-1">
-                            @if($service->status === \App\Models\Service::STATUS_COMPLETED)
-                                <a href="{{ route('services.edit',$service) }}" class="btn btn-edit btn-sm" title="Edit">
-                                    <i class="bi bi-pencil-square"></i>
-                                </a>
-                            @elseif($service->status === \App\Models\Service::STATUS_PENDING)
+                            {{-- Edit Button (Always Visible) --}}
+                            <a href="{{ route('services.edit',$service) }}" class="btn btn-edit btn-sm" title="Edit Service">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+
+                            {{-- Status Actions --}}
+                            @if($service->status === \App\Models\Service::STATUS_PENDING)
                                  <button type="button" 
                                     class="btn btn-secondary btn-sm" 
                                     data-action="schedule-service" 
