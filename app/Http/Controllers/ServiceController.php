@@ -127,40 +127,44 @@ class ServiceController extends Controller
         $this->sanitizeItems($request);
         $validated = $this->validateService($request, false);
 
-        DB::transaction(function () use ($service, $validated, $request) {
-            $this->restoreInventory($service);
+        try {
+            DB::transaction(function () use ($service, $validated, $request) {
+                $this->restoreInventory($service);
 
-            $service->update([
-                'labor_fee' => $validated['labor_fee'] ?? 0,
-                'notes' => $validated['notes'] ?? null,
+                $service->update([
+                    'labor_fee' => $validated['labor_fee'] ?? 0,
+                    'notes' => $validated['notes'] ?? null,
 
-                'expected_end_date' => $validated['expected_end_date'] ?? null,
-                'technician_id' => (auth()->user()->canAccessAdmin() && isset($validated['technician_id']))
-                    ? $validated['technician_id']
-                    : $service->technician_id,
-            ]);
+                    'expected_end_date' => $validated['expected_end_date'] ?? null,
+                    'technician_id' => (auth()->user()->canAccessAdmin() && isset($validated['technician_id']))
+                        ? $validated['technician_id']
+                        : $service->technician_id,
+                ]);
 
-            // Handle Payment Status Update (for non-completed services)
-            if ($request->has('payment_status') && auth()->user()->canAccessAdmin()) {
-                $service->booking->update(['payment_status' => $request->payment_status]);
+                // Handle Payment Status Update (for non-completed services)
+                if ($request->has('payment_status') && auth()->user()->canAccessAdmin()) {
+                    $service->booking->update(['payment_status' => $request->payment_status]);
+                    ActivityLog::record(
+                        'booking.payment_status_updated',
+                        $service->booking,
+                        'Payment status updated to ' . $request->payment_status,
+                        ['payment_status' => $request->payment_status]
+                    );
+                }
+
+                $service->items()->delete();
+                $this->syncItemsAndTotals($service, $validated['items']);
+
                 ActivityLog::record(
-                    'booking.payment_status_updated',
-                    $service->booking,
-                    'Payment status updated to ' . $request->payment_status,
-                    ['payment_status' => $request->payment_status]
+                    'service.updated',
+                    $service,
+                    'Service updated',
+                    ['booking_id' => $service->booking_id]
                 );
-            }
-
-            $service->items()->delete();
-            $this->syncItemsAndTotals($service, $validated['items']);
-
-            ActivityLog::record(
-                'service.updated',
-                $service,
-                'Service updated',
-                ['booking_id' => $service->booking_id]
-            );
-        });
+            });
+        } catch (\Throwable $e) {
+            dd('DEBUG ERROR: ' . $e->getMessage(), $e->getTraceAsString());
+        }
 
         return redirect()->route('services.edit', $service)
             ->with('success', 'Service updated.');
