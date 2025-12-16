@@ -70,7 +70,8 @@
             @endif
 
             <div class="form-group">
-                <input name="labor_fee" type="number" step="0.01" min="0"
+                <label>Labor Fee</label>
+                <input name="labor_fee" type="number" step="0.01" min="0" 
                        class="form-input"
                        value="{{ old('labor_fee',$service->labor_fee) }}"
                        @if($service->status==='completed') disabled @endif>
