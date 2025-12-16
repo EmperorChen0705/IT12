@@ -44,7 +44,7 @@
                 <div class="form-group" style="flex: 1 0 100%; margin-top: 10px; padding: 15px; border: 1px solid var(--accent-color); border-radius: 12px; background: rgba(239, 53, 53, 0.05);">
                     <label style="color:var(--accent-color); font-weight: 600; margin-bottom: 10px; display: block;">Payment Status (Admin Only)</label>
                     
-                    @if($service->status === \App\Models\Service::STATUS_COMPLETED)
+                    @if($service->status === \App\Models\Service::STATUS_COMPLETED || $service->status === \App\Models\Service::STATUS_IN_PROGRESS)
                         <div style="display: flex; gap: 20px;">
                             <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
                                 <input type="radio" name="payment_status" value="None" 
@@ -74,7 +74,7 @@
                                 <span style="color: var(--gray-500);">{{ $service->booking->payment_status ?? 'None' }}</span>
                             </label>
                             <span style="font-size: 0.8rem; color: var(--gray-500); align-self: center;">
-                                (Editable only after Check-Out)
+                                (Editable only after Check-In)
                             </span>
                         </div>
                     @endif
