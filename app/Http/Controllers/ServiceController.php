@@ -127,7 +127,6 @@ class ServiceController extends Controller
         $this->sanitizeItems($request);
         $validated = $this->validateService($request, false);
 
-        DB::transaction(function () use ($service, $validated) {
             $this->restoreInventory($service);
 
             $service->update([
@@ -139,6 +138,17 @@ class ServiceController extends Controller
                     ? $validated['technician_id']
                     : $service->technician_id,
             ]);
+
+            // Handle Payment Status Update (for non-completed services)
+            if ($request->has('payment_status') && auth()->user()->canAccessAdmin()) {
+                $service->booking->update(['payment_status' => $request->payment_status]);
+                ActivityLog::record(
+                    'booking.payment_status_updated',
+                    $service->booking,
+                    'Payment status updated to ' . $request->payment_status,
+                    ['payment_status' => $request->payment_status]
+                );
+            }
 
             $service->items()->delete();
             $this->syncItemsAndTotals($service, $validated['items']);
