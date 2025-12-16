@@ -235,6 +235,24 @@
                 color: var(--green-400);
                 font-size: 0.8rem;
             }
+
+            /* Fix Visibility: Ensure primary text in lists is white/light */
+            .list-row .lr-details>div:first-child {
+                color: #e6e6e6 !important;
+                /* Force light color */
+            }
+
+            /* Fix Visibility: Ensure empty state text is visible */
+            .empty-alt {
+                color: #8d8d8d !important;
+                /* Lighter gray for empty state */
+            }
+
+            /* Fix Visibility: Ensure secondary text is visible enough */
+            .list-row .lr-details>div:last-child {
+                color: #a0a0a0 !important;
+                opacity: 1 !important;
+            }
         </style>
     </div>
 
