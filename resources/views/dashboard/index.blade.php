@@ -104,27 +104,44 @@
                 <div class="panel-head">
                     <h3>Today's Schedule</h3>
                 </div>
-                <div class="list-body">
-                    @forelse($todaysSchedule as $bk)
-                        <div class="list-row">
-                            <span class="lr-id">{{ \Carbon\Carbon::parse($bk->preferred_time)->format('h:i A') }}</span>
-                            <div class="lr-details" style="flex:1; margin-left:10px;">
-                                <div style="font-weight:600;">{{ $bk->customer_name }}</div>
-                                <div style="font-size:0.8rem; opacity:0.7;">
-                                    {{ $bk->service_type }}
+                <table class="table table-sm" style="font-size:0.8rem; --bs-table-bg:transparent; color:var(--text-main);">
+                    <thead>
+                        <tr style="color:var(--text-secondary); border-bottom:1px solid #333;">
+                            <th>Time</th>
+                            <th>Customer</th>
+                            <th>Vehicle</th>
+                            <th>Service</th>
+                            <th>Tech</th>
+                            <th class="text-end">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($todaysSchedule as $bk)
+                            <tr>
+                                <td>{{ \Carbon\Carbon::parse($bk->preferred_time)->format('h:i A') }}</td>
+                                <td style="font-weight:600; color:#eee;">{{ $bk->customer_name }}</td>
+                                <td class="text-muted">{{ $bk->vehicle_model ?? '—' }}</td>
+                                <td>{{ $bk->service_type }}</td>
+                                <td>
                                     @if($bk->service && $bk->service->technician)
-                                        <span style="color:var(--text-accent); margin-left:6px;">
-                                            <i class="bi bi-tools"></i> {{ $bk->service->technician->first_name }}
+                                        <span style="color:var(--text-accent);">
+                                            {{ $bk->service->technician->first_name }}
                                         </span>
+                                    @else
+                                        <span class="text-muted">—</span>
                                     @endif
-                                </div>
-                            </div>
-                            <span class="lr-status badge-{{ $bk->status }}">{{ ucfirst($bk->status) }}</span>
-                        </div>
-                    @empty
-                        <div class="empty-alt">No bookings for today.</div>
-                    @endforelse
-                </div>
+                                </td>
+                                <td class="text-end">
+                                    <span class="badge-{{ $bk->status }}">{{ ucfirst($bk->status) }}</span>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="text-center py-3 text-muted">No bookings for today.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
 
             <!-- LIST 2: Ongoing Services -->

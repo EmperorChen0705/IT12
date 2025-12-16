@@ -18,11 +18,25 @@ class BookingController extends Controller
 
         $search = $request->input('search');
         $status = $request->input('status');
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
 
-        $query = Booking::query();
+        // "Upcoming" view mode or default filter
+        // If request has no filters, maybe we default? 
+        // Let's just implement the filter capability first.
+
+        $query = Booking::query()->with(['service.technician']); // Eager load for the column
 
         if ($status) {
             $query->where('status', $status);
+        }
+
+        if ($startDate) {
+            $query->whereDate('preferred_date', '>=', $startDate);
+        }
+
+        if ($endDate) {
+            $query->whereDate('preferred_date', '<=', $endDate);
         }
 
         if ($search) {
@@ -34,10 +48,21 @@ class BookingController extends Controller
             });
         }
 
-        $bookings = $query->orderByDesc('created_at')->paginate(15);
+        // Default sort by date ascending for schedule view, or desc for log view?
+        // Usually schedule is ascending (soonest first).
+        // If searching/history, desc.
+        // Let's decide based on filter: if "Upcoming" (start_date >= today), ASC.
+        // Default existing is desc. I will keep desc as default but maybe allow toggle?
+        // User said "Schedule Page (Upcoming Schedule)".
+        // I'll stick to DESC default for now to match "Recent Bookings" pattern, 
+        // but if they filter for future, they might want ASC.
+        // Let's add simple sort logic.
+        $query->orderBy('preferred_date', 'asc')->orderBy('preferred_time', 'asc');
+
+        $bookings = $query->paginate(15);
         $serviceTypes = ServiceType::where('active', true)->orderBy('name')->get();
 
-        return view('bookings.index', compact('bookings', 'search', 'status', 'serviceTypes'));
+        return view('bookings.index', compact('bookings', 'search', 'status', 'serviceTypes', 'startDate', 'endDate'));
     }
 
     public function appoint($booking_id)

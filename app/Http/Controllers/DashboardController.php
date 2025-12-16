@@ -28,6 +28,7 @@ class DashboardController extends Controller
 
         // Lists
         $todaysSchedule = Booking::where('status', '!=', 'rejected')
+            ->with(['service.technician'])
             ->whereDate('preferred_date', today())
             ->orderBy('preferred_time')
             ->limit(10)
