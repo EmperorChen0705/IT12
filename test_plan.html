@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Test Plan - Inventory and Booking System</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+            line-height: 1.6;
+            color: #24292e;
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1,
+        h2,
+        h3 {
+            margin-top: 24px;
+            margin-bottom: 16px;
+            font-weight: 600;
+            line-height: 1.25;
+        }
+
+        h1 {
+            font-size: 2em;
+            border-bottom: 1px solid #eaecef;
+            padding-bottom: 0.3em;
+        }
+
+        h2 {
+            font-size: 1.5em;
+            border-bottom: 1px solid #eaecef;
+            padding-bottom: 0.3em;
+        }
+
+        h3 {
+            font-size: 1.25em;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 16px;
+            display: block;
+            overflow-x: auto;
+        }
+
+        th,
+        td {
+            padding: 6px 13px;
+            border: 1px solid #dfe2e5;
+        }
+
+        th {
+            font-weight: 600;
+            background-color: #f6f8fa;
+        }
+
+        tr:nth-child(2n) {
+            background-color: #f6f8fa;
+        }
+
+        ul {
+            padding-left: 2em;
+        }
+
+        code {
+            padding: 0.2em 0.4em;
+            margin: 0;
+            font-size: 85%;
+            background-color: rgba(27, 31, 35, 0.05);
+            border-radius: 3px;
+            font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+        }
+
+        .priority-high {
+            color: #d73a49;
+            font-weight: bold;
+        }
+
+        .priority-medium {
+            color: #dbab09;
+            font-weight: bold;
+        }
+
+        .priority-low {
+            color: #28a745;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>System Test Plan</h1>
+    <p>
+        <strong>Project:</strong> Inventory and Booking System<br>
+        <strong>Date:</strong> 2025-12-17<br>
+        <strong>Version:</strong> 2.0
+    </p>
+
+    <h2>1. Introduction</h2>
+    <p>
+        This document outlines the test strategy and test cases for the Inventory and Booking System. It covers
+        functional testing of critical modules including Authentication, Inventory, Services, Bookings, Reports, and
+        System Utilities.
+    </p>
+
+    <h2>2. Test Scope</h2>
+    <ul>
+        <li><strong>In Scope:</strong>
+            <ul>
+                <li>User Authentication & Role-Based Access Control (RBAC)</li>
+                <li>Public Booking Portal</li>
+                <li>Admin/Manager Dashboard</li>
+                <li>Inventory Management (Items, Categories, Stock In/Out)</li>
+                <li>Service Management (Job Orders, Status Workflow)</li>
+                <li>Employee & Supplier Management</li>
+                <li>Reports & Analytics</li>
+                <li>Backup & Restore Functionality</li>
+            </ul>
+        </li>
+        <li><strong>Out of Scope:</strong>
+            <ul>
+                <li>Performance/Load Testing</li>
+                <li>Security Penetration Testing (handled separately)</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h2>3. Test Cases</h2>
+
+    <h3>3.1 Authentication & Security</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Test Case</th>
+                <th>Steps</th>
+                <th>Expected Result</th>
+                <th>Priority</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>TA-01</td>
+                <td>Admin Login</td>
+                <td>1. Go to <code>/login</code>.<br>2. Enter Admin credentials.<br>3. Submit.</td>
+                <td>Redirect to <code>/system</code> Dashboard.</td>
+                <td class="priority-high">High</td>
+            </tr>
+            <tr>
+                <td>TA-02</td>
+                <td>Invalid Login</td>
+                <td>1. Go to <code>/login</code>.<br>2. Enter wrong password.</td>
+                <td>Error "Invalid credentials" displayed.</td>
+                <td class="priority-high">High</td>
+            </tr>
+            <tr>
+                <td>TA-03</td>
+                <td>Manager Access Restriction</td>
+                <td>1. Login as Manager.<br>2. Try to access <code>/employees</code> (Admin only).</td>
+                <td>Access Denied (403) or Redirected.</td>
+                <td class="priority-high">High</td>
+            </tr>
+            <tr>
+                <td>TA-04</td>
+                <td>Logout</td>
+                <td>1. Click "Logout".</td>
+                <td>Redirect to login page. Session cleared.</td>
+                <td class="priority-medium">Medium</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>3.2 Public Booking Portal</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Test Case</th>
+                <th>Steps</th>
+                <th>Expected Result</th>
+                <th>Priority</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>TB-01</td>
+                <td>Submit Booking (Standard)</td>
+                <td>1. Go to <code>/booking</code>.<br>2. Fill Name, Date, Service.<br>3. Submit.</td>
+                <td>Success message. Booking saved as "Pending".</td>
+                <td class="priority-high">High</td>
+            </tr>
+            <tr>
+                <td>TB-02</td>
+                <td>Submit Booking (No Email)</td>
+                <td>1. Go to <code>/booking</code>.<br>2. Fill required fields, leave Email blank.<br>3. Submit.</td>
+                <td>Success message. System accepts null email.</td>
+                <td class="priority-medium">Medium</td>
+            </tr>
+            <tr>
+                <td>TB-03</td>
+                <td>Validation Check</td>
+                <td>1. Submit empty form.</td>
+                <td>Field validation errors displayed.</td>
+                <td class="priority-low">Low</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>3.3 Dashboard</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Test Case</th>
+                <th>Steps</th>
+                <th>Expected Result</th>
+                <th>Priority</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>TD-01</td>
+                <td>Metric Accuracy</td>
+                <td>1. Compare Dashboard counts (Bookings, Sales) with DB.</td>
+                <td>Counts match actual database records.</td>
+                <td class="priority-medium">Medium</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>3.4 Inventory Management</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Test Case</th>
+                <th>Steps</th>
+                <th>Expected Result</th>
+                <th>Priority</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>TI-01</td>
+                <td>Add Category</td>
+                <td>1. Inventory > Categories > Add.<br>2. Enter "Tires". Save.</td>
+                <td>"Tires" added to category list.</td>
+                <td class="priority-high">High</td>
+            </tr>
+            <tr>
+                <td>TI-02</td>
+                <td>Add Item</td>
+                <td>1. Inventory > Items > Add.<br>2. Enter details, assign category.<br>3. Save.</td>
+                <td>Item created with initial stock.</td>
+                <td class="priority-high">High</td>
+            </tr>
+            <tr>
+                <td>TI-03</td>
+                <td>Edit Item</td>
+                <td>1. Select Item > Edit.<br>2. Change Price.<br>3. Save.</td>
+                <td>Price updated in list and DB.</td>
+                <td class="priority-medium">Medium</td>
+            </tr>
+            <tr>
+                <td>TI-04</td>
+                <td>Soft Delete Item</td>
+                <td>1. Select Item > Delete.</td>
+                <td>Item hidden from main list.</td>
+                <td class="priority-medium">Medium</td>
+            </tr>
+            <tr>
+                <td>TI-05</td>
+                <td>Restore Item</td>
+                <td>1. Go to "History" or "Trash".<br>2. Click Restore.</td>
+                <td>Item reappears in active inventory.</td>
+                <td class="priority-low">Low</td>
+            </tr>
+            <tr>
+                <td>TI-06</td>
+                <td>Stock In</td>
+                <td>1. Inventory > Stock In.<br>2. Select Item, Qty (+10), Supplier.<br>3. Save.</td>
+                <td>Item stock increases by 10.</td>
+                <td class="priority-high">High</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>3.5 Service Management (Job Orders)</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Test Case</th>
+                <th>Steps</th>
+                <th>Expected Result</th>
+                <th>Priority</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>TS-01</td>
+                <td>Create Service</td>
+                <td>1. Services > New.<br>2. Link Booking (optional).<br>3. Add Items.<br>4. Save.</td>
+                <td>Service created (Status: Pending). Stock deducted.</td>
+                <td class="priority-high">High</td>
+            </tr>
+            <tr>
+                <td>TS-02</td>
+                <td>Check-In</td>
+                <td>1. Open Pending Service.<br>2. Status -> In Progress.</td>
+                <td>Status updates. "Started At" set.</td>
+                <td class="priority-high">High</td>
+            </tr>
+            <tr>
+                <td>TS-03</td>
+                <td>Check-In Limit</td>
+                <td>1. Have 10 "In Progress" services.<br>2. Attempt 11th Check-In.</td>
+                <td>Error: "Check-in limit reached". Blocked.</td>
+                <td class="priority-high">High</td>
+            </tr>
+            <tr>
+                <td>TS-04</td>
+                <td>Check-Out (Complete)</td>
+                <td>1. Open In Progress Service.<br>2. Add Labor Fee.<br>3. Status -> Completed.</td>
+                <td>Status updates. "Completed At" set.</td>
+                <td class="priority-high">High</td>
+            </tr>
+            <tr>
+                <td>TS-05</td>
+                <td>Billing/Receipt</td>
+                <td>1. View Completed Service.<br>2. Click Receipt.</td>
+                <td>Receipt generated with correct totals.</td>
+                <td class="priority-medium">Medium</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>3.6 Financial & Payments</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Test Case</th>
+                <th>Steps</th>
+                <th>Expected Result</th>
+                <th>Priority</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>TF-01</td>
+                <td>Record Payment</td>
+                <td>1. Service > Payments.<br>2. Add partial amount.</td>
+                <td>Remaining balance updates.</td>
+                <td class="priority-high">High</td>
+            </tr>
+            <tr>
+                <td>TF-02</td>
+                <td>Full Payment</td>
+                <td>1. Pay full balance.</td>
+                <td>Payment Status becomes "Paid".</td>
+                <td class="priority-medium">Medium</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>3.7 Employee & Supplier Management</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Test Case</th>
+                <th>Steps</th>
+                <th>Expected Result</th>
+                <th>Priority</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>TU-01</td>
+                <td>Create Employee</td>
+                <td>1. Settings > Employees > Add.<br>2. Fill details, Role.</td>
+                <td>User created. Can login.</td>
+                <td class="priority-high">High</td>
+            </tr>
+            <tr>
+                <td>TU-02</td>
+                <td>Update Role</td>
+                <td>1. Edit Employee.<br>2. Change Role (Manager -> Admin).</td>
+                <td>Permissions update immediately.</td>
+                <td class="priority-medium">Medium</td>
+            </tr>
+            <tr>
+                <td>TU-03</td>
+                <td>Create Supplier</td>
+                <td>1. Suppliers > Add.</td>
+                <td>Supplier added to directory.</td>
+                <td class="priority-medium">Medium</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>3.8 Reports</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Test Case</th>
+                <th>Steps</th>
+                <th>Expected Result</th>
+                <th>Priority</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>TR-01</td>
+                <td>Sales Report</td>
+                <td>1. Reports > Sales.<br>2. Filter by Date Range.</td>
+                <td>Shows correct revenue for period.</td>
+                <td class="priority-medium">Medium</td>
+            </tr>
+            <tr>
+                <td>TR-02</td>
+                <td>Inventory Report</td>
+                <td>1. Reports > Inventory.</td>
+                <td>Lists current stock value/levels.</td>
+                <td class="priority-low">Low</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>3.9 System Utilities</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Test Case</th>
+                <th>Steps</th>
+                <th>Expected Result</th>
+                <th>Priority</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>TU-01</td>
+                <td>View Logs</td>
+                <td>1. Settings > Logs.</td>
+                <td>Recent actions (Login, Update) listed.</td>
+                <td class="priority-low">Low</td>
+            </tr>
+            <tr>
+                <td>TU-02</td>
+                <td>Create Backup</td>
+                <td>1. Settings > Backups > Create.</td>
+                <td>Database dump created locally.</td>
+                <td class="priority-high">High</td>
+            </tr>
+            <tr>
+                <td>TU-03</td>
+                <td>Restore Backup</td>
+                <td>1. Settings > Backups > Restore (on test env).</td>
+                <td>DB reverts to backup state.</td>
+                <td class="priority-high">Critical</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>4. Test Environment</h2>
+    <ul>
+        <li><strong>URL:</strong> Localhost (Development) / Railway (Staging)</li>
+        <li><strong>Browser:</strong> Chrome (Latest), Firefox</li>
+        <li><strong>Database:</strong> MySQL</li>
+    </ul>
+
+</body>
+
+</html>

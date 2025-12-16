@@ -168,13 +168,17 @@
                                 <form action="{{ route('services.status',$service) }}" method="POST" class="d-inline">
                                     @csrf
                                     <input type="hidden" name="status" value="{{ \App\Models\Service::STATUS_IN_PROGRESS }}">
-                                    <button type="submit" class="btn btn-secondary btn-sm" title="Check-In">Check-In</button>
+                                    <button type="submit" class="btn btn-secondary btn-sm btn-icon" title="Check-In">
+                                        <i class="bi bi-box-arrow-in-right"></i>
+                                    </button>
                                 </form>
                             @elseif($service->status === \App\Models\Service::STATUS_IN_PROGRESS)
                                 <form action="{{ route('services.status',$service) }}" method="POST" class="d-inline">
                                     @csrf
                                     <input type="hidden" name="status" value="{{ \App\Models\Service::STATUS_COMPLETED }}">
-                                    <button type="submit" class="btn btn-primary btn-sm" title="Check-Out" @if($service->items->isEmpty()) disabled @endif>Check-Out</button>
+                                    <button type="submit" class="btn btn-primary btn-sm btn-icon" title="Check-Out" @if($service->items->isEmpty()) disabled @endif>
+                                        <i class="bi bi-box-arrow-right"></i>
+                                    </button>
                                 </form>
                             @endif
                         </div>
