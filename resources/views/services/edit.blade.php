@@ -160,8 +160,15 @@
 
         <div class="button-row" style="margin-top:24px;display:flex;gap:10px;justify-content:flex-end;">
             <a href="{{ route('services.index') }}" class="btn-secondary">Back</a>
-            @if($service->status!=='completed')
+            
+            @if($service->status !== 'completed')
                 <button type="submit" class="btn-primary">Update Service</button>
+            @elseif(auth()->user()->canAccessAdmin())
+                {{-- Allow update for Payment Status only --}}
+                <button type="submit" class="btn-primary" 
+                    style="background: var(--accent-color); border-color: var(--accent-color);">
+                    Update Payment Status
+                </button>
             @endif
         </div>
     </form>
