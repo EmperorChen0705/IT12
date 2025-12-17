@@ -195,8 +195,14 @@ class ItemController extends Controller
         // Combine and sort chronologically (oldest first) to calculate running balance
         $allLogs = $ins->concat($outs)->sortBy('date')->values();
 
+        // Calculate starting balance: current quantity + total outs - total ins
+        // This gives us what the quantity was BEFORE any recorded transaction
+        $totalIns = $ins->sum('qty');
+        $totalOuts = abs($outs->sum('qty'));
+        $startingBalance = $item->quantity + $totalOuts - $totalIns;
+
         // Calculate remaining stock after each transaction
-        $runningBalance = 0;
+        $runningBalance = $startingBalance;
         $logsWithRemaining = $allLogs->map(function ($log) use (&$runningBalance) {
             $runningBalance += $log['qty'];
             $log['remaining'] = $runningBalance;

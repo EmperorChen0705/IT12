@@ -38,7 +38,7 @@
                                 @endif
                             </td>
                             <td class="text-end" style="font-weight:bold;">
-                                {{ abs($log['remaining']) }}
+                                {{ $log['remaining'] }}
                             </td>
                             <td>{{ $log['user'] }}</td>
                             <td>{{ $log['ref'] }}</td>
