@@ -233,7 +233,7 @@
                 </div>
             @endif
 
-            <div class="form-row" style="display:flex;gap:14px;align-items:flex-end;">
+            <div class="form-row" style="display:flex;gap:24px;align-items:flex-end;">
                 <div class="form-group" style="flex:0 0 100px;">
                     <label>Labor Fee</label>
                     <input name="labor_fee" type="number" step="0.01" min="0"
@@ -241,7 +241,7 @@
                 </div>
                 
                 @if(auth()->user()->canAccessAdmin())
-                <div class="form-group" style="flex:0 0 180px;">
+                <div class="form-group" style="flex:0 0 220px;">
                     <label>Technician (Required)</label>
                     <select name="technician_id" class="form-input" required>
                         <option value="">-- Select Technician --</option>
