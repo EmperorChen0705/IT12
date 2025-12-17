@@ -42,13 +42,18 @@ class Service extends Model
 
     protected static function booted(): void
     {
+        // Set default status before creating
         static::creating(function (Service $service) {
-            if (empty($service->reference_code)) {
-                $next = (static::max('id') ?? 0) + 1;
-                $service->reference_code = 'SRV-' . str_pad($next, 6, '0', STR_PAD_LEFT);
-            }
             if (empty($service->status)) {
                 $service->status = self::STATUS_PENDING;
+            }
+        });
+
+        // Set reference code after creation so we have the actual database ID
+        static::created(function (Service $service) {
+            if (empty($service->reference_code)) {
+                $service->reference_code = 'SRV-' . str_pad($service->id, 6, '0', STR_PAD_LEFT);
+                $service->saveQuietly(); // Save without triggering events again
             }
         });
     }
