@@ -256,7 +256,7 @@
                 </div>
                 @endif
 
-                <div class="form-group" style="flex:1;min-width:150px;">
+                <div class="form-group" style="flex:1;min-width:150px;margin-left:20px;">
                     <label>Notes</label>
                     <input name="notes" class="form-input" value="{{ old('notes') }}">
                 </div>
