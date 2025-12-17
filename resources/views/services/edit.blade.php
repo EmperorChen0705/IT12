@@ -42,7 +42,7 @@
             
             @if(auth()->user()->canAccessAdmin())
                 <div class="form-group" style="flex: 1 0 100%; margin-top: 10px; padding: 15px; border: 1px solid var(--accent-color); border-radius: 12px; background: rgba(239, 53, 53, 0.05);">
-                    <label style="color:var(--accent-color); font-weight: 600; margin-bottom: 10px; display: block;">Payment Status (Admin Only)</label>
+                    <label style="color:#fff; font-weight: 600; margin-bottom: 10px; display: block;">Payment Status (Admin Only)</label>
                     
                     <div style="display: flex; gap: 20px;">
                         <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
