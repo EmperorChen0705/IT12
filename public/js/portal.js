@@ -88,6 +88,14 @@
             else if (data.preferred_date < todayISO()) errs.push(['preferred_date', 'Date cannot be past.']);
 
             if (!data.preferred_time) errs.push(['preferred_time', 'Preferred time required.']);
+            else if (data.preferred_date === todayISO()) {
+                // Check if time is in the past for today's bookings
+                const now = new Date();
+                const currentTime = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+                if (data.preferred_time <= currentTime) {
+                    errs.push(['preferred_time', 'For today\'s booking, please select a time later than now.']);
+                }
+            }
 
             if (errs.length) {
                 errs.forEach(([f, m]) => setErr(f, m));

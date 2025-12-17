@@ -64,6 +64,14 @@ class ServiceController extends Controller
                     ]);
                 }
 
+                // Check technician availability
+                $tech = Employee::find($validated['technician_id']);
+                if ($tech && !$tech->isAvailable()) {
+                    throw \Illuminate\Validation\ValidationException::withMessages([
+                        'technician_id' => 'This technician is currently assigned to an in-progress service and is unavailable.'
+                    ]);
+                }
+
                 // Check limit
                 $currentActive = Service::whereIn('status', [Service::STATUS_IN_PROGRESS, Service::STATUS_SCHEDULED])->count();
                 if ($currentActive >= 10) {
@@ -237,6 +245,14 @@ class ServiceController extends Controller
             if ($new === Service::STATUS_SCHEDULED) {
                 if (!auth()->user()->canAccessAdmin()) {
                     throw new \Exception('Only admins can assign technicians.');
+                }
+
+                // Check technician availability
+                $tech = Employee::find($request->technician_id);
+                if ($tech && !$tech->isAvailable()) {
+                    throw \Illuminate\Validation\ValidationException::withMessages([
+                        'technician_id' => 'This technician is currently assigned to an in-progress service and is unavailable.'
+                    ]);
                 }
 
                 // Active Service Limit Check (Scheduled services count as active)

@@ -25,4 +25,21 @@ class Employee extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    /**
+     * Get active services assigned to this technician (in_progress status).
+     */
+    public function activeServices()
+    {
+        return $this->hasMany(Service::class, 'technician_id')
+            ->where('status', Service::STATUS_IN_PROGRESS);
+    }
+
+    /**
+     * Check if technician is available (not currently assigned to an in-progress service).
+     */
+    public function isAvailable(): bool
+    {
+        return $this->activeServices()->count() === 0;
+    }
 }

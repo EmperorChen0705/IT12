@@ -34,6 +34,16 @@ class BookingPublicController extends Controller
             'is_admin_booking' => ['nullable', 'boolean'],
         ]);
 
+        // Time validation: if date is today, time must be in the future
+        if ($data['preferred_date'] === now()->toDateString()) {
+            $selectedTime = \Carbon\Carbon::parse($data['preferred_time']);
+            if ($selectedTime->format('H:i') <= now()->format('H:i')) {
+                return back()->withErrors([
+                    'preferred_time' => 'For today\'s booking, please select a time later than now (' . now()->format('h:i A') . ').'
+                ])->withInput();
+            }
+        }
+
         // 5-Booking Limit Check
         $count = Booking::whereDate('preferred_date', $data['preferred_date'])
             ->where('status', '!=', 'rejected')

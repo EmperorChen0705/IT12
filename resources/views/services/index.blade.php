@@ -247,7 +247,10 @@
                     <select name="technician_id" class="form-input" required>
                         <option value="">-- Select Technician --</option>
                         @foreach($technicians ?? [] as $t)
-                            <option value="{{ $t->id }}">{{ $t->first_name }} {{ $t->last_name }}</option>
+                            @php $isBusy = $t->activeServices()->exists(); @endphp
+                            <option value="{{ $t->id }}" @if($isBusy) disabled style="color:#888;" @endif>
+                                {{ $t->first_name }} {{ $t->last_name }}@if($isBusy) (Busy)@endif
+                            </option>
                         @endforeach
                     </select>
                 </div>
@@ -314,7 +317,10 @@
                 <select name="technician_id" class="form-input" required>
                     <option value="">-- Select Technician --</option>
                     @foreach($technicians as $tech)
-                        <option value="{{ $tech->id }}">{{ $tech->first_name }} {{ $tech->last_name }}</option>
+                        @php $isBusy = $tech->activeServices()->exists(); @endphp
+                        <option value="{{ $tech->id }}" @if($isBusy) disabled style="color:#888;" @endif>
+                            {{ $tech->first_name }} {{ $tech->last_name }}@if($isBusy) (Busy)@endif
+                        </option>
                     @endforeach
                 </select>
             </div>

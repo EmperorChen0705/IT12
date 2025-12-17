@@ -203,7 +203,7 @@
                     <div class="form-group" style="margin-right:25px;">
                         <label>Preferred Date *</label>
                         <input type="date" name="preferred_date" class="form-input" required
-                            value="{{ old('preferred_date', now()->format('Y-m-d')) }}">
+                            min="{{ now()->format('Y-m-d') }}" value="{{ old('preferred_date', now()->format('Y-m-d')) }}">
                         <div class="field-error" data-error-for="preferred_date"></div>
                     </div>
                     <div class="form-group">
