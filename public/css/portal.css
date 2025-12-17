@@ -9,8 +9,132 @@
     --portal-radius-lg: 28px;
     --portal-radius: 18px;
     --portal-text-dim: #b2b4b8;
+    --portal-text-main: #f5f7fa;
+    --portal-topbar-bg: linear-gradient(to right, rgba(20, 12, 12, .82), rgba(18, 10, 10, .65));
+    --portal-card-bg: rgba(255, 255, 255, 0.08);
+    --portal-input-bg: rgba(255, 255, 255, 0.07);
+    --portal-input-border: rgba(255, 255, 255, 0.17);
     --portal-gradient-accent: linear-gradient(90deg, var(--portal-accent), var(--portal-accent-alt));
     --portal-gradient-accent-diag: linear-gradient(135deg, var(--portal-accent) 0%, var(--portal-accent-alt) 95%);
+}
+
+/* Light Mode */
+.booking-portal-body.light-mode {
+    --portal-bg: #f5f5f5;
+    --portal-surface: rgba(0, 0, 0, 0.04);
+    --portal-surface-alt: rgba(0, 0, 0, 0.06);
+    --portal-border: rgba(0, 0, 0, 0.10);
+    --portal-text-dim: #555555;
+    --portal-text-main: #1a1a1a;
+    --portal-topbar-bg: linear-gradient(to right, rgba(255, 255, 255, .95), rgba(245, 245, 245, .90));
+    --portal-card-bg: rgba(255, 255, 255, 0.9);
+    --portal-input-bg: rgba(255, 255, 255, 0.9);
+    --portal-input-border: rgba(0, 0, 0, 0.15);
+}
+
+.booking-portal-body.light-mode {
+    background: var(--portal-bg);
+    color: var(--portal-text-main);
+}
+
+.booking-portal-body.light-mode .portal-topbar {
+    background: var(--portal-topbar-bg);
+    border-bottom-color: rgba(0, 0, 0, 0.1);
+}
+
+.booking-portal-body.light-mode .portal-subtitle,
+.booking-portal-body.light-mode .hero-sub,
+.booking-portal-body.light-mode .section-sub,
+.booking-portal-body.light-mode .svc-card p,
+.booking-portal-body.light-mode .p-step p,
+.booking-portal-body.light-mode .why-card p,
+.booking-portal-body.light-mode .side-desc,
+.booking-portal-body.light-mode .note {
+    color: var(--portal-text-dim);
+}
+
+.booking-portal-body.light-mode .svc-card,
+.booking-portal-body.light-mode .p-step,
+.booking-portal-body.light-mode .why-card {
+    background: var(--portal-card-bg) !important;
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.booking-portal-body.light-mode .svc-card h3,
+.booking-portal-body.light-mode .p-step h4,
+.booking-portal-body.light-mode .why-card h3 {
+    color: #1a1a1a;
+}
+
+.booking-portal-body.light-mode .glass-tile {
+    background: rgba(255, 255, 255, 0.85) !important;
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+.booking-portal-body.light-mode .booking-form-panel {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.booking-portal-body.light-mode .form-input,
+.booking-portal-body.light-mode .form-group textarea {
+    background: var(--portal-input-bg);
+    border-color: var(--portal-input-border);
+    color: #1a1a1a;
+}
+
+.booking-portal-body.light-mode .form-group label {
+    color: #555;
+}
+
+.booking-portal-body.light-mode .metric-label {
+    color: #666;
+}
+
+.booking-portal-body.light-mode .mini-link {
+    color: #555;
+}
+
+.booking-portal-body.light-mode .mini-link:hover {
+    color: #1a1a1a;
+}
+
+.booking-portal-body.light-mode .side-list {
+    color: #333;
+}
+
+.booking-portal-body.light-mode .portal-footer {
+    background: #1a1a1a;
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.25s ease;
+}
+
+.theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.booking-portal-body.light-mode .theme-toggle {
+    border-color: rgba(0, 0, 0, 0.2);
+    color: #333;
+}
+
+.booking-portal-body.light-mode .theme-toggle:hover {
+    background: rgba(0, 0, 0, 0.05);
 }
 
 /* BODY */

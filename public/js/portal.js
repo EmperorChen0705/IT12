@@ -123,4 +123,39 @@
     if (wrap && wrap.dataset.autoOpen === '1') {
         openForm(false);
     }
+
+    // ============ Theme Toggle ============
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const themeIconLight = document.getElementById('themeIconLight');
+    const themeIconDark = document.getElementById('themeIconDark');
+    const body = document.body;
+
+    function setTheme(isLight) {
+        if (isLight) {
+            body.classList.add('light-mode');
+            if (themeIconLight) themeIconLight.style.display = 'none';
+            if (themeIconDark) themeIconDark.style.display = 'inline';
+            localStorage.setItem('portalTheme', 'light');
+        } else {
+            body.classList.remove('light-mode');
+            if (themeIconLight) themeIconLight.style.display = 'inline';
+            if (themeIconDark) themeIconDark.style.display = 'none';
+            localStorage.setItem('portalTheme', 'dark');
+        }
+    }
+
+    // Load saved theme preference
+    const savedTheme = localStorage.getItem('portalTheme');
+    if (savedTheme === 'light') {
+        setTheme(true);
+    } else {
+        setTheme(false);
+    }
+
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', () => {
+            const isCurrentlyLight = body.classList.contains('light-mode');
+            setTheme(!isCurrentlyLight);
+        });
+    }
 })();

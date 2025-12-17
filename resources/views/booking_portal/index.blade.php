@@ -50,6 +50,10 @@
                     <a href="#process" class="mini-link">Process</a>
                     <a href="#why" class="mini-link">Why Us</a>
                     <a href="#contact" class="mini-link">Contact</a>
+                    <button id="themeToggleBtn" type="button" class="theme-toggle" title="Toggle Light/Dark Mode">
+                        <i class="bi bi-sun-fill" id="themeIconLight" style="display:none;"></i>
+                        <i class="bi bi-moon-fill" id="themeIconDark"></i>
+                    </button>
                     <button id="openBookingFormBtn" type="button" class="btn btn-primary top-cta">
                         <i class="bi bi-calendar-plus"></i> Book Now
                     </button>
