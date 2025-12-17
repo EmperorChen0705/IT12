@@ -1746,3 +1746,45 @@ button:focus,
     transform: translateY(-2px);
     box-shadow: 0 4px 12px -6px rgba(0, 0, 0, .12);
 }
+/* =====================================================================
+   Pagination Overrides (Dark Theme)
+   Force visibility for standard pagination links
+===================================================================== */
+.pagination {
+    margin-top: 1rem;
+    justify-content: center;
+}
+
+.page-item.disabled .page-link {
+    background-color: transparent;
+    border-color: var(--gray-350);
+    color: var(--gray-500);
+}
+
+.page-item.active .page-link {
+    background-color: var(--brand-red);
+    border-color: var(--brand-red);
+    color: #fff;
+}
+
+.page-link {
+    background-color: transparent;
+    border-color: var(--gray-350);
+    color: #fff !important; /* Force white text */
+    padding: 0.375rem 0.75rem;
+}
+
+.page-link:hover {
+    background-color: var(--gray-200);
+    border-color: var(--gray-400);
+    color: var(--brand-red) !important;
+}
+
+nav[role='navigation'] p {
+    color: var(--gray-700);
+    margin-bottom: 0;
+}
+nav[role='navigation'] a {
+    color: #fff !important;
+}
+
