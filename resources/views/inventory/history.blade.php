@@ -21,7 +21,7 @@
                     <tr>
                         <th>Date & Time</th>
                         <th>Type</th>
-                        <th class="text-end">Quantity</th>
+                        <th class="text-end">Remaining</th>
                         <th>User / Removed By</th>
                         <th>Reference / Remarks</th>
                     </tr>
@@ -37,8 +37,8 @@
                                     <span class="badge" style="background:var(--red-500);color:white;padding:2px 8px;border-radius:4px;">STOCK OUT</span>
                                 @endif
                             </td>
-                            <td class="text-end" style="color: {{ $log['type'] === 'in' ? 'var(--green-400)' : 'var(--red-400)' }}; font-weight:bold;">
-                                {{ $log['qty'] > 0 ? '+' : '' }}{{ $log['qty'] }}
+                            <td class="text-end" style="font-weight:bold;">
+                                {{ $log['remaining'] }}
                             </td>
                             <td>{{ $log['user'] }}</td>
                             <td>{{ $log['ref'] }}</td>

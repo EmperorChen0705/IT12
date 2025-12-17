@@ -187,13 +187,24 @@ class ItemController extends Controller
             ->map(fn($r) => [
                 'type' => 'out',
                 'date' => $r->created_at,
-                'qty' => -$r->quantity, // Negative for display
+                'qty' => -$r->quantity, // Negative for calculation
                 'user' => $r->user->name ?? 'Unknown',
                 'ref' => $r->remarks ?? 'Stock Out',
             ]);
 
-        // Combine and sort
-        $logs = $ins->concat($outs)->sortByDesc('date');
+        // Combine and sort chronologically (oldest first) to calculate running balance
+        $allLogs = $ins->concat($outs)->sortBy('date')->values();
+
+        // Calculate remaining stock after each transaction
+        $runningBalance = 0;
+        $logsWithRemaining = $allLogs->map(function ($log) use (&$runningBalance) {
+            $runningBalance += $log['qty'];
+            $log['remaining'] = $runningBalance;
+            return $log;
+        });
+
+        // Sort by date descending for display (newest first)
+        $logs = $logsWithRemaining->sortByDesc('date');
 
         return view('inventory.history', compact('item', 'logs'));
     }
