@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System ERD - Inventory & Booking System</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+            /* White background for document style */
+            color: #000;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1 {
+            text-align: center;
+            color: #000;
+            margin: 10px 0;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .controls {
+            text-align: center;
+            margin-bottom: 10px;
+            flex-shrink: 0;
+        }
+
+        .controls button {
+            padding: 8px 16px;
+            cursor: pointer;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            margin: 0 5px;
+        }
+
+        .controls button:hover {
+            background: #555;
+        }
+
+        #diagram-container {
+            flex-grow: 1;
+            border: none;
+            /* No border for cleaner look */
+            background: white;
+            margin: 0;
+            overflow: hidden;
+            /* Important for svg-pan-zoom */
+            position: relative;
+            box-shadow: none;
+            /* No shadow */
+            border-radius: 8px;
+        }
+
+        .mermaid {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Ensure SVG takes full space */
+        .mermaid svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .legend {
+            text-align: center;
+            font-size: 0.9em;
+            color: #666;
+            padding-bottom: 10px;
+            flex-shrink: 0;
+        }
+
+        /* Print Styles */
+        @media print {
+
+            .controls,
+            .legend,
+            #diagram-container {
+                display: none !important;
+            }
+
+            body {
+                background: white;
+                height: auto;
+                overflow: visible;
+            }
+
+            #print-container {
+                display: block !important;
+                width: 100%;
+                height: auto;
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+
+            #print-container svg {
+                width: 100%;
+                height: auto;
+                /* Use max-height to ensure it fits on one page if possible, or let it flow */
+                max-width: 100%;
+            }
+
+            /* Force landscape in print dialog if supported */
+            @page {
+                size: landscape;
+                margin: 0.5cm;
+            }
+
+            /* Fix line thickness on print scaling */
+            #print-container .edgePath path,
+            #print-container .relationship,
+            #print-container path {
+                stroke-width: 0.5px !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>System Entity Relationship Diagram</h1>
+
+    <div class="controls">
+        <button id="zoom-in">Zoom In (+)</button>
+        <button id="zoom-out">Zoom Out (-)</button>
+        <button id="reset">Reset</button>
+        <button onclick="window.print()">Print / Save as PDF</button>
+    </div>
+
+    <!-- Interactive Container -->
+    <div id="diagram-container">
+        <div class="mermaid">
+            classDiagram
+            direction LR
+            note "System Entity Relationship Diagram (Landscape)"
+
+            %% User Management
+            class USERS {
+            bigint id (PK)
+            string name
+            string email (UK)
+            string password
+            string role
+            boolean is_manager
+            boolean is_inventory_officer
+            timestamp elevated_until
+            bigint elevated_by (FK)
+            timestamp email_verified_at
+            }
+
+            class EMPLOYEES {
+            bigint id (PK)
+            bigint user_id (FK)
+            string first_name
+            string last_name
+            string address
+            string contact_number
+            string sss_number (UK)
+            string profile_picture
+            }
+
+            USERS "1" -- "*" EMPLOYEES : has_profile
+            USERS "1" -- "*" USERS : elevates
+
+            %% Inventory System
+            class ITEM_CATEGORIES {
+            string itemctgry_id (PK)
+            string name (UK)
+            string description
+            boolean active
+            }
+
+            class ITEMS {
+            string item_id (PK)
+            string itemctgry_id (FK)
+            string name (UK)
+            text description
+            uint quantity
+            decimal unit_price
+            string unit
+            boolean active
+            }
+
+            class SUPPLIERS {
+            string supplier_id (PK)
+            string name
+            string address
+            string number
+            string contact_person
+            }
+
+            class STOCK_IN {
+            string stockin_id (PK)
+            string item_id (FK)
+            string supplier_id (FK)
+            uint quantity
+            decimal price
+            decimal total_price
+            date stockin_date
+            }
+
+            class STOCK_OUT {
+            string stockout_id (PK)
+            string item_id (FK)
+            bigint user_id (FK)
+            uint quantity
+            date stockout_date
+            string reference_type
+            string reference_id
+            }
+
+            ITEM_CATEGORIES "1" -- "*" ITEMS : categorizes
+            SUPPLIERS "1" -- "*" STOCK_IN : supplies
+            ITEMS "1" -- "*" STOCK_IN : restocked_via
+            ITEMS "1" -- "*" STOCK_OUT : deducted_via
+            USERS "1" -- "*" STOCK_OUT : processed_by
+
+            %% Booking & Service System
+            class BOOKINGS {
+            string booking_id (PK)
+            string customer_name
+            string email
+            string contact_number
+            string service_type
+            date preferred_date
+            string preferred_time
+            text notes
+            string status
+            string channel
+            string vehicle_make
+            string vehicle_model
+            string plate_number
+            string payment_status
+            }
+
+            class SERVICES {
+            bigint id (PK)
+            string booking_id (FK)
+            string reference_code (UK)
+            string status
+            decimal labor_fee
+            decimal subtotal
+            decimal total
+            text notes
+            timestamp started_at
+            timestamp completed_at
+            timestamp expected_end_date
+            bigint technician_id (FK)
+            }
+
+            class SERVICE_ITEMS {
+            bigint id (PK)
+            bigint service_id (FK)
+            string item_id (FK)
+            uint quantity
+            decimal unit_price
+            decimal line_total
+            }
+
+            class SERVICE_TYPES {
+            bigint id (PK)
+            string name (UK)
+            text description
+            boolean active
+            }
+
+            %% Relationships
+            BOOKINGS "1" -- "1" SERVICES : generates
+            EMPLOYEES "1" -- "*" SERVICES : performs_technician
+            SERVICES "1" -- "*" SERVICE_ITEMS : uses
+            ITEMS "1" -- "*" SERVICE_ITEMS : consumed_in
+
+            %% Logical/Soft Relationships
+            SERVICE_TYPES "1" .. "*" BOOKINGS : type_selected_in
+            USERS "1" .. "*" ACTIVITY_LOGS : causes
+
+            %% Logs
+            class ACTIVITY_LOGS {
+            bigint id (PK)
+            string log_name
+            text description
+            bigint subject_id
+            string subject_type
+            bigint causer_id
+            string causer_type
+            json properties
+            }
+        </div>
+    </div>
+
+    <!-- Hidden Container for Printing -->
+    <div id="print-container" style="display: none;"></div>
+
+    <div class="legend">
+        <p><strong>PK</strong>: Primary Key | <strong>FK</strong>: Foreign Key | <strong>UK</strong>: Unique Key</p>
+        <p>Use mouse wheel to zoom, click and drag to pan.</p>
+    </div>
+
+    <script>
+        // Use 'neutral' theme for clearer, document-friendly look
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'neutral',
+            securityLevel: 'loose',
+            er: {
+                diagramPadding: 20
+            }
+        });
+
+        // Initialize pan-zoom after mermaid renders
+        let panZoomInstance;
+
+        async function initPanZoom() {
+            // Wait a short moment for mermaid to render the SVG
+            setTimeout(() => {
+                const originalSvg = document.querySelector('.mermaid svg');
+                if (originalSvg) {
+
+                    // 1. Prepare Print Version (Clean Clone)
+                    const printContainer = document.getElementById('print-container');
+                    printContainer.innerHTML = ''; // Clear previous if any
+                    const clonedSvg = originalSvg.cloneNode(true);
+
+                    // Rigorously clean attributes that might prevent resizing
+                    clonedSvg.removeAttribute('id');
+                    clonedSvg.removeAttribute('width');
+                    clonedSvg.removeAttribute('height');
+                    clonedSvg.removeAttribute('style'); // Remove inline styles like max-width
+
+                    // Apply print-specific structural styles
+                    clonedSvg.style.display = 'block';
+                    clonedSvg.style.margin = '0 auto';
+                    clonedSvg.style.width = '100%';
+                    clonedSvg.style.height = 'auto';
+
+                    printContainer.appendChild(clonedSvg);
+
+
+                    // 2. Prepare Interactive Version
+                    // Set SVG to 100% width/height to fill container
+                    originalSvg.style.width = '100%';
+                    originalSvg.style.height = '100%';
+
+                    panZoomInstance = svgPanZoom(originalSvg, {
+                        zoomEnabled: true,
+                        controlIconsEnabled: false,
+                        fit: true,
+                        center: true,
+                        minZoom: 0.1,
+                        maxZoom: 10
+                    });
+
+                    // Resize handler
+                    window.addEventListener('resize', function () {
+                        panZoomInstance.resize();
+                        panZoomInstance.fit();
+                        panZoomInstance.center();
+                    });
+                }
+            }, 500);
+        }
+
+        // Hook into mermaid completion or just wait for load
+        window.addEventListener('load', initPanZoom);
+
+        // Control buttons
+        document.getElementById('zoom-in').addEventListener('click', function () {
+            if (panZoomInstance) panZoomInstance.zoomIn();
+        });
+
+        document.getElementById('zoom-out').addEventListener('click', function () {
+            if (panZoomInstance) panZoomInstance.zoomOut();
+        });
+
+        document.getElementById('reset').addEventListener('click', function () {
+            if (panZoomInstance) {
+                panZoomInstance.reset();
+                panZoomInstance.fit();
+                panZoomInstance.center();
+            }
+        });
+    </script>
+</body>
+
+</html>
