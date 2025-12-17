@@ -87,7 +87,7 @@
                 <!-- Helper Quick Links -->
                 <a href="{{ route('bookings.index', ['start_date' => \Carbon\Carbon::tomorrow()->toDateString(), 'status' => 'approved']) }}"
                     class="btn btn-sm btn-outline-primary" style="border:1px solid #444;">
-                    Upcoming (Tomorrow+)
+                    Upcoming
                 </a>
             </form>
         </div>
@@ -226,303 +226,303 @@
         <!-- Removed duplicate table responsive block to fix structure -->
 
 
-            <!-- Receipt Modal -->
-            <div class="modal hidden" id="bookingReceiptModal" data-modal>
-                <div class="modal-content" style="max-width:800px;">
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-                        <h2 style="margin:0;font-size:1rem;">Booking Receipt</h2>
-                    </div>
-                    <div id="receiptBody" style="font-size:.72rem;line-height:1.4;max-height:70vh;overflow:auto;"></div>
-                    <div style="text-align:right;margin-top:12px;">
-                        <button type="button" class="btn-secondary" data-close>Close</button>
-                    </div>
+        <!-- Receipt Modal -->
+        <div class="modal hidden" id="bookingReceiptModal" data-modal>
+            <div class="modal-content" style="max-width:800px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                    <h2 style="margin:0;font-size:1rem;">Booking Receipt</h2>
+                </div>
+                <div id="receiptBody" style="font-size:.72rem;line-height:1.4;max-height:70vh;overflow:auto;"></div>
+                <div style="text-align:right;margin-top:12px;">
+                    <button type="button" class="btn-secondary" data-close>Close</button>
                 </div>
             </div>
+        </div>
 
-            <script>
-                document.addEventListener('DOMContentLoaded', () => {
-                    const modalId = 'bookingReceiptModal';
-                    const bodyEl = document.getElementById('receiptBody');
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const modalId = 'bookingReceiptModal';
+                const bodyEl = document.getElementById('receiptBody');
 
-                    function openModal() {
-                        window._systemUI?.openModalById(modalId);
+                function openModal() {
+                    window._systemUI?.openModalById(modalId);
+                }
+
+                function formatMoney(v) {
+                    if (v === null || v === undefined || v === '') return '0.00';
+                    return parseFloat(v).toFixed(2);
+                }
+
+                document.addEventListener('click', e => {
+                    const btn = e.target.closest('.btn-receipt');
+                    if (!btn) return;
+                    try {
+                        const data = JSON.parse(btn.getAttribute('data-receipt'));
+                        renderReceipt(data);
+                        openModal();
+                    } catch (err) {
+                        console.error('Receipt parse error', err);
+                        alert('Cannot open receipt.');
                     }
+                });
 
-                    function formatMoney(v) {
-                        if (v === null || v === undefined || v === '') return '0.00';
-                        return parseFloat(v).toFixed(2);
-                    }
-
-                    document.addEventListener('click', e => {
-                        const btn = e.target.closest('.btn-receipt');
-                        if (!btn) return;
-                        try {
-                            const data = JSON.parse(btn.getAttribute('data-receipt'));
-                            renderReceipt(data);
-                            openModal();
-                        } catch (err) {
-                            console.error('Receipt parse error', err);
-                            alert('Cannot open receipt.');
-                        }
-                    });
-
-                    function renderReceipt(data) {
-                        let html = '';
-                        html += `<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:10px;">
-                                                    <div>
-                                                        <div style="font-weight:600;font-size:.8rem;">Booking #${escapeHtml(data.booking_id ?? '')}</div>
-                                                        <div>${escapeHtml(data.customer_name ?? '')}</div>
-                                                        <div>${escapeHtml(data.email ?? '—')}</div>
-                                                        <div>${escapeHtml(data.contact_number ?? '')}</div>
-                                                    </div>
-                                                    <div>
-                                                        <div><strong>Status:</strong> ${escapeHtml(data.status ?? '')}</div>
-                                                        <div><strong>Date:</strong> ${escapeHtml(data.preferred_date ?? '')}</div>
-                                                        <div><strong>Time:</strong> ${escapeHtml(data.preferred_time ?? '')}</div>
-                                                        <div><strong>Service Type:</strong> ${escapeHtml(data.service_type ?? '')}</div>
-                                                    </div>
-                                                </div>`;
-
-                        if (data.service) {
-                            html += `<hr style="border:0;border-top:1px solid var(--gray-700);margin:8px 0;">
-                                                    <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+                function renderReceipt(data) {
+                    let html = '';
+                    html += `<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:10px;">
                                                         <div>
-                                                            <div><strong>Service Ref:</strong> ${escapeHtml(data.service.reference_code ?? '')}</div>
-                                                            <div><strong>Service Status:</strong> ${escapeHtml(data.service.status ?? '')}</div>
-                                                            <div><strong>Started:</strong> ${escapeHtml(data.service.started_at ?? '—')}</div>
-                                                            <div><strong>Completed:</strong> ${escapeHtml(data.service.completed_at ?? '—')}</div>
+                                                            <div style="font-weight:600;font-size:.8rem;">Booking #${escapeHtml(data.booking_id ?? '')}</div>
+                                                            <div>${escapeHtml(data.customer_name ?? '')}</div>
+                                                            <div>${escapeHtml(data.email ?? '—')}</div>
+                                                            <div>${escapeHtml(data.contact_number ?? '')}</div>
                                                         </div>
                                                         <div>
-                                                            <div><strong>Labor Fee:</strong> ${formatMoney(data.service.labor_fee)}</div>
-                                                            <div><strong>Subtotal:</strong> ${formatMoney(data.service.subtotal)}</div>
-                                                            <div><strong>Total:</strong> ${formatMoney(data.service.total)}</div>
+                                                            <div><strong>Status:</strong> ${escapeHtml(data.status ?? '')}</div>
+                                                            <div><strong>Date:</strong> ${escapeHtml(data.preferred_date ?? '')}</div>
+                                                            <div><strong>Time:</strong> ${escapeHtml(data.preferred_time ?? '')}</div>
+                                                            <div><strong>Service Type:</strong> ${escapeHtml(data.service_type ?? '')}</div>
                                                         </div>
                                                     </div>`;
 
-                            if (data.service.items && data.service.items.length) {
-                                html += `<div style="margin-top:10px;">
-                                                            <h3 style="margin:0 0 6px;font-size:.7rem;letter-spacing:1px;text-transform:uppercase;">Items</h3>
-                                                            <table style="width:100%;border-collapse:collapse;font-size:.68rem;">
-                                                                <thead>
-                                                                    <tr style="text-align:left;background:var(--gray-800);">
-                                                                        <th style="padding:6px;">Name</th>
-                                                                        <th style="padding:6px;">Qty</th>
-                                                                        <th style="padding:6px;text-align:right;">Unit</th>
-                                                                        <th style="padding:6px;text-align:right;">Line Total</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>`;
-                                data.service.items.forEach(it => {
-                                    html += `<tr>
-                                                                <td style="padding:4px 6px;">${escapeHtml(it.name ?? '')}</td>
-                                                                <td style="padding:4px 6px;">${it.quantity}</td>
-                                                                <td style="padding:4px 6px;text-align:right;">${formatMoney(it.unit_price)}</td>
-                                                                <td style="padding:4px 6px;text-align:right;">${formatMoney(it.line_total)}</td>
-                                                            </tr>`;
-                                });
-                                html += `</tbody></table></div>`;
-                            }
-                        } else {
-                            html += `<div style="margin-top:10px;font-style:italic;color:var(--gray-500);">No service linked.</div>`;
+                    if (data.service) {
+                        html += `<hr style="border:0;border-top:1px solid var(--gray-700);margin:8px 0;">
+                                                        <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+                                                            <div>
+                                                                <div><strong>Service Ref:</strong> ${escapeHtml(data.service.reference_code ?? '')}</div>
+                                                                <div><strong>Service Status:</strong> ${escapeHtml(data.service.status ?? '')}</div>
+                                                                <div><strong>Started:</strong> ${escapeHtml(data.service.started_at ?? '—')}</div>
+                                                                <div><strong>Completed:</strong> ${escapeHtml(data.service.completed_at ?? '—')}</div>
+                                                            </div>
+                                                            <div>
+                                                                <div><strong>Labor Fee:</strong> ${formatMoney(data.service.labor_fee)}</div>
+                                                                <div><strong>Subtotal:</strong> ${formatMoney(data.service.subtotal)}</div>
+                                                                <div><strong>Total:</strong> ${formatMoney(data.service.total)}</div>
+                                                            </div>
+                                                        </div>`;
+
+                        if (data.service.items && data.service.items.length) {
+                            html += `<div style="margin-top:10px;">
+                                                                <h3 style="margin:0 0 6px;font-size:.7rem;letter-spacing:1px;text-transform:uppercase;">Items</h3>
+                                                                <table style="width:100%;border-collapse:collapse;font-size:.68rem;">
+                                                                    <thead>
+                                                                        <tr style="text-align:left;background:var(--gray-800);">
+                                                                            <th style="padding:6px;">Name</th>
+                                                                            <th style="padding:6px;">Qty</th>
+                                                                            <th style="padding:6px;text-align:right;">Unit</th>
+                                                                            <th style="padding:6px;text-align:right;">Line Total</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>`;
+                            data.service.items.forEach(it => {
+                                html += `<tr>
+                                                                    <td style="padding:4px 6px;">${escapeHtml(it.name ?? '')}</td>
+                                                                    <td style="padding:4px 6px;">${it.quantity}</td>
+                                                                    <td style="padding:4px 6px;text-align:right;">${formatMoney(it.unit_price)}</td>
+                                                                    <td style="padding:4px 6px;text-align:right;">${formatMoney(it.line_total)}</td>
+                                                                </tr>`;
+                            });
+                            html += `</tbody></table></div>`;
+                        }
+                    } else {
+                        html += `<div style="margin-top:10px;font-style:italic;color:var(--gray-500);">No service linked.</div>`;
+                    }
+
+                    bodyEl.innerHTML = html;
+                }
+
+                function escapeHtml(str) {
+                    return ('' + (str ?? '')).replace(/[&<>"']/g, s => ({
+                        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+                    }[s]));
+                }
+            });
+        </script>
+        <!-- Create Booking Modal (Admin) -->
+        <div class="modal hidden" id="createBookingModal" data-modal>
+            <div class="modal-content"
+                style="width: 100%; max-width:1000px; background-color:#222; border:1px solid #333; color:white; border-radius:12px; padding:30px;">
+                <h2
+                    style="text-align:center; color:#ef4444; margin-bottom:20px; font-weight:500; font-size:1.5rem; letter-spacing:0.5px;">
+                    Booking Request</h2>
+
+                <form action="{{ route('booking.portal.store') }}" method="POST" id="adminBookingForm">
+                    @csrf
+                    <input type="hidden" name="is_admin_booking" value="1">
+
+                    <div style="display:flex; flex-wrap:wrap; gap:30px;">
+                        <!-- LEFT COLUMN: Customer & Vehicle -->
+                        <div style="flex:1; min-width:300px;">
+                            <h4
+                                style="color:#ef4444; margin-bottom:15px; font-size:0.9rem; text-transform:uppercase; border-bottom:1px solid #444; padding-bottom:5px;">
+                                Customer & Vehicle</h4>
+
+                            <!-- Customer Info -->
+                            <div class="form-row" style="margin-bottom:15px;">
+                                <div class="form-group" style="flex:1;">
+                                    <label
+                                        style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Full
+                                        Name *</label>
+                                    <input name="customer_name" class="form-input" required
+                                        style="background:white; color:black; border:none; border-radius:8px; padding:10px; font-size:0.9rem; width:100%;">
+                                </div>
+                            </div>
+
+                            <div class="form-row" style="display:flex; gap:15px; margin-bottom:15px;">
+                                <div class="form-group" style="flex:1;">
+                                    <label
+                                        style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Contact
+                                        Number *</label>
+                                    <input name="contact_number" class="form-input" required
+                                        style="background:white; color:black; border:none; border-radius:8px; padding:10px; font-size:0.9rem; width:100%;">
+                                </div>
+                                <div class="form-group" style="flex:1;">
+                                    <label
+                                        style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Channel
+                                        *</label>
+                                    <div style="position:relative;">
+                                        <select name="channel" class="form-input" required
+                                            style="background:white; color:black; border:none; border-radius:8px; padding:10px; font-size:0.9rem; width:100%; -webkit-appearance:none; appearance:none;">
+                                            <option value="walk-in">Walk-In</option>
+                                            <option value="phone">Phone Call</option>
+                                            <option value="facebook">Facebook / Messenger</option>
+                                        </select>
+                                        <span
+                                            style="position:absolute; right:15px; top:50%; transform:translateY(-50%); color:black; pointer-events:none;"><i
+                                                class="bi bi-chevron-down"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Vehicle Info -->
+                            <div class="form-row" style="margin-bottom:15px;">
+                                <label
+                                    style="color:#fff; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px; display:block;">Vehicle
+                                    Details (Optional)</label>
+                                <div style="display:flex; gap:10px;">
+                                    <div class="form-group" style="flex:1;">
+                                        <input name="vehicle_make" placeholder="Make" class="form-input"
+                                            style="background:white; color:black; border:none; border-radius:8px; padding:10px; font-size:0.9rem; width:100%;">
+                                    </div>
+                                    <div class="form-group" style="flex:1;">
+                                        <input name="vehicle_model" placeholder="Model" class="form-input"
+                                            style="background:white; color:black; border:none; border-radius:8px; padding:10px; font-size:0.9rem; width:100%;">
+                                    </div>
+                                    <div class="form-group" style="flex:1;">
+                                        <input name="plate_number" placeholder="Plate" class="form-input"
+                                            style="background:white; color:black; border:none; border-radius:8px; padding:10px; font-size:0.9rem; width:100%;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- RIGHT COLUMN: Service & Schedule -->
+                        <div style="flex:1; min-width:300px;">
+                            <h4
+                                style="color:#ef4444; margin-bottom:15px; font-size:0.9rem; text-transform:uppercase; border-bottom:1px solid #444; padding-bottom:5px;">
+                                Service & Schedule</h4>
+
+                            <div class="form-row" style="margin-bottom:15px;">
+                                <div class="form-group" style="flex:1;">
+                                    <label
+                                        style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Service
+                                        Type *</label>
+                                    <div style="position:relative;">
+                                        <select name="service_type" class="form-input" required
+                                            style="background:white; color:#ef4444; border:none; border-radius:8px; padding:10px; font-size:0.9rem; width:100%; -webkit-appearance:none; appearance:none;">
+                                            <option value="" disabled selected>-- select service --</option>
+                                            @foreach($serviceTypes ?? [] as $st)
+                                                <option value="{{ $st->name }}">{{ $st->name }}</option>
+                                            @endforeach
+                                        </select>
+                                        <span
+                                            style="position:absolute; right:15px; top:50%; transform:translateY(-50%); color:#ef4444; pointer-events:none;"><i
+                                                class="bi bi-chevron-down"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-row" style="display:flex; gap:15px; margin-bottom:15px;">
+                                <div class="form-group" style="flex:1;">
+                                    <label
+                                        style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Preferred
+                                        Date *</label>
+                                    <div style="position:relative;">
+                                        <input name="preferred_date" type="date" class="form-input" required
+                                            min="{{ date('Y-m-d') }}"
+                                            style="background:white; color:#ef4444; border:none; border-radius:8px; padding:10px; font-size:0.9rem; width:100%;">
+                                    </div>
+                                </div>
+                                <div class="form-group" style="flex:1;">
+                                    <label
+                                        style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Preferred
+                                        Time *</label>
+                                    <div style="position:relative;">
+                                        <select name="preferred_time" class="form-input" required
+                                            style="background:white; color:#ef4444; border:none; border-radius:8px; padding:10px; font-size:0.9rem; width:100%; -webkit-appearance:none; appearance:none;">
+                                            <option value="" disabled selected>-- : -- --</option>
+                                            <option value="08:00">08:00 AM</option>
+                                            <option value="09:00">09:00 AM</option>
+                                            <option value="10:00">10:00 AM</option>
+                                            <option value="11:00">11:00 AM</option>
+                                            <option value="13:00">01:00 PM</option>
+                                            <option value="14:00">02:00 PM</option>
+                                            <option value="15:00">03:00 PM</option>
+                                            <option value="16:00">04:00 PM</option>
+                                        </select>
+                                        <span
+                                            style="position:absolute; right:15px; top:50%; transform:translateY(-50%); color:black; pointer-events:none;"><i
+                                                class="bi bi-clock"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-row" style="margin-bottom:0;">
+                                <div class="form-group" style="flex:1;">
+                                    <label
+                                        style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Additional
+                                        Notes</label>
+                                    <textarea name="notes" class="form-input" rows="3"
+                                        style="background:white; color:black; border:none; border-radius:8px; padding:10px; font-size:0.9rem; width:100%; resize:vertical;"></textarea>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="button-row"
+                        style="display:flex; gap:10px; justify-content:flex-end; margin-top:25px; border-top:1px solid #333; padding-top:20px;">
+                        <button type="button" data-close
+                            style="background:#444; color:white; border:none; border-radius:6px; padding:10px 24px; font-weight:600; cursor:pointer;">
+                            Cancel
+                        </button>
+                        <button type="submit" id="submitBookingBtn"
+                            style="background:#dc2626; color:white; border:none; border-radius:6px; padding:10px 24px; font-weight:600; cursor:pointer;">
+                            Submit Booking
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <script>
+            // Prevent double submission on admin booking form
+            (function () {
+                const form = document.getElementById('adminBookingForm');
+                const submitBtn = document.getElementById('submitBookingBtn');
+                let isSubmitting = false;
+
+                if (form && submitBtn) {
+                    form.addEventListener('submit', function (e) {
+                        if (isSubmitting) {
+                            e.preventDefault();
+                            return;
                         }
 
-                        bodyEl.innerHTML = html;
-                    }
-
-                    function escapeHtml(str) {
-                        return ('' + (str ?? '')).replace(/[&<>"']/g, s => ({
-                            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-                        }[s]));
-                    }
-                });
-            </script>
-            <!-- Create Booking Modal (Admin) -->
-            <div class="modal hidden" id="createBookingModal" data-modal>
-                <div class="modal-content"
-                    style="width: 100%; max-width:1000px; background-color:#222; border:1px solid #333; color:white; border-radius:12px; padding:30px;">
-                    <h2
-                        style="text-align:center; color:#ef4444; margin-bottom:20px; font-weight:500; font-size:1.5rem; letter-spacing:0.5px;">
-                        Booking Request</h2>
-
-                    <form action="{{ route('booking.portal.store') }}" method="POST" id="adminBookingForm">
-                        @csrf
-                        <input type="hidden" name="is_admin_booking" value="1">
-
-                        <div style="display:flex; flex-wrap:wrap; gap:30px;">
-                            <!-- LEFT COLUMN: Customer & Vehicle -->
-                            <div style="flex:1; min-width:300px;">
-                                <h4
-                                    style="color:#ef4444; margin-bottom:15px; font-size:0.9rem; text-transform:uppercase; border-bottom:1px solid #444; padding-bottom:5px;">
-                                    Customer & Vehicle</h4>
-
-                                <!-- Customer Info -->
-                                <div class="form-row" style="margin-bottom:15px;">
-                                    <div class="form-group" style="flex:1;">
-                                        <label
-                                            style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Full
-                                            Name *</label>
-                                        <input name="customer_name" class="form-input" required
-                                            style="background:white; color:black; border:none; border-radius:8px; padding:10px; font-size:0.9rem; width:100%;">
-                                    </div>
-                                </div>
-
-                                <div class="form-row" style="display:flex; gap:15px; margin-bottom:15px;">
-                                    <div class="form-group" style="flex:1;">
-                                        <label
-                                            style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Contact
-                                            Number *</label>
-                                        <input name="contact_number" class="form-input" required
-                                            style="background:white; color:black; border:none; border-radius:8px; padding:10px; font-size:0.9rem; width:100%;">
-                                    </div>
-                                    <div class="form-group" style="flex:1;">
-                                        <label
-                                            style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Channel
-                                            *</label>
-                                        <div style="position:relative;">
-                                            <select name="channel" class="form-input" required
-                                                style="background:white; color:black; border:none; border-radius:8px; padding:10px; font-size:0.9rem; width:100%; -webkit-appearance:none; appearance:none;">
-                                                <option value="walk-in">Walk-In</option>
-                                                <option value="phone">Phone Call</option>
-                                                <option value="facebook">Facebook / Messenger</option>
-                                            </select>
-                                            <span
-                                                style="position:absolute; right:15px; top:50%; transform:translateY(-50%); color:black; pointer-events:none;"><i
-                                                    class="bi bi-chevron-down"></i></span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Vehicle Info -->
-                                <div class="form-row" style="margin-bottom:15px;">
-                                    <label
-                                        style="color:#fff; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px; display:block;">Vehicle
-                                        Details (Optional)</label>
-                                    <div style="display:flex; gap:10px;">
-                                        <div class="form-group" style="flex:1;">
-                                            <input name="vehicle_make" placeholder="Make" class="form-input"
-                                                style="background:white; color:black; border:none; border-radius:8px; padding:10px; font-size:0.9rem; width:100%;">
-                                        </div>
-                                        <div class="form-group" style="flex:1;">
-                                            <input name="vehicle_model" placeholder="Model" class="form-input"
-                                                style="background:white; color:black; border:none; border-radius:8px; padding:10px; font-size:0.9rem; width:100%;">
-                                        </div>
-                                        <div class="form-group" style="flex:1;">
-                                            <input name="plate_number" placeholder="Plate" class="form-input"
-                                                style="background:white; color:black; border:none; border-radius:8px; padding:10px; font-size:0.9rem; width:100%;">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- RIGHT COLUMN: Service & Schedule -->
-                            <div style="flex:1; min-width:300px;">
-                                <h4
-                                    style="color:#ef4444; margin-bottom:15px; font-size:0.9rem; text-transform:uppercase; border-bottom:1px solid #444; padding-bottom:5px;">
-                                    Service & Schedule</h4>
-
-                                <div class="form-row" style="margin-bottom:15px;">
-                                    <div class="form-group" style="flex:1;">
-                                        <label
-                                            style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Service
-                                            Type *</label>
-                                        <div style="position:relative;">
-                                            <select name="service_type" class="form-input" required
-                                                style="background:white; color:#ef4444; border:none; border-radius:8px; padding:10px; font-size:0.9rem; width:100%; -webkit-appearance:none; appearance:none;">
-                                                <option value="" disabled selected>-- select service --</option>
-                                                @foreach($serviceTypes ?? [] as $st)
-                                                    <option value="{{ $st->name }}">{{ $st->name }}</option>
-                                                @endforeach
-                                            </select>
-                                            <span
-                                                style="position:absolute; right:15px; top:50%; transform:translateY(-50%); color:#ef4444; pointer-events:none;"><i
-                                                    class="bi bi-chevron-down"></i></span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="form-row" style="display:flex; gap:15px; margin-bottom:15px;">
-                                    <div class="form-group" style="flex:1;">
-                                        <label
-                                            style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Preferred
-                                            Date *</label>
-                                        <div style="position:relative;">
-                                            <input name="preferred_date" type="date" class="form-input" required
-                                                min="{{ date('Y-m-d') }}"
-                                                style="background:white; color:#ef4444; border:none; border-radius:8px; padding:10px; font-size:0.9rem; width:100%;">
-                                        </div>
-                                    </div>
-                                    <div class="form-group" style="flex:1;">
-                                        <label
-                                            style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Preferred
-                                            Time *</label>
-                                        <div style="position:relative;">
-                                            <select name="preferred_time" class="form-input" required
-                                                style="background:white; color:#ef4444; border:none; border-radius:8px; padding:10px; font-size:0.9rem; width:100%; -webkit-appearance:none; appearance:none;">
-                                                <option value="" disabled selected>-- : -- --</option>
-                                                <option value="08:00">08:00 AM</option>
-                                                <option value="09:00">09:00 AM</option>
-                                                <option value="10:00">10:00 AM</option>
-                                                <option value="11:00">11:00 AM</option>
-                                                <option value="13:00">01:00 PM</option>
-                                                <option value="14:00">02:00 PM</option>
-                                                <option value="15:00">03:00 PM</option>
-                                                <option value="16:00">04:00 PM</option>
-                                            </select>
-                                            <span
-                                                style="position:absolute; right:15px; top:50%; transform:translateY(-50%); color:black; pointer-events:none;"><i
-                                                    class="bi bi-clock"></i></span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="form-row" style="margin-bottom:0;">
-                                    <div class="form-group" style="flex:1;">
-                                        <label
-                                            style="color:#ef4444; font-size:0.75rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px;">Additional
-                                            Notes</label>
-                                        <textarea name="notes" class="form-input" rows="3"
-                                            style="background:white; color:black; border:none; border-radius:8px; padding:10px; font-size:0.9rem; width:100%; resize:vertical;"></textarea>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-
-                        <div class="button-row"
-                            style="display:flex; gap:10px; justify-content:flex-end; margin-top:25px; border-top:1px solid #333; padding-top:20px;">
-                            <button type="button" data-close
-                                style="background:#444; color:white; border:none; border-radius:6px; padding:10px 24px; font-weight:600; cursor:pointer;">
-                                Cancel
-                            </button>
-                            <button type="submit" id="submitBookingBtn"
-                                style="background:#dc2626; color:white; border:none; border-radius:6px; padding:10px 24px; font-weight:600; cursor:pointer;">
-                                Submit Booking
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <script>
-                // Prevent double submission on admin booking form
-                (function () {
-                    const form = document.getElementById('adminBookingForm');
-                    const submitBtn = document.getElementById('submitBookingBtn');
-                    let isSubmitting = false;
-
-                    if (form && submitBtn) {
-                        form.addEventListener('submit', function (e) {
-                            if (isSubmitting) {
-                                e.preventDefault();
-                                return;
-                            }
-
-                            isSubmitting = true;
-                            submitBtn.disabled = true;
-                            submitBtn.textContent = 'Submitting...';
-                        });
-                    }
-                })();
-            </script>
+                        isSubmitting = true;
+                        submitBtn.disabled = true;
+                        submitBtn.textContent = 'Submitting...';
+                    });
+                }
+            })();
+        </script>
 
 @endsection
