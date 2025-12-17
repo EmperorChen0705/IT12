@@ -209,33 +209,32 @@
             @csrf
             <input type="hidden" name="_from" value="createService">
 
-            <div class="form-row" style="display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap;">
-                <div class="form-group" style="flex:0 0 180px;">
-                @if($booking && !$booking->service)
-                    <input type="hidden" name="booking_id" id="svc_booking_id"
-                        value="{{ $booking->booking_id }}">
-                @else
-                    <div class="form-row" style="display:flex;gap:14px;margin-bottom:4px;">
-                        <div class="form-group" style="flex:0 0 260px;">
-                            <label>Booking (required)</label>
-                            <select name="booking_id" id="booking_id_select" class="form-input" required>
-                                <option value="">-- choose booking --</option>
-                                @foreach(\App\Models\Booking::doesntHave('service')
-                                    ->orderByDesc('created_at')
-                                    ->limit(50)->get(['booking_id','customer_name','vehicle_make','vehicle_model','service_type']) as $bk)
-                                    <option value="{{ $bk->booking_id }}"
-                                        @selected(old('booking_id')===$bk->booking_id)>
-                                        #{{ $bk->booking_id }} — {{ $bk->customer_name }}
-                                        ({{ $bk->vehicle_make }} {{ $bk->vehicle_model }})
-                                        [{{ $bk->service_type }}]
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
+            @if($booking && !$booking->service)
+                <input type="hidden" name="booking_id" id="svc_booking_id"
+                    value="{{ $booking->booking_id }}">
+            @else
+                <div class="form-row" style="display:flex;gap:14px;margin-bottom:10px;">
+                    <div class="form-group" style="flex:0 0 300px;">
+                        <label>Booking (required)</label>
+                        <select name="booking_id" id="booking_id_select" class="form-input" required>
+                            <option value="">-- choose booking --</option>
+                            @foreach(\App\Models\Booking::doesntHave('service')
+                                ->orderByDesc('created_at')
+                                ->limit(50)->get(['booking_id','customer_name','vehicle_make','vehicle_model','service_type']) as $bk)
+                                <option value="{{ $bk->booking_id }}"
+                                    @selected(old('booking_id')===$bk->booking_id)>
+                                    #{{ $bk->booking_id }} — {{ $bk->customer_name }}
+                                    ({{ $bk->vehicle_make }} {{ $bk->vehicle_model }})
+                                    [{{ $bk->service_type }}]
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
-                @endif
                 </div>
-                <div class="form-group" style="flex:0 0 120px;">
+            @endif
+
+            <div class="form-row" style="display:flex;gap:14px;align-items:flex-end;">
+                <div class="form-group" style="flex:0 0 100px;">
                     <label>Labor Fee</label>
                     <input name="labor_fee" type="number" step="0.01" min="0"
                            class="form-input" value="{{ old('labor_fee',0) }}">
@@ -256,7 +255,7 @@
                 </div>
                 @endif
 
-                <div class="form-group" style="flex:1;min-width:150px;margin-left:20px;">
+                <div class="form-group" style="flex:1;min-width:150px;">
                     <label>Notes</label>
                     <input name="notes" class="form-input" value="{{ old('notes') }}">
                 </div>
