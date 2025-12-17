@@ -227,17 +227,61 @@
 
 
         <!-- Receipt Modal -->
+        <!-- Receipt Modal -->
         <div class="modal hidden" id="bookingReceiptModal" data-modal>
-            <div class="modal-content" style="max-width:800px;">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-                    <h2 style="margin:0;font-size:1rem;">Booking Receipt</h2>
+            <div class="modal-content"
+                style="max-width:800px; width:95%; display:flex; flex-direction:column; max-height:85vh;">
+                <div
+                    style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px; flex-shrink:0;">
+                    <h2 style="margin:0;font-size:1.1rem; color:white;">Booking Receipt</h2>
+                    <button type="button" class="btn-close-white" data-close
+                        style="background:none; border:none; color:#aaa; font-size:1.2rem; cursor:pointer;"><i
+                            class="bi bi-x-lg"></i></button>
                 </div>
-                <div id="receiptBody" style="font-size:.72rem;line-height:1.4;max-height:70vh;overflow:auto;"></div>
-                <div style="text-align:right;margin-top:12px;">
-                    <button type="button" class="btn-secondary" data-close>Close</button>
+                <!-- Scrollable Body -->
+                <div id="receiptBody"
+                    style="font-size:.8rem; line-height:1.5; overflow-y:auto; overflow-x:hidden; padding-right:5px; flex-grow:1;">
+                </div>
+
+                <div style="text-align:right; margin-top:15px; pt-3; border-top:1px solid #333; flex-shrink:0;">
+                    <button type="button" class="btn btn-secondary" onclick="window.print()"
+                        style="margin-right:10px;">Print</button>
+                    <button type="button" class="btn btn-secondary" data-close>Close</button>
                 </div>
             </div>
         </div>
+
+        <style>
+            @media print {
+                body * {
+                    visibility: hidden;
+                }
+
+                #bookingReceiptModal,
+                #bookingReceiptModal * {
+                    visibility: visible;
+                }
+
+                #bookingReceiptModal {
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    background: white;
+                    color: black;
+                    width: 100%;
+                    height: auto;
+                }
+
+                .modal-content {
+                    border: none;
+                    box-shadow: none;
+                }
+
+                .btn {
+                    display: none;
+                }
+            }
+        </style>
 
         <script>
             document.addEventListener('DOMContentLoaded', () => {
@@ -268,62 +312,86 @@
 
                 function renderReceipt(data) {
                     let html = '';
-                    html += `<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:10px;">
-                                                        <div>
-                                                            <div style="font-weight:600;font-size:.8rem;">Booking #${escapeHtml(data.booking_id ?? '')}</div>
-                                                            <div>${escapeHtml(data.customer_name ?? '')}</div>
-                                                            <div>${escapeHtml(data.email ?? '—')}</div>
-                                                            <div>${escapeHtml(data.contact_number ?? '')}</div>
-                                                        </div>
-                                                        <div>
-                                                            <div><strong>Status:</strong> ${escapeHtml(data.status ?? '')}</div>
-                                                            <div><strong>Date:</strong> ${escapeHtml(data.preferred_date ?? '')}</div>
-                                                            <div><strong>Time:</strong> ${escapeHtml(data.preferred_time ?? '')}</div>
-                                                            <div><strong>Service Type:</strong> ${escapeHtml(data.service_type ?? '')}</div>
-                                                        </div>
-                                                    </div>`;
+                    // Header Section
+                    html += `<div style="background:#222; padding:15px; border-radius:8px; margin-bottom:15px;">
+                        <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:20px;">
+                            <div style="flex:1; min-width:200px;">
+                                <div style="color:#ef4444; font-weight:bold; font-size:1rem; margin-bottom:5px;">Booking #${escapeHtml(data.booking_id ?? '')}</div>
+                                <div style="font-size:1.1rem; font-weight:600; margin-bottom:5px;">${escapeHtml(data.customer_name ?? '')}</div>
+                                <div style="color:#aaa;">${escapeHtml(data.email ?? '—')}</div>
+                                <div style="color:#aaa;">${escapeHtml(data.contact_number ?? '')}</div>
+                            </div>
+                            <div style="text-align:right; flex:1; min-width:200px;">
+                                <div style="margin-bottom:4px;"><span style="color:#888;">Date:</span> <strong>${escapeHtml(data.preferred_date ?? '')}</strong></div>
+                                <div style="margin-bottom:4px;"><span style="color:#888;">Time:</span> <strong>${escapeHtml(data.preferred_time ?? '')}</strong></div>
+                                <div style="margin-bottom:4px;"><span style="color:#888;">Service:</span> <strong>${escapeHtml(data.service_type ?? '')}</strong></div>
+                                <div><span style="color:#888;">Status:</span> <span style="text-transform:uppercase; font-weight:bold; color:#fff;">${escapeHtml(data.status ?? '')}</span></div>
+                            </div>
+                        </div>
+                    </div>`;
 
                     if (data.service) {
-                        html += `<hr style="border:0;border-top:1px solid var(--gray-700);margin:8px 0;">
-                                                        <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;">
-                                                            <div>
-                                                                <div><strong>Service Ref:</strong> ${escapeHtml(data.service.reference_code ?? '')}</div>
-                                                                <div><strong>Service Status:</strong> ${escapeHtml(data.service.status ?? '')}</div>
-                                                                <div><strong>Started:</strong> ${escapeHtml(data.service.started_at ?? '—')}</div>
-                                                                <div><strong>Completed:</strong> ${escapeHtml(data.service.completed_at ?? '—')}</div>
-                                                            </div>
-                                                            <div>
-                                                                <div><strong>Labor Fee:</strong> ${formatMoney(data.service.labor_fee)}</div>
-                                                                <div><strong>Subtotal:</strong> ${formatMoney(data.service.subtotal)}</div>
-                                                                <div><strong>Total:</strong> ${formatMoney(data.service.total)}</div>
-                                                            </div>
-                                                        </div>`;
+                        // Service Info
+                        html += `<div style="margin-bottom:20px;">
+                            <h3 style="border-bottom:1px solid #444; padding-bottom:5px; margin-bottom:10px; font-size:0.9rem; color:#ef4444; text-transform:uppercase;">Service Details</h3>
+                            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:15px; font-size:0.85rem;">
+                                <div><span style="color:#888;">Reference:</span> ${escapeHtml(data.service.reference_code ?? '')}</div>
+                                <div><span style="color:#888;">Svc Status:</span> ${escapeHtml(data.service.status ?? '')}</div>
+                                <div><span style="color:#888;">Started:</span> ${escapeHtml(data.service.started_at ?? '—')}</div>
+                                <div><span style="color:#888;">Completed:</span> ${escapeHtml(data.service.completed_at ?? '—')}</div>
+                            </div>
+                        </div>`;
 
+                        // Items Table
                         if (data.service.items && data.service.items.length) {
-                            html += `<div style="margin-top:10px;">
-                                                                <h3 style="margin:0 0 6px;font-size:.7rem;letter-spacing:1px;text-transform:uppercase;">Items</h3>
-                                                                <table style="width:100%;border-collapse:collapse;font-size:.68rem;">
-                                                                    <thead>
-                                                                        <tr style="text-align:left;background:var(--gray-800);">
-                                                                            <th style="padding:6px;">Name</th>
-                                                                            <th style="padding:6px;">Qty</th>
-                                                                            <th style="padding:6px;text-align:right;">Unit</th>
-                                                                            <th style="padding:6px;text-align:right;">Line Total</th>
-                                                                        </tr>
-                                                                    </thead>
-                                                                    <tbody>`;
+                            html += `<div style="margin-bottom:20px;">
+                                <h3 style="border-bottom:1px solid #444; padding-bottom:5px; margin-bottom:10px; font-size:0.9rem; color:#ef4444; text-transform:uppercase;">Items Used</h3>
+                                <table style="width:100%; border-collapse:collapse; font-size:0.85rem;">
+                                    <thead>
+                                        <tr style="background:#333; color:#fff; text-align:left;">
+                                            <th style="padding:8px 10px; border-radius:4px 0 0 4px;">Item Name</th>
+                                            <th style="padding:8px 10px; text-align:center;">Qty</th>
+                                            <th style="padding:8px 10px; text-align:right;">Unit Price</th>
+                                            <th style="padding:8px 10px; text-align:right; border-radius:0 4px 4px 0;">Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>`;
                             data.service.items.forEach(it => {
-                                html += `<tr>
-                                                                    <td style="padding:4px 6px;">${escapeHtml(it.name ?? '')}</td>
-                                                                    <td style="padding:4px 6px;">${it.quantity}</td>
-                                                                    <td style="padding:4px 6px;text-align:right;">${formatMoney(it.unit_price)}</td>
-                                                                    <td style="padding:4px 6px;text-align:right;">${formatMoney(it.line_total)}</td>
-                                                                </tr>`;
+                                html += `<tr style="border-bottom:1px solid #333;">
+                                    <td style="padding:8px 10px;">${escapeHtml(it.name ?? '')}</td>
+                                    <td style="padding:8px 10px; text-align:center;">${it.quantity}</td>
+                                    <td style="padding:8px 10px; text-align:right;">${formatMoney(it.unit_price)}</td>
+                                    <td style="padding:8px 10px; text-align:right;">${formatMoney(it.line_total)}</td>
+                                </tr>`;
                             });
                             html += `</tbody></table></div>`;
+                        } else {
+                            html += `<div style="margin-bottom:20px; font-style:italic; color:#888;">No items recorded.</div>`;
                         }
+                        
+                         // Financial Totals
+                        html += `<div style="display:flex; justify-content:flex-end;">
+                            <div style="width:250px; background:#222; padding:15px; border-radius:8px;">
+                                <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                                    <span style="color:#aaa;">Labor Fee:</span>
+                                    <span>${formatMoney(data.service.labor_fee)}</span>
+                                </div>
+                                <div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px solid #444; padding-bottom:5px;">
+                                    <span style="color:#aaa;">Subtotal:</span>
+                                    <span>${formatMoney(data.service.subtotal)}</span>
+                                </div>
+                                <div style="display:flex; justify-content:space-between; font-size:1.1rem; font-weight:bold; color:#ef4444;">
+                                    <span>TOTAL:</span>
+                                    <span>${formatMoney(data.service.total)}</span>
+                                </div>
+                            </div>
+                        </div>`;
+
                     } else {
-                        html += `<div style="margin-top:10px;font-style:italic;color:var(--gray-500);">No service linked.</div>`;
+                        html += `<div style="margin-top:20px; padding:20px; background:#222; border-radius:8px; text-align:center; color:#888;">
+                            <i class="bi bi-info-circle" style="font-size:1.5rem; display:block; margin-bottom:10px;"></i>
+                            No service record linked yet.
+                        </div>`;
                     }
 
                     bodyEl.innerHTML = html;
