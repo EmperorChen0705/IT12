@@ -235,16 +235,14 @@
                     </div>
                 @endif
                 </div>
-                <div class="form-group" style="flex:0 0 180px;">
+                <div class="form-group" style="flex:0 0 120px;">
                     <label>Labor Fee</label>
                     <input name="labor_fee" type="number" step="0.01" min="0"
                            class="form-input" value="{{ old('labor_fee',0) }}">
                 </div>
-            </div>
-            
-            <div class="form-row" style="display:flex;gap:14px;align-items:flex-end;margin-top:10px;">
+                
                 @if(auth()->user()->canAccessAdmin())
-                <div class="form-group" style="flex:0 0 200px;">
+                <div class="form-group" style="flex:0 0 180px;">
                     <label>Technician (Required)</label>
                     <select name="technician_id" class="form-input" required>
                         <option value="">-- Select Technician --</option>
@@ -258,7 +256,7 @@
                 </div>
                 @endif
 
-                <div class="form-group" style="flex:1;">
+                <div class="form-group" style="flex:1;min-width:150px;">
                     <label>Notes</label>
                     <input name="notes" class="form-input" value="{{ old('notes') }}">
                 </div>
