@@ -42,18 +42,27 @@ class Service extends Model
 
     protected static function booted(): void
     {
-        // Set default status before creating
+        // Set defaults before creating
         static::creating(function (Service $service) {
             if (empty($service->status)) {
                 $service->status = self::STATUS_PENDING;
             }
+
+            // Generate reference_code before insert (MySQL requires it)
+            if (empty($service->reference_code)) {
+                // Get the next ID by finding the max current ID
+                $lastService = self::withTrashed()->orderByDesc('id')->first();
+                $nextId = $lastService ? $lastService->id + 1 : 1;
+                $service->reference_code = 'SRV-' . str_pad($nextId, 6, '0', STR_PAD_LEFT);
+            }
         });
 
-        // Set reference code after creation so we have the actual database ID
+        // Update reference code after creation to use actual ID (in case of race condition)
         static::created(function (Service $service) {
-            if (empty($service->reference_code)) {
-                $service->reference_code = 'SRV-' . str_pad($service->id, 6, '0', STR_PAD_LEFT);
-                $service->saveQuietly(); // Save without triggering events again
+            $correctCode = 'SRV-' . str_pad($service->id, 6, '0', STR_PAD_LEFT);
+            if ($service->reference_code !== $correctCode) {
+                $service->reference_code = $correctCode;
+                $service->saveQuietly();
             }
         });
     }
