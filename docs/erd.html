@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory and Booking System - ERD</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #e0e0e0;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #e94560, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #aaa;
+            font-size: 0.95rem;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+        }
+
+        .legend-line {
+            width: 40px;
+            height: 3px;
+            border-radius: 2px;
+        }
+
+        .legend-one-to-one {
+            background: #4ecdc4;
+        }
+
+        .legend-one-to-many {
+            background: #ffd93d;
+        }
+
+        .legend-self-ref {
+            background: #ff6b6b;
+        }
+
+        .erd-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            justify-content: center;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .entity {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02));
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            min-width: 280px;
+            max-width: 320px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .entity:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(233, 69, 96, 0.2);
+        }
+
+        .entity-header {
+            padding: 15px 20px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .entity-header .icon {
+            font-size: 1.3rem;
+        }
+
+        /* Color themes for different entity types */
+        .entity.users .entity-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .entity.employees .entity-header {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+        }
+
+        .entity.bookings .entity-header {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+        }
+
+        .entity.services .entity-header {
+            background: linear-gradient(135deg, #43e97b, #38f9d7);
+        }
+
+        .entity.items .entity-header {
+            background: linear-gradient(135deg, #fa709a, #fee140);
+        }
+
+        .entity.inventory .entity-header {
+            background: linear-gradient(135deg, #a8edea, #fed6e3);
+            color: #333;
+        }
+
+        .entity.suppliers .entity-header {
+            background: linear-gradient(135deg, #ff9a9e, #fecfef);
+            color: #333;
+        }
+
+        .entity.logs .entity-header {
+            background: linear-gradient(135deg, #d299c2, #fef9d7);
+            color: #333;
+        }
+
+        .entity-body {
+            padding: 15px 20px;
+        }
+
+        .attribute {
+            display: flex;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.9rem;
+        }
+
+        .attribute:last-child {
+            border-bottom: none;
+        }
+
+        .attr-icon {
+            width: 20px;
+            color: #888;
+            font-size: 0.7rem;
+            text-align: center;
+        }
+
+        .attr-name {
+            flex: 1;
+            font-family: 'Consolas', monospace;
+        }
+
+        .attr-type {
+            color: #888;
+            font-size: 0.8rem;
+            font-family: 'Consolas', monospace;
+        }
+
+        .pk {
+            color: #ffd93d;
+            font-weight: 600;
+        }
+
+        .fk {
+            color: #4ecdc4;
+        }
+
+        .nullable {
+            font-style: italic;
+            opacity: 0.8;
+        }
+
+        .relationships-section {
+            margin-top: 40px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .relationships-section h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #e94560;
+        }
+
+        .relationship-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 15px;
+        }
+
+        .relationship {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            border-left: 4px solid;
+        }
+
+        .relationship.one-to-one {
+            border-left-color: #4ecdc4;
+        }
+
+        .relationship.one-to-many {
+            border-left-color: #ffd93d;
+        }
+
+        .relationship.self-ref {
+            border-left-color: #ff6b6b;
+        }
+
+        .rel-entity {
+            padding: 4px 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            font-weight: 500;
+            font-family: 'Consolas', monospace;
+        }
+
+        .rel-type {
+            padding: 0 15px;
+            color: #aaa;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .rel-type .arrow {
+            font-size: 1.2rem;
+        }
+
+        .mermaid-section {
+            margin-top: 40px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .mermaid-section h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #e94560;
+        }
+
+        .mermaid {
+            background: #1a1a2e;
+            padding: 20px;
+            border-radius: 10px;
+            overflow: auto;
+        }
+
+        @media print {
+            body {
+                background: white;
+                color: #333;
+                padding: 10px;
+            }
+
+            .entity {
+                break-inside: avoid;
+                border: 1px solid #ccc;
+            }
+
+            .entity-header {
+                color: white !important;
+            }
+
+            .relationship {
+                border: 1px solid #ccc;
+                background: #f5f5f5;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .entity {
+                min-width: 100%;
+            }
+
+            .relationship-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>🔧 Inventory and Booking System - ERD</h1>
+        <p>Entity Relationship Diagram with Clear Relationships</p>
+    </div>
+
+    <div class="legend">
+        <div class="legend-item">
+            <div class="legend-line legend-one-to-one"></div>
+            <span>One-to-One (1:1)</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-line legend-one-to-many"></div>
+            <span>One-to-Many (1:N)</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-line legend-self-ref"></div>
+            <span>Self-Reference</span>
+        </div>
+        <div class="legend-item">
+            <span class="pk" style="font-size: 0.9rem;">🔑 PK</span>
+            <span>Primary Key</span>
+        </div>
+        <div class="legend-item">
+            <span class="fk" style="font-size: 0.9rem;">🔗 FK</span>
+            <span>Foreign Key</span>
+        </div>
+    </div>
+
+    <div class="erd-container">
+        <!-- Users Entity -->
+        <div class="entity users">
+            <div class="entity-header">
+                <span class="icon">👤</span>
+                Users
+            </div>
+            <div class="entity-body">
+                <div class="attribute">
+                    <span class="attr-icon">🔑</span>
+                    <span class="attr-name pk">id</span>
+                    <span class="attr-type">bigint</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">name</span>
+                    <span class="attr-type">varchar(255)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">email</span>
+                    <span class="attr-type">varchar(255)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">password</span>
+                    <span class="attr-type">varchar(255)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">role</span>
+                    <span class="attr-type">enum</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">is_manager</span>
+                    <span class="attr-type">boolean</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">is_inventory_officer</span>
+                    <span class="attr-type">boolean</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name nullable">elevated_until</span>
+                    <span class="attr-type">datetime</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon">🔗</span>
+                    <span class="attr-name fk nullable">elevated_by</span>
+                    <span class="attr-type">bigint (users.id)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name nullable">deleted_at</span>
+                    <span class="attr-type">timestamp</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Employees Entity -->
+        <div class="entity employees">
+            <div class="entity-header">
+                <span class="icon">👷</span>
+                Employees
+            </div>
+            <div class="entity-body">
+                <div class="attribute">
+                    <span class="attr-icon">🔑</span>
+                    <span class="attr-name pk">id</span>
+                    <span class="attr-type">bigint</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon">🔗</span>
+                    <span class="attr-name fk">user_id</span>
+                    <span class="attr-type">bigint (users.id)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">first_name</span>
+                    <span class="attr-type">varchar(255)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">last_name</span>
+                    <span class="attr-type">varchar(255)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">address</span>
+                    <span class="attr-type">varchar(255)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">contact_number</span>
+                    <span class="attr-type">varchar(15)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">sss_number</span>
+                    <span class="attr-type">varchar(20)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name nullable">profile_picture</span>
+                    <span class="attr-type">varchar(255)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name nullable">deleted_at</span>
+                    <span class="attr-type">timestamp</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bookings Entity -->
+        <div class="entity bookings">
+            <div class="entity-header">
+                <span class="icon">📅</span>
+                Bookings
+            </div>
+            <div class="entity-body">
+                <div class="attribute">
+                    <span class="attr-icon">🔑</span>
+                    <span class="attr-name pk">booking_id</span>
+                    <span class="attr-type">varchar (BKG0001)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">customer_name</span>
+                    <span class="attr-type">varchar(255)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">vehicle_make</span>
+                    <span class="attr-type">varchar(100)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">vehicle_model</span>
+                    <span class="attr-type">varchar(100)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">plate_number</span>
+                    <span class="attr-type">varchar(20)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name nullable">email</span>
+                    <span class="attr-type">varchar(255)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">contact_number</span>
+                    <span class="attr-type">varchar(15)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">service_type</span>
+                    <span class="attr-type">varchar(100)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">preferred_date</span>
+                    <span class="attr-type">date</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">preferred_time</span>
+                    <span class="attr-type">time</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name nullable">notes</span>
+                    <span class="attr-type">text</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">status</span>
+                    <span class="attr-type">enum</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">payment_status</span>
+                    <span class="attr-type">enum</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">channel</span>
+                    <span class="attr-type">varchar(50)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Services Entity -->
+        <div class="entity services">
+            <div class="entity-header">
+                <span class="icon">🔧</span>
+                Services
+            </div>
+            <div class="entity-body">
+                <div class="attribute">
+                    <span class="attr-icon">🔑</span>
+                    <span class="attr-name pk">id</span>
+                    <span class="attr-type">bigint</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon">🔗</span>
+                    <span class="attr-name fk nullable">booking_id</span>
+                    <span class="attr-type">varchar (bookings.booking_id)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon">🔗</span>
+                    <span class="attr-name fk nullable">technician_id</span>
+                    <span class="attr-type">bigint (employees.id)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">reference_code</span>
+                    <span class="attr-type">varchar (SRV-000001)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">status</span>
+                    <span class="attr-type">enum</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">labor_fee</span>
+                    <span class="attr-type">decimal(10,2)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">subtotal</span>
+                    <span class="attr-type">decimal(10,2)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">total</span>
+                    <span class="attr-type">decimal(10,2)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name nullable">notes</span>
+                    <span class="attr-type">text</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name nullable">started_at</span>
+                    <span class="attr-type">datetime</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name nullable">completed_at</span>
+                    <span class="attr-type">datetime</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name nullable">expected_end_date</span>
+                    <span class="attr-type">datetime</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name nullable">deleted_at</span>
+                    <span class="attr-type">timestamp</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Service Items Entity -->
+        <div class="entity items">
+            <div class="entity-header">
+                <span class="icon">📋</span>
+                Service Items (Pivot)
+            </div>
+            <div class="entity-body">
+                <div class="attribute">
+                    <span class="attr-icon">🔑</span>
+                    <span class="attr-name pk">id</span>
+                    <span class="attr-type">bigint</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon">🔗</span>
+                    <span class="attr-name fk">service_id</span>
+                    <span class="attr-type">bigint (services.id)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon">🔗</span>
+                    <span class="attr-name fk">item_id</span>
+                    <span class="attr-type">varchar (items.item_id)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">quantity</span>
+                    <span class="attr-type">int</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">unit_price</span>
+                    <span class="attr-type">decimal(10,2)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">line_total</span>
+                    <span class="attr-type">decimal(10,2)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name nullable">deleted_at</span>
+                    <span class="attr-type">timestamp</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Items Entity -->
+        <div class="entity items">
+            <div class="entity-header">
+                <span class="icon">📦</span>
+                Items
+            </div>
+            <div class="entity-body">
+                <div class="attribute">
+                    <span class="attr-icon">🔑</span>
+                    <span class="attr-name pk">item_id</span>
+                    <span class="attr-type">varchar (ITM0001)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon">🔗</span>
+                    <span class="attr-name fk">itemctgry_id</span>
+                    <span class="attr-type">varchar (item_categories.itemctgry_id)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">name</span>
+                    <span class="attr-type">varchar(255)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name nullable">description</span>
+                    <span class="attr-type">text</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">quantity</span>
+                    <span class="attr-type">int</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">unit_price</span>
+                    <span class="attr-type">decimal(10,2)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">unit</span>
+                    <span class="attr-type">varchar(50)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">active</span>
+                    <span class="attr-type">boolean</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name nullable">deleted_at</span>
+                    <span class="attr-type">timestamp</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Item Categories Entity -->
+        <div class="entity inventory">
+            <div class="entity-header">
+                <span class="icon">🏷️</span>
+                Item Categories
+            </div>
+            <div class="entity-body">
+                <div class="attribute">
+                    <span class="attr-icon">🔑</span>
+                    <span class="attr-name pk">itemctgry_id</span>
+                    <span class="attr-type">varchar</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">name</span>
+                    <span class="attr-type">varchar(255)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name nullable">description</span>
+                    <span class="attr-type">text</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">active</span>
+                    <span class="attr-type">boolean</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Service Types Entity -->
+        <div class="entity inventory">
+            <div class="entity-header">
+                <span class="icon">🛠️</span>
+                Service Types
+            </div>
+            <div class="entity-body">
+                <div class="attribute">
+                    <span class="attr-icon">🔑</span>
+                    <span class="attr-name pk">id</span>
+                    <span class="attr-type">bigint</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">name</span>
+                    <span class="attr-type">varchar(255)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name nullable">description</span>
+                    <span class="attr-type">text</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">active</span>
+                    <span class="attr-type">boolean</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Suppliers Entity -->
+        <div class="entity suppliers">
+            <div class="entity-header">
+                <span class="icon">🏢</span>
+                Suppliers
+            </div>
+            <div class="entity-body">
+                <div class="attribute">
+                    <span class="attr-icon">🔑</span>
+                    <span class="attr-name pk">supplier_id</span>
+                    <span class="attr-type">varchar (S001)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">name</span>
+                    <span class="attr-type">varchar(255)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">address</span>
+                    <span class="attr-type">varchar(255)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">number</span>
+                    <span class="attr-type">varchar(15)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">contact_person</span>
+                    <span class="attr-type">varchar(255)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name nullable">deleted_at</span>
+                    <span class="attr-type">timestamp</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stock In Entity -->
+        <div class="entity inventory">
+            <div class="entity-header">
+                <span class="icon">📥</span>
+                Stock In
+            </div>
+            <div class="entity-body">
+                <div class="attribute">
+                    <span class="attr-icon">🔑</span>
+                    <span class="attr-name pk">stockin_id</span>
+                    <span class="attr-type">varchar</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon">🔗</span>
+                    <span class="attr-name fk">item_id</span>
+                    <span class="attr-type">varchar (items.item_id)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon">🔗</span>
+                    <span class="attr-name fk">supplier_id</span>
+                    <span class="attr-type">varchar (suppliers.supplier_id)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">quantity</span>
+                    <span class="attr-type">int</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">price</span>
+                    <span class="attr-type">decimal(10,2)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">total_price</span>
+                    <span class="attr-type">decimal(10,2)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">stockin_date</span>
+                    <span class="attr-type">date</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name nullable">deleted_at</span>
+                    <span class="attr-type">timestamp</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stock Out Entity -->
+        <div class="entity inventory">
+            <div class="entity-header">
+                <span class="icon">📤</span>
+                Stock Out
+            </div>
+            <div class="entity-body">
+                <div class="attribute">
+                    <span class="attr-icon">🔑</span>
+                    <span class="attr-name pk">stockout_id</span>
+                    <span class="attr-type">varchar</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon">🔗</span>
+                    <span class="attr-name fk">item_id</span>
+                    <span class="attr-type">varchar (items.item_id)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon">🔗</span>
+                    <span class="attr-name fk">user_id</span>
+                    <span class="attr-type">bigint (users.id)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">quantity</span>
+                    <span class="attr-type">int</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">stockout_date</span>
+                    <span class="attr-type">date</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name nullable">reference_type</span>
+                    <span class="attr-type">varchar(100)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name nullable">reference_id</span>
+                    <span class="attr-type">varchar(100)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name nullable">deleted_at</span>
+                    <span class="attr-type">timestamp</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity Logs Entity -->
+        <div class="entity logs">
+            <div class="entity-header">
+                <span class="icon">📝</span>
+                Activity Logs
+            </div>
+            <div class="entity-body">
+                <div class="attribute">
+                    <span class="attr-icon">🔑</span>
+                    <span class="attr-name pk">id</span>
+                    <span class="attr-type">bigint</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">event_type</span>
+                    <span class="attr-type">varchar(100)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name nullable">subject_type</span>
+                    <span class="attr-type">varchar(255)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name nullable">subject_id</span>
+                    <span class="attr-type">varchar(100)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon">🔗</span>
+                    <span class="attr-name fk nullable">user_id</span>
+                    <span class="attr-type">bigint (users.id)</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name nullable">description</span>
+                    <span class="attr-type">text</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name nullable">meta</span>
+                    <span class="attr-type">json</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name">occurred_at</span>
+                    <span class="attr-type">datetime</span>
+                </div>
+                <div class="attribute">
+                    <span class="attr-icon"></span>
+                    <span class="attr-name nullable">deleted_at</span>
+                    <span class="attr-type">timestamp</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Relationships Section -->
+    <div class="relationships-section">
+        <h2>🔗 Entity Relationships</h2>
+        <div class="relationship-grid">
+            <!-- User Relationships -->
+            <div class="relationship one-to-one">
+                <span class="rel-entity">Users</span>
+                <span class="rel-type"><span class="arrow">1</span> ─── <span class="arrow">1</span></span>
+                <span class="rel-entity">Employees</span>
+            </div>
+            <div class="relationship self-ref">
+                <span class="rel-entity">Users</span>
+                <span class="rel-type"><span class="arrow">1</span> ─── <span class="arrow">N</span></span>
+                <span class="rel-entity">Users (elevated_by)</span>
+            </div>
+            <div class="relationship one-to-many">
+                <span class="rel-entity">Users</span>
+                <span class="rel-type"><span class="arrow">1</span> ─── <span class="arrow">N</span></span>
+                <span class="rel-entity">Stock Out</span>
+            </div>
+            <div class="relationship one-to-many">
+                <span class="rel-entity">Users</span>
+                <span class="rel-type"><span class="arrow">1</span> ─── <span class="arrow">N</span></span>
+                <span class="rel-entity">Activity Logs</span>
+            </div>
+
+            <!-- Employee Relationships -->
+            <div class="relationship one-to-many">
+                <span class="rel-entity">Employees</span>
+                <span class="rel-type"><span class="arrow">1</span> ─── <span class="arrow">N</span></span>
+                <span class="rel-entity">Services (technician)</span>
+            </div>
+
+            <!-- Booking Relationships -->
+            <div class="relationship one-to-one">
+                <span class="rel-entity">Bookings</span>
+                <span class="rel-type"><span class="arrow">1</span> ─── <span class="arrow">1</span></span>
+                <span class="rel-entity">Services</span>
+            </div>
+
+            <!-- Service Relationships -->
+            <div class="relationship one-to-many">
+                <span class="rel-entity">Services</span>
+                <span class="rel-type"><span class="arrow">1</span> ─── <span class="arrow">N</span></span>
+                <span class="rel-entity">Service Items</span>
+            </div>
+
+            <!-- Item Relationships -->
+            <div class="relationship one-to-many">
+                <span class="rel-entity">Item Categories</span>
+                <span class="rel-type"><span class="arrow">1</span> ─── <span class="arrow">N</span></span>
+                <span class="rel-entity">Items</span>
+            </div>
+            <div class="relationship one-to-many">
+                <span class="rel-entity">Items</span>
+                <span class="rel-type"><span class="arrow">1</span> ─── <span class="arrow">N</span></span>
+                <span class="rel-entity">Service Items</span>
+            </div>
+            <div class="relationship one-to-many">
+                <span class="rel-entity">Items</span>
+                <span class="rel-type"><span class="arrow">1</span> ─── <span class="arrow">N</span></span>
+                <span class="rel-entity">Stock In</span>
+            </div>
+            <div class="relationship one-to-many">
+                <span class="rel-entity">Items</span>
+                <span class="rel-type"><span class="arrow">1</span> ─── <span class="arrow">N</span></span>
+                <span class="rel-entity">Stock Out</span>
+            </div>
+
+            <!-- Supplier Relationships -->
+            <div class="relationship one-to-many">
+                <span class="rel-entity">Suppliers</span>
+                <span class="rel-type"><span class="arrow">1</span> ─── <span class="arrow">N</span></span>
+                <span class="rel-entity">Stock In</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mermaid ER Diagram -->
+    <div class="mermaid-section">
+        <h2>📊 ER Diagram (Visual)</h2>
+        <div class="mermaid">
+            <pre>
+erDiagram
+    USERS ||--o| EMPLOYEES : "has"
+    USERS ||--o{ USERS : "elevated_by"
+    USERS ||--o{ STOCK_OUT : "records"
+    USERS ||--o{ ACTIVITY_LOGS : "generates"
+    
+    EMPLOYEES ||--o{ SERVICES : "assigned as technician"
+    
+    BOOKINGS ||--o| SERVICES : "creates"
+    
+    SERVICES ||--o{ SERVICE_ITEMS : "contains"
+    
+    ITEM_CATEGORIES ||--o{ ITEMS : "categorizes"
+    
+    ITEMS ||--o{ SERVICE_ITEMS : "used in"
+    ITEMS ||--o{ STOCK_IN : "restocked via"
+    ITEMS ||--o{ STOCK_OUT : "depleted via"
+    
+    SUPPLIERS ||--o{ STOCK_IN : "supplies"
+
+    USERS {
+        bigint id PK
+        varchar name
+        varchar email UK
+        varchar password
+        enum role
+        boolean is_manager
+        boolean is_inventory_officer
+        datetime elevated_until
+        bigint elevated_by FK
+        timestamp deleted_at
+    }
+    
+    EMPLOYEES {
+        bigint id PK
+        bigint user_id FK
+        varchar first_name
+        varchar last_name
+        varchar address
+        varchar contact_number
+        varchar sss_number
+        varchar profile_picture
+        timestamp deleted_at
+    }
+    
+    BOOKINGS {
+        varchar booking_id PK
+        varchar customer_name
+        varchar vehicle_make
+        varchar vehicle_model
+        varchar plate_number
+        varchar email
+        varchar contact_number
+        varchar service_type
+        date preferred_date
+        time preferred_time
+        text notes
+        enum status
+        enum payment_status
+        varchar channel
+    }
+    
+    SERVICES {
+        bigint id PK
+        varchar booking_id FK
+        bigint technician_id FK
+        varchar reference_code
+        enum status
+        decimal labor_fee
+        decimal subtotal
+        decimal total
+        text notes
+        datetime started_at
+        datetime completed_at
+        datetime expected_end_date
+        timestamp deleted_at
+    }
+    
+    SERVICE_ITEMS {
+        bigint id PK
+        bigint service_id FK
+        varchar item_id FK
+        int quantity
+        decimal unit_price
+        decimal line_total
+        timestamp deleted_at
+    }
+    
+    ITEMS {
+        varchar item_id PK
+        varchar itemctgry_id FK
+        varchar name
+        text description
+        int quantity
+        decimal unit_price
+        varchar unit
+        boolean active
+        timestamp deleted_at
+    }
+    
+    ITEM_CATEGORIES {
+        varchar itemctgry_id PK
+        varchar name
+        text description
+        boolean active
+    }
+    
+    SERVICE_TYPES {
+        bigint id PK
+        varchar name
+        text description
+        boolean active
+    }
+    
+    SUPPLIERS {
+        varchar supplier_id PK
+        varchar name
+        varchar address
+        varchar number
+        varchar contact_person
+        timestamp deleted_at
+    }
+    
+    STOCK_IN {
+        varchar stockin_id PK
+        varchar item_id FK
+        varchar supplier_id FK
+        int quantity
+        decimal price
+        decimal total_price
+        date stockin_date
+        timestamp deleted_at
+    }
+    
+    STOCK_OUT {
+        varchar stockout_id PK
+        varchar item_id FK
+        bigint user_id FK
+        int quantity
+        date stockout_date
+        varchar reference_type
+        varchar reference_id
+        timestamp deleted_at
+    }
+    
+    ACTIVITY_LOGS {
+        bigint id PK
+        varchar event_type
+        varchar subject_type
+        varchar subject_id
+        bigint user_id FK
+        text description
+        json meta
+        datetime occurred_at
+        timestamp deleted_at
+    }
+            </pre>
+        </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 30px; padding: 20px; color: #666; font-size: 0.85rem;">
+        <p>Generated on <span id="generated-date"></span></p>
+        <p>Inventory and Booking System ERD</p>
+    </div>
+
+    <script>
+        document.getElementById('generated-date').textContent = new Date().toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    </script>
+</body>
+
+</html>

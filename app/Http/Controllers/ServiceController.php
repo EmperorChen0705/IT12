@@ -13,6 +13,7 @@ use App\Models\StockOut;
 use App\Models\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
 class ServiceController extends Controller
@@ -42,68 +43,96 @@ class ServiceController extends Controller
 
     public function store(Request $request)
     {
-        $this->sanitizeItems($request);
-        $validated = $this->validateService($request, true);
+        try {
+            Log::info('Service store started', ['request' => $request->all()]);
 
-        DB::transaction(function () use ($validated, &$service) {
-            $booking = Booking::where('booking_id', $validated['booking_id'])
-                ->lockForUpdate()
-                ->firstOrFail();
+            $this->sanitizeItems($request);
+            $validated = $this->validateService($request, true);
 
-            if ($booking->service) {
-                abort(422, 'Booking already has a service.');
-            }
+            Log::info('Service validation passed', ['validated' => $validated]);
 
-            $status = Service::STATUS_PENDING;
-            $techId = null;
+            DB::transaction(function () use ($validated, &$service) {
+                $booking = Booking::where('booking_id', $validated['booking_id'])
+                    ->lockForUpdate()
+                    ->firstOrFail();
 
-            if (auth()->user()->canAccessAdmin()) {
-                if (empty($validated['technician_id'])) {
-                    throw \Illuminate\Validation\ValidationException::withMessages([
-                        'technician_id' => 'Technician assignment is mandatory.'
-                    ]);
+                if ($booking->service) {
+                    abort(422, 'Booking already has a service.');
                 }
 
-                // Check technician availability
-                $tech = Employee::find($validated['technician_id']);
-                if ($tech && !$tech->isAvailable()) {
-                    throw \Illuminate\Validation\ValidationException::withMessages([
-                        'technician_id' => 'This technician is currently assigned to an in-progress service and is unavailable.'
-                    ]);
+                $status = Service::STATUS_PENDING;
+                $techId = null;
+
+                if (auth()->user()->canAccessAdmin()) {
+                    if (empty($validated['technician_id'])) {
+                        throw \Illuminate\Validation\ValidationException::withMessages([
+                            'technician_id' => 'Technician assignment is mandatory.'
+                        ]);
+                    }
+
+                    // Check technician availability
+                    $tech = Employee::find($validated['technician_id']);
+                    if ($tech && !$tech->isAvailable()) {
+                        throw \Illuminate\Validation\ValidationException::withMessages([
+                            'technician_id' => 'This technician is currently assigned to an in-progress service and is unavailable.'
+                        ]);
+                    }
+
+                    // Check limit
+                    $currentActive = Service::whereIn('status', [Service::STATUS_IN_PROGRESS, Service::STATUS_SCHEDULED])->count();
+                    if ($currentActive >= 10) {
+                        throw new \Exception('Active service limit reached (10/10). Cannot schedule new service.');
+                    }
+                    $status = Service::STATUS_SCHEDULED;
+                    $techId = $validated['technician_id'];
                 }
 
-                // Check limit
-                $currentActive = Service::whereIn('status', [Service::STATUS_IN_PROGRESS, Service::STATUS_SCHEDULED])->count();
-                if ($currentActive >= 10) {
-                    throw new \Exception('Active service limit reached (10/10). Cannot schedule new service.');
-                }
-                $status = Service::STATUS_SCHEDULED;
-                $techId = $validated['technician_id'];
-            }
+                Log::info('Creating service', ['booking_id' => $booking->booking_id, 'status' => $status]);
 
-            $service = Service::create([
-                'booking_id' => $booking->booking_id,
-                'status' => $status,
-                'technician_id' => $techId,
-                'labor_fee' => $validated['labor_fee'] ?? 0,
-                'notes' => $validated['notes'] ?? null,
-                'subtotal' => 0,
-                'total' => 0,
-                'expected_end_date' => now()->addDays(rand(2, 5)),
+                $service = Service::create([
+                    'booking_id' => $booking->booking_id,
+                    'status' => $status,
+                    'technician_id' => $techId,
+                    'labor_fee' => $validated['labor_fee'] ?? 0,
+                    'notes' => $validated['notes'] ?? null,
+                    'subtotal' => 0,
+                    'total' => 0,
+                    'expected_end_date' => now()->addDays(rand(2, 5)),
+                ]);
+
+                Log::info('Service created, syncing items', ['service_id' => $service->id]);
+
+                $this->syncItemsAndTotals($service, $validated['items']);
+
+                ActivityLog::record(
+                    'service.created',
+                    $service,
+                    'Service created',
+                    ['booking_id' => $service->booking_id]
+                );
+
+                Log::info('Service store completed successfully', ['service_id' => $service->id]);
+            });
+
+            return redirect()->route('services.index')
+                ->with('success', 'Service created.');
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::error('Service store validation failed', [
+                'errors' => $e->errors(),
+                'request' => $request->all()
             ]);
-
-            $this->syncItemsAndTotals($service, $validated['items']);
-
-            ActivityLog::record(
-                'service.created',
-                $service,
-                'Service created',
-                ['booking_id' => $service->booking_id]
-            );
-        });
-
-        return redirect()->route('services.index')
-            ->with('success', 'Service created.');
+            throw $e;
+        } catch (\Exception $e) {
+            Log::error('Service store error', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+                'request' => $request->all()
+            ]);
+            throw $e;
+        }
     }
 
     public function edit(Service $service)
