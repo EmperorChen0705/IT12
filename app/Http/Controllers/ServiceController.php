@@ -43,20 +43,32 @@ class ServiceController extends Controller
 
     public function store(Request $request)
     {
+        Log::info('=== SERVICE STORE CALLED ===', [
+            'all_input' => $request->all(),
+            'user_id' => auth()->id(),
+            'is_admin' => auth()->user()->canAccessAdmin()
+        ]);
+
         try {
             $this->sanitizeItems($request);
-            $validated = $this->validateService($request, true);
+            Log::info('After sanitize', ['items' => $request->input('items')]);
 
-            // Find booking without lock (simpler, works better on hosted DBs)
+            $validated = $this->validateService($request, true);
+            Log::info('Validation passed', ['validated' => $validated]);
+
+            // Find booking
             $booking = Booking::where('booking_id', $validated['booking_id'])->first();
+            Log::info('Booking lookup', ['booking_id' => $validated['booking_id'], 'found' => $booking ? 'yes' : 'no']);
 
             if (!$booking) {
+                Log::warning('Booking not found');
                 return redirect()->back()
                     ->withInput()
                     ->withErrors(['booking_id' => 'Booking not found.']);
             }
 
             if ($booking->service) {
+                Log::warning('Booking already has service');
                 return redirect()->back()
                     ->withInput()
                     ->withErrors(['booking_id' => 'This booking already has a service.']);
@@ -66,34 +78,42 @@ class ServiceController extends Controller
             $techId = null;
 
             if (auth()->user()->canAccessAdmin()) {
+                Log::info('Admin user - checking technician');
+
                 if (empty($validated['technician_id'])) {
+                    Log::warning('No technician selected');
                     return redirect()->back()
                         ->withInput()
                         ->withErrors(['technician_id' => 'Technician assignment is mandatory.']);
                 }
 
-                // Check technician availability
                 $tech = Employee::find($validated['technician_id']);
+                Log::info('Technician lookup', ['tech_id' => $validated['technician_id'], 'found' => $tech ? 'yes' : 'no']);
+
                 if ($tech && !$tech->isAvailable()) {
+                    Log::warning('Technician not available');
                     return redirect()->back()
                         ->withInput()
                         ->withErrors(['technician_id' => 'This technician is currently busy with another service.']);
                 }
 
-                // Check active service limit
                 $currentActive = Service::whereIn('status', [Service::STATUS_IN_PROGRESS, Service::STATUS_SCHEDULED])->count();
+                Log::info('Active service count', ['count' => $currentActive]);
+
                 if ($currentActive >= 10) {
+                    Log::warning('Active limit reached');
                     return redirect()->back()
                         ->withInput()
-                        ->withErrors(['technician_id' => 'Active service limit reached (10/10). Cannot schedule new service.']);
+                        ->withErrors(['technician_id' => 'Active service limit reached (10/10).']);
                 }
 
                 $status = Service::STATUS_SCHEDULED;
                 $techId = $validated['technician_id'];
             }
 
-            // Create service (transaction for data integrity)
-            $service = null;
+            Log::info('Creating service now', ['status' => $status, 'tech_id' => $techId]);
+
+            // Create service
             DB::beginTransaction();
             try {
                 $service = Service::create([
@@ -107,7 +127,10 @@ class ServiceController extends Controller
                     'expected_end_date' => now()->addDays(3),
                 ]);
 
+                Log::info('Service created', ['service_id' => $service->id]);
+
                 $this->syncItemsAndTotals($service, $validated['items']);
+                Log::info('Items synced');
 
                 ActivityLog::record(
                     'service.created',
@@ -117,31 +140,35 @@ class ServiceController extends Controller
                 );
 
                 DB::commit();
+                Log::info('=== SERVICE STORE SUCCESS ===', ['service_id' => $service->id]);
+
             } catch (\Exception $e) {
                 DB::rollBack();
-                Log::error('Service creation failed', [
+                Log::error('Service creation DB error', [
                     'error' => $e->getMessage(),
-                    'booking_id' => $booking->booking_id
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine()
                 ]);
                 return redirect()->back()
                     ->withInput()
-                    ->withErrors(['error' => 'Failed to create service: ' . $e->getMessage()]);
+                    ->withErrors(['error' => 'Database error: ' . $e->getMessage()]);
             }
 
             return redirect()->route('services.index')
                 ->with('success', 'Service created successfully.');
 
         } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::error('Validation failed', ['errors' => $e->errors()]);
             throw $e;
         } catch (\Exception $e) {
-            Log::error('Service store error', [
+            Log::error('General error', [
                 'message' => $e->getMessage(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine()
             ]);
             return redirect()->back()
                 ->withInput()
-                ->withErrors(['error' => 'An error occurred: ' . $e->getMessage()]);
+                ->withErrors(['error' => 'Error: ' . $e->getMessage()]);
         }
     }
 
