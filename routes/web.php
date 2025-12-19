@@ -22,6 +22,18 @@ Route::get('/', function () {
         : redirect()->route('login');
 })->name('home');
 
+// Debug route - remove after testing
+Route::get('/debug-test', function () {
+    return response()->json([
+        'status' => 'ok',
+        'time' => now()->toDateTimeString(),
+        'db' => \DB::connection()->getPDO() ? 'connected' : 'failed',
+        'bookings_without_service' => \App\Models\Booking::doesntHave('service')->count(),
+        'items_count' => \App\Models\Item::count(),
+        'employees_count' => \App\Models\Employee::count(),
+    ]);
+});
+
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1')->name('login.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
