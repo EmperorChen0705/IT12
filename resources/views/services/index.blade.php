@@ -356,7 +356,7 @@ document.addEventListener('DOMContentLoaded', () => {
 <template id="lineItemTemplate">
     <tr class="li-row">
         <td>
-            <select data-name="item_id" class="form-input item-select" required>
+            <select name="items[0][item_id]" data-name="item_id" class="form-input item-select" required>
                 <option value="">-- select --</option>
                 @foreach(\App\Models\Item::orderBy('name')->get(['item_id','name','unit_price','quantity']) as $it)
                     <option value="{{ $it->item_id }}"
@@ -367,8 +367,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 @endforeach
             </select>
         </td>
-        <td><input type="number" data-name="quantity" class="form-input qty-input text-end" min="1" value="1" required></td>
-        <td><input type="number" data-name="unit_price" class="form-input price-input text-end" step="0.01" min="0"></td>
+        <td><input type="number" name="items[0][quantity]" data-name="quantity" class="form-input qty-input text-end" min="1" value="1" required></td>
+        <td><input type="number" name="items[0][unit_price]" data-name="unit_price" class="form-input price-input text-end" step="0.01" min="0"></td>
         <td class="line-total-cell text-end">0.00</td>
         <td><button type="button" class="btn btn-delete btn-sm remove-line"><i class="bi bi-x"></i></button></td>
     </tr>
